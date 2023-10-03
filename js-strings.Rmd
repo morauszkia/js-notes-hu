@@ -1,0 +1,69 @@
+---
+title: "JavaScript String műveletek"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    toc_depth: 2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
+```
+
+```{js}
+// Indexek
+const name = "Peter"
+console.log(name[0])  // P
+
+// Konvertálás
+const str = String(num)
+const str = num + ""
+
+// Property-k
+name.length
+
+// Metódusok
+name.indexOf("e")     // 1
+name.indexOf("er")    // 3
+name.lastIndexOf("e") // 3
+
+// .slice(start, end) start: inclusive, end: exclusive
+name.slice(2)         // ter
+name.slice(2, 4)      // te
+name.slice(-1)        // r
+
+// Text transform
+name.toLowerCase()
+name.toUpperCase()
+str[0].toUpperCase() + str.slice(1)
+
+// Whitespace
+str.trim()
+str.trimStart()
+str.trimEnd()
+
+// Padding
+str.padStart(len, '0')
+str.padEnd(len, ' ')
+
+str.replace("a", "b")     // 1. előfordulást
+str.replaceAll("a", "b")
+str.replace(str[0], str[0].toUpperCase())
+str.replace(regex, x => {})   // Függvény is használható, amely megkapja a lecserélendő substringet
+
+str.repeat(times)
+
+str.includes("a")
+str.startsWith("name")
+str.endsWith("name")
+
+// .split(divider) return: array
+str.split("")       // Betűkre
+str.split(" ")      // Szavakra
+
+// .join(divider) return: string
+arr.join(" ")
+arr.join(", ")
+```

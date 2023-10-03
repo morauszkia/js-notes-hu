@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Node.js</title>
+
+<script src="site_libs/header-attrs-2.24/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/readable.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    background-color: #ffffff;
+    color: #a0a0a0;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #a0a0a0;  padding-left: 4px; }
+div.sourceCode
+  { color: #1f1c1b; background-color: #ffffff; }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span { color: #1f1c1b; } /* Normal */
+code span.al { color: #bf0303; background-color: #f7e6e6; font-weight: bold; } /* Alert */
+code span.an { color: #ca60ca; } /* Annotation */
+code span.at { color: #0057ae; } /* Attribute */
+code span.bn { color: #b08000; } /* BaseN */
+code span.bu { color: #644a9b; font-weight: bold; } /* BuiltIn */
+code span.cf { color: #1f1c1b; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #924c9d; } /* Char */
+code span.cn { color: #aa5500; } /* Constant */
+code span.co { color: #898887; } /* Comment */
+code span.cv { color: #0095ff; } /* CommentVar */
+code span.do { color: #607880; } /* Documentation */
+code span.dt { color: #0057ae; } /* DataType */
+code span.dv { color: #b08000; } /* DecVal */
+code span.er { color: #bf0303; text-decoration: underline; } /* Error */
+code span.ex { color: #0095ff; font-weight: bold; } /* Extension */
+code span.fl { color: #b08000; } /* Float */
+code span.fu { color: #644a9b; } /* Function */
+code span.im { color: #ff5500; } /* Import */
+code span.in { color: #b08000; } /* Information */
+code span.kw { color: #1f1c1b; font-weight: bold; } /* Keyword */
+code span.op { color: #1f1c1b; } /* Operator */
+code span.ot { color: #006e28; } /* Other */
+code span.pp { color: #006e28; } /* Preprocessor */
+code span.re { color: #0057ae; background-color: #e0e9f8; } /* RegionMarker */
+code span.sc { color: #3daee9; } /* SpecialChar */
+code span.ss { color: #ff5500; } /* SpecialString */
+code span.st { color: #bf0303; } /* String */
+code span.va { color: #0057ae; } /* Variable */
+code span.vs { color: #bf0303; } /* VerbatimString */
+code span.wa { color: #bf0303; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Programozás jegyzeteim</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Vanilla JS
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="vanilla/js-variables.html">JavaScript alapok</a>
+    </li>
+    <li>
+      <a href="vanilla/js-program-flow.html">Program Flow Control</a>
+    </li>
+    <li>
+      <a href="vanilla/js-functions.html">Függvények</a>
+    </li>
+    <li>
+      <a href="vanilla/js-data-structures.html">Adatstruktúrák</a>
+    </li>
+    <li>
+      <a href="vanilla/js-array-methods.html">Haladó Array műveletek</a>
+    </li>
+    <li>
+      <a href="vanilla/js-dom-manipulation.html">DOM manipuláció</a>
+    </li>
+    <li>
+      <a href="vanilla/js-strings.html">Stringek</a>
+    </li>
+    <li>
+      <a href="vanilla/js-numbers-dates.html">Számok és dátumok</a>
+    </li>
+    <li>
+      <a href="vanilla/js-regex.html">Reguláris kifejezések</a>
+    </li>
+    <li>
+      <a href="vanilla/js-async.html">Asynchronous JavaScript</a>
+    </li>
+    <li>
+      <a href="vanilla/js-oop.html">OOP</a>
+    </li>
+    <li>
+      <a href="vanilla/js-dev-practice.html">JavaScript Development a gyakorlatban</a>
+    </li>
+    <li>
+      <a href="vanilla/js-api.html">Hasznos API-k</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Typescript
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="ts-basics.html">TypeScript basics</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Front-End JS Libraries&amp;Frameworks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="front-end/jquery-basics.html">jQuery</a>
+    </li>
+    <li>
+      <a href="front-end/react-basics.html">React</a>
+    </li>
+    <li>
+      <a href="front-end/redux-basics.html">Redux</a>
+    </li>
+    <li>
+      <a href="front-end/next.html">Next</a>
+    </li>
+    <li>
+      <a href="front-end/vue-basics.html">Vue.js</a>
+    </li>
+    <li>
+      <a href="front-end/angular.html">Angular</a>
+    </li>
+    <li>
+      <a href="front-end/svelte.html">Svelte</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Back-End JS
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="back-end/node-js.html">Node.js</a>
+    </li>
+    <li>
+      <a href="back-end/express-js.html">Express.js</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Miscellaneous
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="misc/js-libraries.html">JS libraries</a>
+    </li>
+    <li>
+      <a href="misc/js-testing.html">JS Testing</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Node.js</h1>
+
+</div>
+
+
+<p>A Node.js egy JavaScript futtatási környezet, amely lehetővé teszi,
+hogy JavaScript programokat futtassunk a böngészőn kívül, és így például
+egy szerveren. Ezáltal a funkciók köre a böngészőben használt JS-hez
+képest részben bővebb (pl. file-rendszerhez való hozzáférés), részben
+szűkebb (pl. DOM manipuláció, böngésző API-k).</p>
+<div id="mi-van-a-motorháztető-alatt" class="section level2">
+<h2>Mi van a motorháztető alatt?</h2>
+<p>Alapja a Google V8 engine-je, amely a Chrome-ban is fut, és a
+libuv.</p>
+<p>A V8 motor felelős a JS kód gépi kóddá való alakításáért. A libuv egy
+open-source library, amely aszinkron input/outputra összpontosít, és ez
+teszi lehetővé az Event Loopot és a Thread poolt. Előbbi a gyors
+feladatok elvégzésének ütemezéséért felel, utóbbi pedig az időigényesebb
+feladatok elvégzéséért. Mindkettő C++ kódra támaszkodik: a libuv abban
+íródott, a V8 pedig C++-ban és JS-ban. A Node.js e kettőt összekötve
+magas szintű absztrakciót tesz lehetővé.</p>
+<p>Ezeken túl a Node.js további csomagokra is támaszkodik, különböző
+feladatok elvégzéséért (http-parser, c-ares, OpenSSL, zlib, stb.)</p>
+<div id="event-loop-és-thread-pool" class="section level3">
+<h3>Event loop és thread pool</h3>
+<p>A Node.js egyetlen szálon fut (ellentétben pl. a php-vel), ezért
+könnyen blokkolható a futása, és ezért ajánlatos aszinkron műveleteket
+használni. De ez teszi kevésbé erőforrásigényessé.</p>
+<p>A Node futása a program indítását követően a legfelső szintű kód
+futtatásával indul, amelynek része a szükséges könyvtárak betöltése, a
+callback függvények regisztrálása, majd az Event loop elindítása. Ebben
+történnek az alapvető műveletek.</p>
+<p>A Thread pool kapja az időigényes feladatokat: alapbeállításként 4
+szálat futtat párhuzamosan, ami általában elég is. Ide kerül a
+kriptográfia, file-okkal való munka, tömörítés, DNS keresés. Ennek
+célja, hogy ezek ne blokkolják a kód futását.</p>
+<p>A szálak számát a <code>process.env.UV_THREADPOOL_SIZE = num</code>
+paranccsal változtatható.</p>
+<p>A Node.js nagyrészt callback függvények használatára épül, amelyek
+különböző eventek esetén élesednek. Ezek futtatása az Event loopban
+történik. Az időigényes feladatok is ilyen eventeket élesítenek, amikor
+lefutottak, és az Event loop ezeket felfogja, és élesíti a megfelelő
+függvényeket.</p>
+<div id="műveletek-sorrendje-az-event-loopban" class="section level4">
+<h4>Műveletek sorrendje az event loopban</h4>
+<ol style="list-style-type: decimal">
+<li>Az első fázis a lejárt időzítők függvényeivel foglalkozik. A második
+fázis csak azután indul, ha nincs több lejárt időzítő.</li>
+<li>A második fázis az input/output eventekkel foglalkozik.</li>
+<li>Ezt követik a setImmediate callback-ek</li>
+<li>A close eventek: pl. ha a web szerver lekapcsol</li>
+</ol>
+<p>De ezek mellett futnak a process.nextTick() queue és az egyéb
+mikrofeladatok sora, amelyek aktuális feladatai rögtön lefutnak, ahogy
+bármelyik fázis lezárul.</p>
+<p>A negyedik fázis után, ha maradtak még háttérben futó tevékenységek,
+akkor újraindul az event loop, és csak akkor áll le, ha már nem maradt
+feladat. Ha bejövő http requestekre hallgatunk, akkor mindig marad
+legalább egy futó tevékenység, ezért az event loop nem áll le.</p>
+<p>Tippek, hogy ne blokkoljuk a futást:</p>
+<p>Ne használjuk az fs, crypto, zlib könyvtárak függvényeinek szinkron
+változatait callback függvényekben. A legfelső szinten használhatók,
+hiszen az még az event loop előtt fut le. Kerüljük a komplex
+számításokat, legyünk óvatosak a JSON-nal nagy objektumok esetén, és
+kerüljük a túl komplex reguláris kifejezéseket.</p>
+</div>
+</div>
+</div>
+<div id="a-node.js-használata" class="section level2">
+<h2>A Node.js használata</h2>
+<p>A Node-ot először telepíteni kell a számítógépre. Ezt követően a
+parancssorról futtathatóak a .js kiterjesztésű file-ok a
+<code>node filename.js</code> paranccsal.</p>
+<p>A Node alapcsomag része a Node Package Manager (npm) is, amely
+hozzáférést biztosít a JS könyvtárakhoz. Ezzel tudunk további
+könyvtárakat telepíteni lokálisan (adott projekthez) vagy globálisan (a
+gépre, az összes projekthez).</p>
+<div id="projekt-alapok-npm-scriptek" class="section level3">
+<h3>Projekt alapok, npm scriptek</h3>
+<p>Az új projektek az <code>npm init</code> paranccsal iniciálhatók,
+mely után számos metaadat megadható, és ez létrehozza a
+<code>package.json</code> file-t, amely tartalmazza ezeket, valamint az
+npm scripteket és a telepített könyvtárakat is.</p>
+<p>Hasznos dev dependency a <code>nodemon</code>, amely lehetővé teszi,
+hogy a script változása esetén automatikusan újrainduljon az alkalmazás.
+Ez a parancssorból csak akkor futtatható, ha globálisan telepítettük, de
+lokális telepítés futtatható npm script segítségével:
+<code>"start": "nodemon app.js"</code>.</p>
+<p>A scriptek az <code>npm run script-name</code> paranccsal
+futtathatók. A <code>start</code> script kiemelt, és az
+<code>npm start</code> paranccsal is futtatható.</p>
+</div>
+<div id="modulok-telepítése" class="section level3">
+<h3>Modulok telepítése</h3>
+<p>Az npm révén számtalan mások által írt könyvtárhoz férhetünk hozzá,
+amelyeket az npm révén telepíthetünk is: lokálisan (a projekthez) simán
+vagy dev dependency-ként (olyan csomagok, amelyek a fejlesztéshez
+szükségesek, de a futáshoz nem), illetve globálisan. Lehetőség van
+konkrét verzió telepítésére is.</p>
+<pre><code>// Local dependency (project)
+npm install slugify
+npm i jwt
+
+// Dev dependency
+npm install nodemon --save-dev
+npm install typescript -D
+
+// Global dependency
+npm install express -g
+npm install typescript --global
+
+// Version
+npm install module-name@2
+npm install next@latest
+
+// From package.json
+npm install
+npm i
+
+// From tarball
+npm install ./package.tar
+npm install &lt;tarball url&gt;
+
+// From scope
+npm install @types/react</code></pre>
+<p>A <code>package.json</code> file tartalmazza a dependency-ket, azok
+verziószámaival is. Ennek révén ellenőrizhető, melyikből áll
+rendelkezésre frissebb változat és frissíthetők. A könyvtárakat
+törölhetjük is.</p>
+<pre><code>npm outdated
+npm update
+npm uninstall module-name</code></pre>
+<p>A frissítéseket szabályozhatjuk a verziószám elé írt karakterekkel: a
+<code>^</code> bármilyen minor verziót elfogad (alapbeállítás), a
+<code>~</code> csak patch update-eket, a <code>*</code> pedig a fő
+verziók közül is elfogad újabbakat (óvatosan: ezek a kód futását
+érinthetik)</p>
+<div id="yarn" class="section level4">
+<h4>Yarn</h4>
+<p>A <code>yarn</code> az npm alternatívája, amely egy időben jobban
+működött. Az alábbi parancsokat jó ismerni.</p>
+<pre><code>// package.json-ból
+yarn
+
+// local
+yarn add express
+
+// devDependency
+yarn add typescript --dev
+
+// global
+yarn global add typescript
+
+// uninstall, update
+yarn remove jwt
+yarn upgrade express</code></pre>
+</div>
+</div>
+<div id="importexport" class="section level3">
+<h3>Import/export</h3>
+<p>Akárcsak a böngészőben használt JS, a Node esetében is hasznos, hogy
+támaszkodhatunk mások által készített modulokra, illetve saját kódunk
+bizonyos részeit külön modulokban tárolhatjuk, és így többféle
+helyzetben használhatjuk. A Node a Common.js modulrendszerét használja,
+ellentétben a böngészőben futó JS-szel, amely az ES modulrendszert.</p>
+<p>A modulok importja a <code>require()</code> függvénnyel történik.
+Ennek return értékét egy objektumba mentjük, és így férhetünk hozzá a
+modulban lévő elemekhez. Jellemzően a változó neve ugyanaz lesz, mint az
+importált modulé.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co">// Core modulok</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="kw">const</span> fs <span class="op">=</span> <span class="pp">require</span>(<span class="st">&#39;fs&#39;</span>)<span class="op">;</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="co">// Mások moduljai telepítést követően</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="kw">const</span> slugify <span class="op">=</span> <span class="pp">require</span>(<span class="st">&#39;slugify&#39;</span>)<span class="op">;</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="co">// Saját modulok file-ból</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="kw">const</span> moduleName <span class="op">=</span> <span class="pp">require</span>(<span class="st">&#39;./moduleName.js&#39;</span>)<span class="op">;</span></span></code></pre></div>
+<p>Az exportálás egy modulból a beépített <code>module.exports</code>
+objektum révén történik. Ehhez hozzárendelhetünk egy-egy objektumot (pl.
+függvényt), egy olyan objektumot, amely property-eit az exportálás során
+fel kívánjuk tölteni, illetve egyenként is létrehozhatjuk az objektumot
+a property-ket.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>module<span class="op">.</span><span class="at">exports</span> <span class="op">=</span> funNameToExport<span class="op">;</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>module<span class="op">.</span><span class="at">exports</span> <span class="op">=</span> {</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>  <span class="dt">fun1</span><span class="op">:</span> function1<span class="op">,</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>  <span class="dt">fun2</span><span class="op">:</span> function2<span class="op">,</span></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>  <span class="dt">obj</span><span class="op">:</span> obj1</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>}</span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>module<span class="op">.</span><span class="at">exports</span><span class="op">.</span><span class="at">obj2</span> <span class="op">=</span> { <span class="op">...</span> }</span></code></pre></div>
+<p>A modulok betöltése a megfelelő út értelmezésével kezdődik: először a
+<code>core</code> modulok között keres, ha az útvonal eleje
+<code>./</code> vagy <code>../</code>, akkor saját modult keres a
+megadott névvel (.js kiterjesztést nem kell írni), ha nincs, akkor pedig
+<code>index.js</code> file-t az adott nevű mappában, végül a
+<code>node_modules</code> mappában keresi a megadott nevű letöltött
+könyvtárat. Következő lépésben a modul kódját egy IIFE-be csomagolva
+futtatja, és így teszi számára közvetlenül elérhetővé a require
+függvényt, az exports objektumot, illetve a module objektum egészét. Ezt
+követően futtatja a modul kódját, return-öli az exportált objektumokat,
+és cache-eli a modult, hogy ismételt <code>require</code> esetén innen
+töltse be.</p>
+</div>
+</div>
+<div id="file-rendszerrel-való-interakció" class="section level2">
+<h2>File-rendszerrel való interakció</h2>
+<p>A Node.js egyik hozadéka a file-rendszerrel való interakció. Ennek
+vannak szinkron, és ezáltal a program futását blokkoló és aszinkron, a
+futást nem blokkoló (és ezért preferált) változatai.</p>
+<p>Callback függvényeken kívül, <em>top-level</em> kódban használhatók a
+szinkron változatok, hiszen ezek még az <em>event loop</em> indítása
+előtt lefutnak. Callback függvényekben viszont az aszinkron változatokat
+kell használni, hogy ne blokkolják a programkód futását, és ezáltal -
+időigényesebb feladatok esetén - ne tegyék lehetetlenné mások számára az
+alkalmazás használatát.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="kw">const</span> fs <span class="op">=</span> <span class="pp">require</span>(<span class="st">&#39;fs&#39;</span>)<span class="op">;</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="co">// Sync</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co">// fs.readFileSync(path, enc)</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="kw">const</span> textIn <span class="op">=</span> fs<span class="op">.</span><span class="fu">readFileSync</span>(<span class="st">&#39;./txt/input.txt&#39;</span><span class="op">,</span> <span class="st">&#39;utf-8&#39;</span>)<span class="op">;</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="co">// fs.writeFileSync(path, text)</span></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="kw">const</span> textOut <span class="op">=</span> <span class="vs">`This is what we know about the avocado: </span><span class="sc">${</span>textIn<span class="sc">}</span><span class="vs">.</span><span class="sc">\n</span><span class="vs">Created on </span><span class="sc">${</span><span class="bu">Date</span><span class="op">.</span><span class="fu">now</span>()<span class="sc">}</span><span class="vs">`</span><span class="op">;</span></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>fs<span class="op">.</span><span class="fu">writeFileSync</span>(<span class="st">&#39;./txt/output.txt&#39;</span><span class="op">,</span> textOut)<span class="op">;</span></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a></span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="co">// Async</span></span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a></span>
+<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a><span class="co">// fs.readFile(path, enc, function (err, data) {...})</span></span>
+<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a><span class="co">// fs.writeFile(path, text, enc, function (err) {...})</span></span>
+<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a></span>
+<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a>fs<span class="op">.</span><span class="fu">readFile</span>(<span class="st">&#39;./txt/start.txt&#39;</span><span class="op">,</span> <span class="st">&#39;utf-8&#39;</span><span class="op">,</span> (err<span class="op">,</span> data1) <span class="kw">=&gt;</span> {</span>
+<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a>  <span class="cf">if</span> (err) <span class="cf">return</span> <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&#39;ERROR! ☹&#39;</span>)</span>
+<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a></span>
+<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a>  fs<span class="op">.</span><span class="fu">readFile</span>(<span class="vs">`./txt/</span><span class="sc">${</span>data1<span class="sc">}</span><span class="vs">.txt`</span><span class="op">,</span> <span class="st">&#39;utf-8&#39;</span><span class="op">,</span> (err<span class="op">,</span> data2) <span class="kw">=&gt;</span> {</span>
+<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a>    <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(data2)<span class="op">;</span></span>
+<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a>    fs<span class="op">.</span><span class="fu">readFile</span>(<span class="st">&#39;./txt/append.txt&#39;</span><span class="op">,</span> <span class="st">&#39;utf-8&#39;</span><span class="op">,</span> (err<span class="op">,</span> data3) <span class="kw">=&gt;</span> {</span>
+<span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a>      <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(data3)<span class="op">;</span></span>
+<span id="cb6-24"><a href="#cb6-24" tabindex="-1"></a></span>
+<span id="cb6-25"><a href="#cb6-25" tabindex="-1"></a>      fs<span class="op">.</span><span class="fu">writeFile</span>(<span class="st">&#39;./txt/final.txt&#39;</span><span class="op">,</span> <span class="vs">`</span><span class="sc">${</span>data2<span class="sc">}\n${</span>data3<span class="sc">}</span><span class="vs">`</span><span class="op">,</span> <span class="st">&#39;utf-8&#39;</span><span class="op">,</span> (err) <span class="kw">=&gt;</span> {</span>
+<span id="cb6-26"><a href="#cb6-26" tabindex="-1"></a>        <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&#39;File written!&#39;</span>)<span class="op">;</span></span>
+<span id="cb6-27"><a href="#cb6-27" tabindex="-1"></a>      })<span class="op">;</span></span>
+<span id="cb6-28"><a href="#cb6-28" tabindex="-1"></a>    })<span class="op">;</span></span>
+<span id="cb6-29"><a href="#cb6-29" tabindex="-1"></a>  })<span class="op">;</span></span>
+<span id="cb6-30"><a href="#cb6-30" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+</div>
+<div id="web-server-és-szerveroldali-renderelés" class="section level2">
+<h2>Web server és szerveroldali renderelés</h2>
+<p>A Node használatának egyik fő iránya a webszerver működtetése. A
+szervert a <code>http</code> modul <code>createServer()</code>
+függvényével hozhatjuk létre, és a létrehozott szerveren lévő
+<code>.listen</code> metódussal figyelhetjük a beérkező kéréseket. A
+listen kötelezően vár egy port számot (fejlesztés céljára tipikusan
+3000, 8000, stb.), ahol elérhető a szerver, ezen kívül megadható egy
+IP-cím (alapértelmezett: localhost) és egy callback függvény, amelyet
+futtat a szerver indulásánál, amikor figyelni kezdi a beérkező
+kéréseket.</p>
+<p>A szervernek kapnia kell egy callback függvényt, amelyet beérkező
+kérés esetén (<code>request</code> event) futtat, és amely kezeli a
+beérkező kérésekre küldött válaszokat. Ezt többféleképpen adhatjuk meg.
+A szerver létrehozható a <code>http</code> modul klasszikus betöltése
+után a modult rejtő objektum használatával, vagy közvetlenül a
+betöltéssel egyidőben.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="kw">const</span> http <span class="op">=</span> <span class="pp">require</span>(<span class="st">&#39;http&#39;</span>)<span class="op">;</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="kw">const</span> server <span class="op">=</span> http<span class="op">.</span><span class="fu">createServer</span>()<span class="op">;</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="co">// vagy egyidőben</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="kw">const</span> server <span class="op">=</span> <span class="pp">require</span>(<span class="st">&#39;http&#39;</span>)<span class="op">.</span><span class="fu">createServer</span>()<span class="op">;</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="co">// request kezelése külön</span></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>server<span class="op">.</span><span class="fu">on</span>(<span class="st">&#39;request&#39;</span><span class="op">,</span> (req<span class="op">,</span> res) <span class="kw">=&gt;</span> {<span class="op">...</span>})</span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a><span class="co">// vagy anonim függvénnyel létrehozve</span></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a><span class="kw">const</span> server <span class="op">=</span> http<span class="op">.</span><span class="fu">createServer</span>((req<span class="op">,</span> res) <span class="kw">=&gt;</span> {<span class="op">...</span>})</span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a></span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="co">// vagy külön létrehozott függvénnyel</span></span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a><span class="kw">const</span> requestHandler <span class="op">=</span> (req<span class="op">,</span> res) <span class="kw">=&gt;</span> {<span class="op">...</span>}</span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a><span class="kw">const</span> server <span class="op">=</span> http<span class="op">.</span><span class="fu">createServer</span>(requestHandler)</span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a></span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a><span class="co">// végül</span></span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a>server<span class="op">.</span><span class="fu">listen</span>(<span class="dv">3000</span><span class="op">,</span> <span class="fl">127.0.0.1</span><span class="op">,</span> () <span class="kw">=&gt;</span> {</span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a>  <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&quot;Listening on port 3000&quot;</span>)</span>
+<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a>})</span></code></pre></div>
+<div id="routing" class="section level3">
+<h3>Routing</h3>
+<p>A szerver handler függvényében adhatjuk meg a logikát, amely függhet
+különböző feltételektől, így elsősorban attól, milyen url-t kér a
+böngésző, vagy attól, milyen metódus tartozik a kérelemhez. Az url és a
+method a request objektumon elérhető property.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="kw">const</span> server <span class="op">=</span> http<span class="op">.</span><span class="fu">createServer</span>((req<span class="op">,</span> res) <span class="kw">=&gt;</span> {</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>  <span class="cf">if</span> (req<span class="op">.</span><span class="at">url</span> <span class="op">===</span> <span class="st">&quot;/&quot;</span>) {</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>    <span class="op">...</span></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>  }</span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>  </span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>  <span class="cf">if</span> (req<span class="op">.</span><span class="at">url</span> <span class="op">===</span> <span class="st">&quot;/create-user&quot;</span> <span class="op">&amp;&amp;</span> req<span class="op">.</span><span class="at">method</span> <span class="op">===</span> <span class="st">&quot;POST&quot;</span>) {</span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>    <span class="op">...</span></span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>  }</span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>})</span></code></pre></div>
+<p>Az url sokszor egyéb adatokat is tartalmazhat, pl. query-ket.
+Ilyenkor hasznos eszköz az <code>url</code> modul, amely képes az urlből
+kiolvasni az útvonalat és a query-ket. Ezeket pl. objektum
+destrukturálással változóba menthetjük.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>  <span class="kw">const</span> { query<span class="op">,</span> pathname } <span class="op">=</span> url<span class="op">.</span><span class="fu">parse</span>(req<span class="op">.</span><span class="at">url</span><span class="op">,</span> <span class="kw">true</span>)<span class="op">;</span></span></code></pre></div>
+</div>
+<div id="response-objektum" class="section level3">
+<h3>Response objektum</h3>
+<p>Az elküldött választ is többféleképpen konfigurálhatjuk, például
+megadhatunk státuszkódot (<code>res.status</code>, alapértelmezettként
+200), módosíthatjuk a metaadatokat (<code>res.writeHead()</code>, a
+státusz ide is kerülhet), írhatunk a válaszba
+(<code>res.write()</code>), és lezárhatjuk, elküldhetjük a választ
+(<code>res.end()</code>). A html/szöveg a res.end paramétereként is
+megadható, ezt követően viszont már további adatot nem írhatunk a
+válaszba.</p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode js"><code class="sourceCode javascript"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>res<span class="op">.</span><span class="at">status</span> <span class="op">=</span> <span class="dv">200</span><span class="op">;</span>   <span class="co">// OK</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>res<span class="op">.</span><span class="at">status</span> <span class="op">=</span> <span class="dv">404</span><span class="op">;</span>   <span class="co">// Not found</span></span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>res<span class="op">.</span><span class="fu">writeHead</span>(<span class="dv">200</span><span class="op">,</span> {</span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>  <span class="st">&#39;Content-type&#39;</span><span class="op">:</span> <span class="st">&#39;text/html&#39;</span></span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>})</span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a>res<span class="op">.</span><span class="fu">writeHead</span>(<span class="dv">200</span><span class="op">,</span> {</span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a>  <span class="st">&#39;Content-type&#39;</span><span class="op">:</span> <span class="st">&#39;application/json&#39;</span></span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a>})</span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a>res<span class="op">.</span><span class="fu">write</span>(<span class="st">&#39;&lt;h1&gt;Welcome from the Server!&lt;/h1&gt;&#39;</span>)</span>
+<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a>res<span class="op">.</span><span class="fu">end</span>()<span class="op">;</span></span></code></pre></div>
+</div>
+<div id="form-adatok-kezelése-bufferrel" class="section level3">
+<h3>Form adatok kezelése bufferrel</h3>
+<p>Ha egy honlapon web kérdőívet használunk, és az adatokat elküldjük, a
+request objektum <code>data</code> eseményt élesít, illetve ha már az
+összes adat megérkezett, <code>end</code> eseményt. Ezeket is kezelni
+tudjuk.</p>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode js"><code class="sourceCode javascript"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="op">...</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a><span class="cf">if</span> (url <span class="op">===</span> <span class="st">&#39;/create-user&#39;</span> <span class="op">&amp;&amp;</span> method <span class="op">===</span> <span class="st">&#39;POST&#39;</span>) {</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>    <span class="kw">const</span> body <span class="op">=</span> []<span class="op">;</span></span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>    req<span class="op">.</span><span class="fu">on</span>(<span class="st">&#39;data&#39;</span><span class="op">,</span> (chunk) <span class="kw">=&gt;</span> {</span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a>      body<span class="op">.</span><span class="fu">push</span>(chunk)<span class="op">;</span></span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a>    })<span class="op">;</span></span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a>    <span class="cf">return</span> req<span class="op">.</span><span class="fu">on</span>(<span class="st">&#39;end&#39;</span><span class="op">,</span> () <span class="kw">=&gt;</span> {</span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a>      <span class="kw">const</span> parsedBody <span class="op">=</span> <span class="bu">Buffer</span><span class="op">.</span><span class="fu">concat</span>(body)<span class="op">.</span><span class="fu">toString</span>()<span class="op">;</span></span>
+<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a>      <span class="kw">const</span> userName <span class="op">=</span> parsedBody<span class="op">.</span><span class="fu">split</span>(<span class="st">&#39;=&#39;</span>)[<span class="dv">1</span>]<span class="op">;</span></span>
+<span id="cb11-10"><a href="#cb11-10" tabindex="-1"></a>      <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(userName)<span class="op">;</span></span>
+<span id="cb11-11"><a href="#cb11-11" tabindex="-1"></a>      res<span class="op">.</span><span class="at">statusCode</span> <span class="op">=</span> <span class="dv">302</span><span class="op">;</span></span>
+<span id="cb11-12"><a href="#cb11-12" tabindex="-1"></a>      res<span class="op">.</span><span class="fu">setHeader</span>(<span class="st">&#39;Location&#39;</span><span class="op">,</span> <span class="st">&#39;/&#39;</span>)<span class="op">;</span></span>
+<span id="cb11-13"><a href="#cb11-13" tabindex="-1"></a>      <span class="cf">return</span> res<span class="op">.</span><span class="fu">end</span>()<span class="op">;</span></span>
+<span id="cb11-14"><a href="#cb11-14" tabindex="-1"></a>    })<span class="op">;</span></span>
+<span id="cb11-15"><a href="#cb11-15" tabindex="-1"></a>  }</span>
+<span id="cb11-16"><a href="#cb11-16" tabindex="-1"></a><span class="op">...</span></span></code></pre></div>
+</div>
+<div id="templating" class="section level3">
+<h3>Templating</h3>
+<p>Szerveroldali renderelésnél html sablonokkal dolgozunk sokszor. A
+html file-ban elhelyezünk helykitöltőket, amelyeket a JS-tel
+programatikusan lecserélünk a megfelelő adatokra. Ezek szerepelhetnek a
+tagek között, de a tagek attribútumait, illetve az elemek osztályait is
+megadhatjuk így dinamikusan. Ilyen helykitöltő lehet pl.
+<code>{%NAME%}</code>. Ezeket aztán regurális kifejezések vagy a
+<code>.replace_all</code> metódus segítségével lecserélhetjük.</p>
+</div>
+</div>
+<div id="eventemitter" class="section level2">
+<h2>EventEmitter</h2>
+<p>A Node.js működése eventekhez, és ezek hatására futtatott
+függvényekhez kötődik. A legtöbb tevékenység ilyen eventet élesít: pl.
+request, data, end, stb. eventeket. Ezek a beépített EventEmitter
+osztály instanicái. Lehetőség van custom eventek manuális élesítésére
+is, ilyenkor az adott event bármi lehet (pl. új eladás), amelyet
+bizonyos feltétek mellett a JS program élesít, és ezeket felfoghatjuk az
+<code>.on</code> metódussal. Az <code>.emit</code> metódus további
+argumentumokat is kaphat, amelyeket a callback függvényben
+használhatunk.</p>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode js"><code class="sourceCode javascript"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="kw">const</span> <span class="bu">EventEmitter</span> <span class="op">=</span> <span class="pp">require</span>(<span class="st">&#39;events&#39;</span>)<span class="op">;</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a><span class="kw">const</span> myEmitter <span class="op">=</span> <span class="kw">new</span> <span class="bu">EventEmitter</span>()<span class="op">;</span></span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a></span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a>myEmitter<span class="op">.</span><span class="fu">emit</span>(<span class="st">&quot;newSale&quot;</span>)</span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a>myEmitter<span class="op">.</span><span class="fu">emit</span>(<span class="st">&quot;newSale&quot;</span><span class="op">,</span> <span class="st">&quot;book&quot;</span><span class="op">,</span> <span class="dv">1</span><span class="op">,</span> <span class="fl">12.99</span>)</span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a></span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a>myEmitter<span class="op">.</span><span class="fu">on</span>(<span class="st">&quot;newSale&quot;</span><span class="op">,</span> (product<span class="op">,</span> quantity<span class="op">,</span> price) <span class="kw">=&gt;</span> {<span class="op">...</span>})</span></code></pre></div>
+</div>
+<div id="streamelés" class="section level2">
+<h2>Streamelés</h2>
+<p>Nagyobb adatmennyiséget célszerű nem egészben beolvasni, hanem
+streamelni. A streameknek többféle változata van Node.js-ben: vannak
+olvasható, írható, duplex és átalakító (olyan duplex, amely módosítja,
+pl. tömöríti az adatokat) streamek.</p>
+<p>Olvasható streamek a request objektumok, és létrehozhatók pl. a ‘fs’
+modullal, a file-ok olvasására:
+<code>const readable = fs.createReadStream(path)</code>. Ezek az
+EventEmitter osztály instanciái, amelyek pl. <code>data</code>,
+<code>end</code> és <code>error</code> eventeket élesítenek, amelyek
+felfoghatók a létrehozott stream objektumon az <code>.on</code>
+metódussal. A <code>data</code> event akkor élesedik, ha egy új
+adatrészlet (chunk) be lett olvasva. Ezt a callback függvényben
+továbbíthatjuk egy írható streambe, optimálisan a <code>.pipe</code>
+metódussal: <code>readale.pipe(writeable)</code>.</p>
+<p>Írható stream például a response objektum is, illetve az ‘fs’
+modulban is létrehozhatók ilyenek streamelt file-ok írására. Duplex
+stream például a net modul web socketjei.</p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

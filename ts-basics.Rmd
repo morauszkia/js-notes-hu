@@ -1,0 +1,817 @@
+---
+title: "Typescript alapok"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    toc_depth: 2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
+```
+
+A TypeScript a JavaScriptre épülő programnyelv, amely a JS-tel ellentétben típusrendszert használ, és nem teszi lehetővé, hogy egy bizonyos típusú változót más típusú értékhez rendeljünk. Az első hozzárendelésnél a TS rögzíti a változó típusát, és később, ha más típusú változóval szeretnénk felülírni, jelzi a hibát.
+
+A TS programfile-ok `.ts` kiterjesztésűek. A TS-tel együtt járó `transcompiler` ezeket `.js` file-okká alakítja. A transcompiler a parancssorból a `tsc` paranccsal indítható. Futtatáskor jelzi a hibákat, ezzel elősegítve, hogy elkerüljük a program futása alatti hibákat, amelyek például abból erednek, hogy az adott változótípuson nem létező metódust hívunk.
+
+A fordítás Babellel is történhet. 
+
+```{js}
+let myNum = 42;  // szám lesz
+myNum = "thirteen";  // hibát jelez
+
+let myString = "Hello, World!"; // string lesz
+let myBool = true;  // boolean
+
+let emptyVar;   // any típusú lesz
+emptyVar = 5.2;
+emptyVar = "Hasta la vista, baby!"    // nem jelez hibát
+
+let mustBeNum: numeric;   // típusdeklaráció
+mutBeNum = "whatever"     // hibát jelez
+```
+
+## Fő típusok
+
+A TypeScript legalapvetőbb típusai megegyeznek a JS alaptípusaival is:  
+
+`number`: bármilyen egész vagy tizedes szám
+`string`: rövidebb/hosszabb szövegek
+`boolean`: igen/nem (`true` vagy `false`) logikai értékek
+
+A változók típusát egyértelműen megadhatjuk deklarációnál, vagy például függvény paramétereknél is megadhatjuk, milyen típust várunk. Ha változót értékkel inicializálunk, akkor a TS megpróbálja felismerni, milyen típusú, és ezentúl nem adhatunk meg más típust az adott változó értékeként.
+
+```{ts}
+let num: number; // type assignment
+
+const num2 = 5; // type  inference
+const num3: number = 5  // nem szükséges, de lehetséges
+
+const add = function(num1: number, num2: number) {
+  return n1 + n2;
+}
+```
+
+A megadott típusok nem feltétlenül jelennek meg bármilyen formán a kompilált JS kódban, de a fejlesztés során segítenek a typescriptnek és az IDE-nek, és például hibaüzenetet kapunk az IDE-től, ha nem megfelelő típusú értéket készülünk a változónak adni.
+
+### Objektumok típusai
+
+Objektumok esetén megadható, hogy milyen property-jei lehetnek, és azok milyen típusúak lehetnek. Az objektum egyik értéke is lehet másik objektum, amelynek típusait szintén megadhatjuk.
+Array esetén megadható, milyen típusú adatokat tartalmazhat.
+
+```{ts}
+const person1: {
+  name: string,
+  age: number,
+  friends: string[],
+  spouse: {
+    name: string,
+    age: number
+  }
+}
+```
+
+Objektum típusok megadhatók a `Record<Keys, Values>` formában is, ahol a property nevek Keys típusúak lehetnek csak, értékeik pedig Values típusúak, és a Key-k lehetséges értékeit megadhatjuk union típusként vagy enumként (ld. később).
+
+Csak a TS-ben fellelhető objektum a Tuple, amely fix elemű array, és rögzíthető, az egyes elemek milyen típusúak lehetnek. Ezek esetében az automatikus felismerés nem tudja eltalálni, hanem pl. union típust rendel hozzá (ld. később)
+
+```{ts}
+let tuple1: [number, string] 
+```
+
+### Enum
+
+Vannak esetek, amikor azt szeretnénk, hogy egy változó meghatározott értékeket vehessen fel. Vannak numerikus és string enumok is.
+
+Numerikus esetben, ha nem adjuk meg az értékeket, automatikusan 0-tól kezdi számozni az egyes eseteket. Ha megadjuk néhány enum értékét, a meg nem adottak az utolsó megadottól kezdődően egyesével növekednek.
+
+String enumoknál minden értéket meg kell adnunk.
+
+Az értékek lehetnek számítottak is, ebben az esetben viszont a később megadottaknak meg kell adnunk értéket, vagy a számítottaknak kell a végére kerülniük.
+
+```{ts}
+enum Direction {
+  Up,     // 0
+  Down,   // 1
+  Left,   // 2
+  Right   // 3
+}
+
+enum Direction2 {
+  Up = 1,
+  Down,   // 2
+  Left,   // 3
+  Right   // 4
+}
+
+enum PokemonType {
+  FIRE = "fire",
+  WATER = "water",
+  POISON = "poison",
+  GRASS = "grass",
+  MISC = "miscellaneous",
+}
+```
+
+Az így deklarált enumok objektumokként jönnek létre a kompilált JS kódban. Ha viszont `const enum {}` formában deklaráljuk, akkor nem jön létre objektum, hanem a JS kódban a megadott értéket veszik fel a változók.
+
+A deklarálást követően objektumként használhatjuk az enumot TS-ben, és rajta property-kként elérhetőek az egyes lehetőségek, ami csökkenti a hibázás lehetőségét, és autocomplete segítséget is kapunk.
+
+### any és unknown típus
+
+Ha akarjuk, megadhatjuk, hogy egy változó bármilyen típusú lehet, de ebben az esetben elveszítjuk a TS használatából eredő előnyöket, hiszen a TS nem tud segíteni, hogy ne kövessünk el valami hibát a változó értékeinek megadásánál.
+
+Ennél egy fokkal szigorúbb az `unknown` típus, amely szintén azt jelenti, hogy nem tudjuk, milyen típusú lesz a változó, de ezt már nem tudjuk olyan egyszerűen például másik, meghatározott típusú változóhoz rendelni, csak a típus ellenőrzése után.
+
+### union típusok
+
+Két vagy több típusból létrehozhatunk egy speciális `union` típust a `|` operátor segítségével. Ezzel azt jelezzük a TypeScriptnek, hogy a változó a megadott típusok valamelyike lehet. Ez kombinálható az objektum-típusokkal is, így például megadható egy array, amely string és number típusú változókat tartalmazhat: `(string | number)[]`.
+
+### literal típusok
+
+Ha const-tal hozunk létre literális változót (string, number, boolean), akkor annak típusa nem egyszerűen number vagy string, stb. lesz, hanem maga az érték lesz a típusa, amely az adott általános típus speciális esetének számít type-checking szempontjából.
+
+Ha egy változó csak bizonyos értékeket vehet fel, akkor enum helyett literal típusok unionját is használhatjuk.
+
+### alias és custom típusok
+
+Ha valamilyen komplexebb típusdeklarációt többször is használunk, ezeket elnevezhetjük, és így tulajdonképpen saját típusokat hozhatunk létre.
+
+```{ts}
+type Pokemon = {
+  name: string,
+  types: PokemonType[],
+}
+```
+
+### Függvények
+
+Megadható, milyen típusú eredményt ad a függvény. A TS ezt is ki tudja találni, ha egyértelmű, vagy megadható, és a TS figyelmeztet, ha a program alapján a TS úgy gondolja, mégsem olyan lesz az eredmény.
+
+Ha a függvénynek nincs return értéke, akkor `void` típusú lesz, hiába `undefined` a return érték ilyenkor, és ez létező TS típus, ezt nem fogadja el return típusként, csak voidot.
+
+Ezen kívül, ha a függvény soha nem ad return értéket, mert pl. olyan utility függvényről van szó, amely custom hibát dob, a return típusa `never` is lehet.
+
+A `Function` maga is egy típus TS-ben, amely használható, hogy a változó csak függvényt kaphasson értékként. Ez részletezhető is: 
+
+```{ts}
+// (parameterTypes) => returnType;
+let combineValues: (a: number, b: number) => number;
+```
+
+Ezzel megadhatjuk azt is, pl. milyen típusú callback függvényeket fogadhatunk el egy függvény paramétereként.
+
+A függvény argumentuma lehet objektum is, és megadhatjuk, milyen property-kkel kell rendelkeznie, és azoknak milyen típusúakna kell lenniük. Ebben az esetben, ha a függvénynek object literalt adunk paraméterként, akkor az szigorúan a megadott formátumú kell, hogy legyen, nem tartalmazhat további mezőket. Ha viszont egy változót adunk, amely egy olyan objektum, amely tartalmazza a szükséges property-ket, és megfelelő típusú értéket vesznek fel, ez az objektum további mezőket is tartalmazhat, amelyek nem szükségesek a függvényhez. 
+
+## Interface-ek
+
+Az `interface` egy objektum struktúráját írja le, de nem hoz létre "tervrajzot" objektumokhoz, hanem csak saját típust. Megadhatjuk, milyen típusú property-k és metódusok lesznek az objektumokon, de nem adhatunk meg értékeket.
+
+```{ts}
+interface Person {
+  name: string;
+  age: number;
+  
+  greet(phrase: string): void;
+}
+```
+
+Az interfészeket type checkinghez használhatjuk. A custom típusoktól eltérnek abban, hogy csak objektumokat hozhatunk létre vele, union típusokhoz, és egyebekhez nem használható.
+
+A metódusokat kétféle szintaxissal is megadhatjuk:
+
+```{ts}
+interface Person {
+  // ...
+  
+  greet: (phrase: string) => void;
+}
+```
+
+Az interface-ek abban is különböznek a type alias-októl, hogy "újranyithatók", tehát kiegészíthetők. Ez hasznos lehet pl. másoktól származó interface-ek importálása után.
+
+```{ts}
+interface Person {
+  name: string;
+}
+
+interface Person {
+  age: number;
+}
+```
+
+### Interface-ek implementálása
+
+Az interfészek jól használhatók osztályokhoz: pl. ez alapján létrehozhatunk több osztályt is, amelyeknek kell, hogy legyenek a megadott property-jei és metódusai. 
+
+Ezt az `implements` kulcsszóval jelezhetjük a TS-nek. Ellentétben az öröklődéssel, egy osztály több interface-et is implementálhat (ezeket vesszővel elválasztva sorolhatjuk fel). Az osztályban viszont több property-t és metódust is megadhatunk.
+
+Hasonlítanak az absztrakt osztályokra, és ezekkel is kikényszeríthetjük, hogy az ezeket implementáló osztályokban deklarálva legyenek bizonyos dolgok, de utóbbiakban lehetnek konkrét implementációk is, nem csak abstract metódusok és property-k, amelyeket az örökösökben kell deklarálnunk, az interface-ekben viszont csak a szükséges property-k és metódusok típusait adjuk meg. Az interface-ben viszont megadhatjuk, milyen típusúaknak kell lenniük ezeknek a metódusoknak.
+
+Az instancia típusa nem csak az osztálynak felel meg, hanem az interface-nek is, annak ellenére, hogy a struktúrája lehet bővebb is. Ezáltal egy érték több osztály instanciája is lehet, ha azok mind egy bizonyos interface-t implementálnak (pl. Greetable interface és Person osztály)
+
+Az interface-ekben az osztályok modifierjei közül a `readonly` használható (custom típusokban is). Ezután ezt már nem kell megtenni az osztályban, elég az interface-ben, és a TS figyelmeztet, ha nem eszerint járunk el.
+
+### Öröklődés
+
+Az interface-ek is tudnak egymásra építeni az `extends` kulcsszóval. Ellentétben az osztályokkal, az interface-ek több interface-t is kibővíthetnek. 
+
+```{ts}
+interface Named {
+  readonly name: string;
+}
+
+interface Greetable extends Named {
+  greet(phrase: string): void;
+}
+
+interface Engineer extends Person, Employee {
+  // ...
+}
+```
+
+### Interface függvénytípusok
+
+Mivel a függvények is objektumok, interface-et is használhatunk a típusuk deklarálására, ami a `type` deklaráció alternatívája.
+
+```{ts}
+interface AddFn {
+  (a: number, b: number): number;
+}
+```
+
+### Opcionális property-k és paraméterek
+
+Osztályokban és interface-ekben is opcionálissá tehetünk property-ket, ha a nevük után, a kettőspont elé kérdőjelet írunk. Ezt kezelni kell a constructorban is, ha releváns.
+
+```{ts}
+interface Greetable {
+  name?: string,
+  greet(phrase: string): void;
+}
+
+class Person implements Greetable {
+  name?: string,
+  age = 30;
+  
+  constructor(n?: string) {
+    if (n) {
+      this.name = n;
+    }
+  }
+  // ...
+}
+```
+
+Ugyanígy megadhatjuk, hogy egy paraméter egy függvényben opcionális (ld. a constructor-nál)
+
+## Haladó típusok
+
+### Intersection type
+
+Az `&` segítségével kombinálhatunk két objektum típust: az eredmény az összes property-t tartalmazni fogja. Ezt elérhetjük interface inheritance segítségével is.
+
+Union típusok esetén az intersection type csak azokat a típusokat fogja tartalmazni, amelyek midkettőben jelen voltak: a megadottak metszetét kapjuk.
+
+### Type guard
+
+Union típusok esetén előfordulhat, hogy egy függvény valamelyik típussal jól működik, a másikkal nem. Ilyenkor explicit módon ellenőrizni kell a változó típusát a `typeof` segítségével, és bizonyos esetekben kezelni kell a problémát.
+
+```{ts}
+type Combinable = string | number;
+
+const add = (a: Combinable, b: Combinable) {
+  if (typeof a === "string" || typeof b === "string") {
+    return a.toString() + b.toString();
+  }
+  return a + b;
+}
+```
+
+Custom type-oknál ez nem működik ebben a formában: pl. két objektumtípus unionjánál nem tudható, hogy egy bizonyos property létezik-e az objektumon, ha az union nem minden elemén létezik.
+
+Ebben az esetben az `if ("privileges" in emp)` módon ellenőrizhetjük, létezik-e a property az adott objektumon, és bizonyos parancsokat csak akkor futtatunk.
+
+Class-oknál az `if (vehicle instanceof Truck)` type guardot is használhatjuk. Interface-eknél ez nem működik.
+
+### Discriminated Union
+
+Segíti a type guardokat objekt típusok esetén. Tegyük fel, hogy két interface hasonló property-ket tartalmaz (pl. flyingSpeed és runningSpeed).
+
+Ehhez az interface-nek adunk egy property-t, amelynek literal type értéket adunk: pl. 'bird' vagy 'horse'. Ekkor a függvényben használhatunk switch statementet, hogy megvizsgáljuk, milyen típusú az objektum.
+
+Az teszi discriminated unionná a típusok unionját, hogy közös property-jük van. Ez objektum típusoknál is működik.
+
+### Type casting
+
+Ha a TS nem tudja megállapítani, egy bizonyos érték milyen típusú, közölhetjük vele. Pl. ha id alapján választunk ki DOM elemeket, a TS nem tudhatja, milyen típusú elemről van szó. 
+
+Két szintaxissal tehetjük ezt meg: az objektumot adó kifejezés elé közvetlenül beírhatjuk `< >` közé:
+`<HTMLInputElement>document.getElementById('user-input')`. Ez viszont a Reactban a JSX-ben is használt szintaxis, ezért van más megoldás is.
+
+A másik megoldás, hogy a kifejezés után adjuk meg: `document.getElementById('user-input') as HTMLInputElement`. 
+
+Ha a TS nem tudja, hogy egy kifejezés soha nem lesz `null`, `!` segítségével tudathatjuk, hogy biztos nem lesz null.
+
+Megtehetjük azt is, hogy a kódban teszteljük, létezik-e az adott érték: `if (userInputElement)`, ebben az esetben viszont a type castingot ezután kell megtennünk.
+
+```{ts}
+if (userInputElement) {
+  (userInputElement as HTMLInputElement).value = "Hi there!"
+}
+```
+
+A zárójellel elérjük, hogy előbb megtörténjen a type casting, majd ezután a kapott értéken már elérhető a value property, és a TS nem panaszkodik.
+
+### Index property
+
+Vannak esetek, amikor nem tudjuk, milyen nevű property-t akarunk létrehozni az objektumon, mégis szeretnénk egy interface-t használni. Ekkor megadhatjuk a következő módon:
+
+```{ts}
+interface ErrorContainer {
+  [prop: string]: string
+}
+```
+
+Ezzel jelezzük, hogy a property neve string lehet (pl. email, username), és az értéke is string (pl. a hibaüzenet) lesz. 
+
+A megadott index property-ból akárhányat fogadhat az ennek mintájára létrejött objektum.
+
+Ha ezt használjuk viszont, minden property-nek ugyanolyan típusúnak kell lennie, mint az index property.
+
+### Function overload
+
+A függvényekhez, amelyeknél a TS nem tudja jól kitalálni a kapott értéket (mert pl. a paraméterektől fügően többféle lehet), megadhatjuk az eseteket közvetlenül a függvény deklarálása előtt:
+
+```{ts}
+function add(a: number, b:number): number;
+function add(a: string, b: string): string;
+// ...
+function add(a: Combinable, b: Combinable) {
+  if (typeof a === "string" || typeof b === "string") {
+    return a.toString() + b.toString();
+  }
+  return a + b;
+}
+```
+
+### Optional chaining
+
+Ha nem lehetünk biztosak benne, hogy pl. egy API-tól kapott objektumon léteznek-e bizonyos property-k, használhatjuk:
+`console.log(fetchedUser?.job?.title)` ha létezik a fetchedUser, megnézi, létezik-e job, és ha igen, akkor annak van-e title property-je. Nem dob hibát, ha nem létezik.
+
+### Nullish coalescing
+
+`||` helyett `??` csak a null vagy undefined értékeket kezeli hamisként, az üres stringet és a nullát nem. 
+
+## Class-ok a TS-ben
+
+metódusoknak megadhatjuk a `this`-t argumentumként (ld. describe metódus), amelyet nem kell kötelezően paraméterként megadni a hívás során, de jelezzük, hogy a metódus olyan objektumon hívható, amely adott Class típusú:
+
+```{ts}
+class Department {
+  name: string;
+  private employees: string[] = [];
+  
+  constructor(n: string) {
+    this.name = n;
+  }
+  
+  describe(this: Department) {
+    console.log(`Department: ${this.name}`)
+  }
+  
+  addEmployee(employee: string) {
+    this.employees.push(employee)
+  }
+}
+
+```
+
+Ez azért fontos, mert a metódusokat át tudjuk másolni más objektumokra, amelyek nem az adott Class instanciái. Ha a fenti lépést megtesszük, a TS figyelmeztetni fog rá, hogy ezt tesszük. 
+
+### Access modifierek
+
+Ha nem szeretnénk, hogy egy field vagy method kívülről elérhető legyen, a `private` megjelöléssel csak az osztályon belülről elérhetővé tudjuk tenni. Ha mégis kívülről érjük el, a kompilálás során hibát jelez, de futtatásnál lefut, mivel a sima JS csak a legfrissebb változataiban ismeri a private property-ket és methodokat. 
+
+Ezen kívül property-ket csak olvashatókká tehetünk a `readonly` modifierrel.
+
+A fieldek deklarálása történhet a constructorban is, de ekkor meg kell adni a public modifiert is.
+
+```{ts}
+class Department {
+  private employees: string[] = [];
+  
+  constructor(private readonly id: string, public name: string) {}
+  
+  describe(this: Department) {
+    console.log(`Department ${id}: ${this.name}`)
+  }
+  
+  addEmployee(employee: string) {
+    this.employees.push(employee)
+  }
+}
+```
+
+### Öröklődés
+
+Osztályok örökölhetnek másik osztálytól: így ki tudjuk bővíteni a szülő osztály property-jeit és metódusait. Az öröklő osztály constructor függvényébe a super() függvénnyel tudjuk a szülő constructorját hívni, és ennek tudjuk továbbadni azokat az argumentumokat, amelyeket az kezel. Ezek egy része lehet konkért érték is, ekkor a constructor argumetumai között ezt nem kell feltüntetni, hiszen ezeket nem az instanciálás során kapjuk kívülről, hanem a deklaráció során adjuk meg.
+
+```{ts}
+class ITDepartment extends Department {
+  constructor(id: string, public admins: string[]) {
+    super(id, 'IT');
+    this.admins = admins; // Can be omitted, but if provided, needs to come after super()
+  }
+}
+```
+
+Örökölni csak egy Class-tól lehet.
+
+Az öröklés során felül is írhatunk egyes metódusokat, ha az öröklő class-ban újra deklaráljuk őket. Arra azonban figyelni kell, hogy a szülő private property-jeihez nem tudunk hozzáférni. Ebben segít, ha `private` helyett `protected` property-ként hozzuk létre, amelyek az öröklő osztályokban is elérhetők, kívülről azonban nem.
+
+### Abstract osztályok és property-k
+
+Bizonyos esetekben megköveteljük, hogy az öröklő osztályok egy bizonyos metódusból sajátot implementáljanak, mert ez a metódus szükséges, de nem tudjuk a szülő osztályon létrehozni, mert konkrét implementálása az egyes öröklő osztályoktól függ. Ilyenkor az `abstract` kulcsszóval hozzuk létre a metódust, és nem adunk meg hozzá implementációt a szülőn, hanem csak azt kell megadnunk, milyen típusú return értéket kell adnia (ez lehet void is). Ilyenkor magát az osztályt is `abstract` osztállyá kell tennünk. Ilyenekből viszont nem hozhatók létre instanciák, csak örökölni lehet tőlük.
+
+Ugyanez létezik property-kkel is.
+
+### Getter és setter metódusok
+
+Ha privát property-ket kívülről lekérhetővé és módosíthatóvá akarunk tenni, de nem közvetlenül, akkor létrehozhatunk getter és setter metódust. Ebben bonyolultabb logikát is használhatunk, mint egyszerűen a private field értékének returnölése. Fontos, hogy ezt metódusként hozzuk létre, és kell, hogy legyen return értéke. Kívülről viszont úgy férünk hozzá, mint property-hez.
+
+```{ts}
+const AccountingAppartment extends Department {
+  private lastReport: string;
+  
+  get mostRecentReport() {
+    if (this.lastReport) {
+      return this.lastReport
+    } else {
+      throw new Error('No report found.')
+    }
+  
+  set mostRecentReport(value: string) {
+    if (!value) {
+      throw new Error('Please provide a valid report!')
+    } else {
+      this.addReport(value)
+    }
+  }
+    
+    // ...
+  }
+}
+```
+
+### Statitkus metódusok és property-k
+
+Ezeket nem az instanciákon, hanem magán az osztályon érhetjük el, az osztály deklaráción belül is. Ezeket elsősorban különböző segédfüggvényekhez használjuk.
+
+### Private constructor és a Singleton minta
+
+Vannak esetek, amikor azt akarjuk, hogy egy bizonyos class alapján éppen egy objektumot hozhassunk létre. Ehhez a class contructorát a `private` kulcsszóval priváttá tehetjük, aminek hatására nem tudunk a new-val objektumot létrehozni. Ahhoz, hogy mégis létrehozzunk objektumot, egy statikus metódust hozunk rajta létre: pl. getInstance néven. Ez ellenőrzi, van-e már ilyen osztályú objektum. Ehhez egy `private static` property-t hozunk létre: pl. instance néven, amelynek értéke az adott osztály típusú.
+
+Statikus metóduson belül a `this` az osztályra utal és nem az instanciára, és mivel az osztály deklarációján belül vagyunk, itt használhatjuk a privát constructor metódust és a `new` parancsot az új instancia létrehozására.
+
+```{ts}
+class AccountingDepartment extends Department {
+  private static instance: AccountingDepartment;
+  
+  ...
+  
+  private constructor(id: string, private reports: string[]) {
+    super(id, 'Accounting')
+    this.lastReport = reports[0];
+  }
+  
+  static getInstance() {
+    if (this.instance) {
+    // alternative: if (AccountingDepartment.instance)
+      return this.instance;
+    }
+    this.instance = new AccountingDepartment('d2', [])
+  }
+}
+
+```
+
+## Generic típusok
+
+A generic-ek olyan általános típusok, amelyek többféle más típussal összekapcsolva használhatók: pl. az Array létező általános típus, de meg kell adni, milyen típusú adatokat fogadhat. Ez lehet `any`, de valamit meg kell adni: `any[]` vagy `Array<string>` formában is megadható, és unionok, custom típusok, stb. is használhatók mindkét esetben.
+
+Ilyen generic típus a Promise is: megadható, hogy a Promise végül milyen resolve értéket fog adni.
+
+Sokszor nem akarunk teljesen specifikusan lenni, hanem azt akarjuk, hogy pl. egy függvény rugalmasan többféle típusú adatot is elfogadjon, mégis típus-biztonságra törekszünk, tehát hogy a TS figyelmeztessen, ha rossz típusú adatot adunk meg neki.
+
+Függvényeknek megadhatunk generikus típusokat is, hogy plusz információkat nyújtsunk, de ne kelljen teljesen specifikusnak lennünk:
+
+```{ts}
+function merge<T, U>(objA: T, objB: U) {
+  return Object.assign(objA, objB)
+}
+```
+
+A fenti függvényt így megadva, a TS értelmezni tudja, hogy a két paraméter várhatóan különböző típusú lesz, és így a függvény a két objektum metszet típusát adja majd. A konkrét meghívásnál dinamikusan azonosítja a generikus típusokat a megadott paraméterek típusával, és így pl. tudja, hogy a kapott értéken elérhetők lesznek-e bizonyos property-k.
+
+### Constraint-ek
+
+Ugyanakkor a fenti módon deklarált függvény bármilyen két különböző típusú paramétert elfogad, nem csak objektumokat. Ahhoz, hogy objektumokra szűkítsük az elfogadott paraméterek körét, az `extends` parancsszót használjuk:
+
+```{ts}
+function merge<T extends object, U extends object>(objA: T, objB: U) {
+  return Object.assign(objA, objB)
+}
+```
+
+A generic típusok saját deklarálású típusokat és interface-eket is kiterjeszthetnek.
+
+```{ts}
+interface Lengthy {
+  length: number;
+}
+
+function countAndDescribe<T extends Lengthy>(element: T): [T, string] {
+  let descriptionText = 'Got no value.';
+  if (element.length === 1) {
+    descriptionText = 'Got 1 element.';
+  } else if (element.length > 1) {
+    descriptionText = `Got ${element.length} elements.`;
+  }
+  return [element, descriptionText];
+}
+```
+
+Szintén generikus típusokra megadott constraint-tel kényszeríthetjük ki, hogy egy függvény stringként csak egy objektum key értékét fogadja el: ezt az `extends keyof` paranccsal tehetjük meg. A TS így figyelmeztetni fog, ha olyan stringet adunk meg, amely nem felel meg az adott objektum egyik key-jének sem.
+
+```{ts}
+function extractAndConvert<T extends object, U extends keyof T>(obj: T, key: U) {
+  return obj[key];
+}
+```
+
+### Generic class
+
+A TS hajlamos hibát jelezni, ha valaminek implicit módon `any` típusa van. Mi viszont sokszor nem akarjuk pontosan megadni, milyen típusokat szeretnénk elfogadni. Pl. létre akarunk hozni egy osztályt, amellyel különböző tároló objektumokat tudunk létrehozni, metódusokkal a tárolt objektumok array-ének bővítésére és törlésre, illetve az elemek kinyerésére. A TS panaszkodni fog, ha nem adjuk meg, milyen típusú adatok array-ét akarjuk tárolni benne. A deklarálás során ezért megadhatunk neki általános típust (`<T>`).
+
+Az instanciálás során pedig megadjuk, hogy milyen típust szeretnénk (ld. alább), és ha aztán mégsem ilyen típusú adatot akarnánk hozzáadni, a TS tudni fogja, hogy hibára kell figyelmeztetnie.
+
+```{ts}
+class DataStorage<T> {
+  private data: T[] = [];
+  
+  addItem(item) {
+    this.data.push(item);
+  }
+  
+  removeItem(item) {
+    this.data.splice(this.data.indexOf(item), 1)
+  }
+  
+  getItems() {
+    return [...this.data]
+  }
+}
+
+const textStorage = new DataStorage<string>();
+const numberStorage = new DataStorage<number>();
+```
+
+A fenti példát nem tudnánk union típussal megoldani, mert nem tudhatjuk, milyen típusú is lesz végül az array, és így milyen típusú elemeket fogadhatunk el. Ha union típust adunk meg, akkor bármelyiket elfogadjuk, akkor viszont nem lehet homogenitást követelni az array-től.
+
+Az osztályhoz több általános típust is használhatunk, természetesen, és az osztály metódusaiban is használhatunk további általános típusokat.
+
+### Általános "utility" típusok
+
+A `Partial` általános típus egy adott objektum típus minden property-jét opcionálissá teszi, ami felhasználható, ha pl. egy objektumot lépésenként akarunk feltölteni adatokkal (pl. mert előbb validáljuk azokat)
+
+Ennek fordítottja a `Required` amely épphogy kötelezővé teszi az egyébként opcionális property-ket is.
+
+A `Readonly` típus pl. egy array-t vagy objektumot csak olvashatóvá tesz, így nem adhatunk hozzá új elemeket/property-ket. (pl. `Readonly<string[]>`)
+
+Objektum típusokból új objektum típusok létrehozhatók, a property-k egy bizonyos megadott részhalmazával a `Pick` és az `Omit`utility típusokkal, amelyeknek megadható, mely property-ket tartalmazza (Pick) vagy ne tartalmazza (Omit) az új típus.
+
+További utility típusok a TS honlapján ismerhetők meg.
+
+## Dekorátorok
+
+Ezek használatához a tsconfig-ban a target JS-t ES6-ra kell állítanunk, és alul engedélyezni kell a kísérleti dekorátorokat.
+
+A dekorátorok olyan függvények, amelyeket más objektumokra, pl. osztályokra alkalmazunk.
+
+A dekorátorok neveit szokás nagybetűvel kezdeni. Argumentuma pl. a `target` objektum (nem kell így nevezni), amelyre alkalmazzuk.
+
+A használata úgy történik, hogy az objektum/osztály elé írjuk az `@DecoratorName` sort, amellyel jelezzük, hogy az adott dekorátort ezen az osztályon akarjuk alkalmazni. Fontos: ez akkor történik, amikor az osztályt deklaráljuk a file-ban, nem pedig az instanciáláshoz kapcsolódik.
+
+Dekorátorokat nemcsak közvetlenül deklarálhatunk mint függvényeket, hanem létrehozhatunk olyan függvényként is, amelyek anonim függvényt adnak vissza.
+
+Ebben az esetben az osztály előtti sorban nem csak rámutatni kell, hanem meghívni: `@DecoratorName()`, mert így csatoljuk az osztályhoz a return értékként kapott függvényt. Ez arra jó, mert így testre is szabhatjuk a dekorátorokat, mert a függvény argumentumokat (pl. különböző string értékeket) fogadhat, és ezek alapján alkotja meg a dekorátort.
+
+Ilyen dekorátorokat használ az Angular ahhoz, hogy komponenseket hozzon létre osztályokból: a dekorátor függvény kap egy template-et és egy hookId-t, ahová rendereli a megfelelő adatokkal feltöltött template-et.
+
+Egy osztályhoz több dekorátort is hozzáadhatunk. A dekorátorokat létrehozó factory függvények fentről lefelé futnak, de maguk a dekorátorok alulról felfelé.
+
+A dekorátor amellett, hogy magához az osztályhoz adhatjuk, adható az egyes property-khez, metódusokhoz, accessorokhoz (getter/setter) és paraméterekhez is.
+Az első esetben a dekorátor paraméterei a target, ami lehet a prototípus vagy a constructor (ha statikus property), illetve a propertyName (string | Symbol). Ilyen dekorátorokat használhatunk például az egyes property-k validálására instanciálás során (pl. a `class-validator` csomag is így működik)
+Ha accessorhoz adjuk, akkor a target ugyanaz, mint az előbb, a name azt mutatja, hogy milyen nevet adtunk a getternek/setternek, nem pedig, hogy melyik property-t kezeli belül, végül a descriptor (típusa PropertyDescriptor) az accessor leírása.
+Metódusokhoz adott dekorátorok szintén ugyanúgy kapják a targetet, kapják a metódus nevét, és megkapják a descriptort. Ilyen metódushoz adott dekorátor használható pl. arra, hogy ha a metódust máshol hívjuk (pl. subscriber patternnél), a this akkor is a metódus objektumára mutasson, és így hozzáférjen pl. annak property-jeihez. 
+Paraméterekhez adott dekorátorok a targetet kapják ugyanúgy, a metódus nevét és az argumentum pozícióját.
+
+A dekorátorok az osztályok deklarálásakor futnak, nem pedig instanciáláskor. Ezért arra használhatók, hogy az osztályok definiálásánál futtassunk bizonyos parancsokat a háttérben. 
+
+
+A dekorátoroknak lehet return értéke: pl. osztályhoz adott dekorátorok returnölhetnek egy új constructor függvényt vagy egy új osztályt, amely kiterjeszti az eredeti constructor-t. Ezzel felülírhatjuk, módosíthatjuk vagy kiegészíthetjük a meglévő osztályt. Így megadhatunk olyan logikát is, ami nem a deklarációnál, hanem az instanciálásnál fut le.   
+
+Return értéke az accessorhoz és metódushoz adott dekorátoroknak is lehet. A property-hez vagy paraméterhez adott dekorátorok return értékeit a TS ignorálja. Az accessorhoz és metódushoz adott dekorátorokkal módosíthatjuk a deskriptorokat.
+
+## A Compiler
+
+A compilert a `tsc` parancssori programmal indíthatjuk, amelynek megadhatjuk, melyik file-t szeretnénk kompilálni.
+A `--watch` vagy `-w` flaggel elérhetjük, hogy a compiler a file módosításai esetén újrainduljon. Ezek ugyanakkor csak egy file- kompilálására alkalmasak. 
+
+Ahhoz, hogy több file-t is egyszerre kompilálhassunk, először a `tsc --init` paranccsal inicializálunk egy typescript projektet. Ez létrehozza a `tsconfig.json` file-t. Ezt követően, ha a `tsc` parancsot magában futtatjuk, az összes `.ts` file-t kompilálja a projekten belül. Működik a `tsc -w` parancs is.
+
+### Konfiguráció
+
+A `tsconfig.json` file-ban megadhatunk különböző opciókat. Pl. az alap opciók után hozzáadhatjuk az `"exclude"` property-t, amely értékeként megadhajuk azoknak a file-oknak az array-ét, amelyeket nem szeretnénk kompilálni. A lista megadásában haszálhatjuk a wildcard `*` karaktert: pl. `*.dev.ts` az összes olyan file-t jelenti, amely így végződik. Egész mappákat is megadhatunk (pl. node_modules, bár ezt eleve kihagyja a kompilátor).
+
+Az "include" segítségével épp fordítva, megadhatjuk azoknak a listáját, amelyeket kompilálni szeretnénk. Amit nem adunk a listához, nem lesz kompilálva. Ebben az esetben is megadhatunk egész mappákat is.
+
+A "files" opcióval szintén megadhatunk, de csak file-okat.
+
+Az alap opciók között hasznosak:
+A `target` megadja, melyik JS verzióra szeretnénk kompilálni.
+Ha a `lib` ki van kommentálva, akkor az alapértelmezett könyvtárakat használja (pl. document, console, stb.).
+Ezeket megadhatjuk manuálisan is: pl. "dom", "es6", "dom.iterable", "scripthost" a default
+Az `allowJs` és `checkJs` lehetővé teszi `.js` file-ok használatát: előbbi ezeket is kompilálja, utóbbi csak ellenőrzi, és így ki tudjuk valamennyire használni a TS képességeit.
+A `sourceMap` lehetőség lehetővé teszi, hogy a böngésző DevTools-jának Sources fülén együtt lássuk a `.ts` és `.js` file-okat és a köztük lévő kapcsolatot kihasználhassuk pl. debuggolás közben.
+Az `outDir` és `rootDir` azt adja meg, hová menjenek a kompilált JS file-ok és honnan vegyye a TS file-okat. Ha megadjuk a rootDirt, csak a megadott (pl. src) mappát kompilálja. A kompilálás során másolja a src könyvtár struktúráját.
+A `removeComments` a kompilálás során kihagyja a kommenteket.
+A `noEmit` paranccsal csak ellenőrzünk, de nem kompilálunk.
+Ha a kompiláció után a loopok nem a várt módon működnek, a `downlevelIteration` opció bekapcsolása segíthet.
+
+Az alap opciók között nincs ott, de a `noEmitOnError` opció lehetővé teszi, hogy ha hibát talál, ne hozzon létre kompilált file-okat. Ez nem csak azokra vonatkozik, ahol hibát talál, hanem az összesre.
+
+Az opciók következő csoportja a `strict` kompilálásra vonatkozik: a `"strict": true` beállítás egyenértékű azzal, hogy az összes részbeállítás igaz:  
+
+- a `noImplicitAny` opció nem engedi, hogy változók implicit módon legyenek `any` típusúak. Változók lehetnek any típusúak, mert azokat a TS követi, és később fel tudja ismerni, egy-egy pontot milyen típusú értéket vesznek fel, paramétereknél viszont nem engedi.
+- a `strictNullChecks` azokra az esetekre vonatkozik, amikor egy változó null értéket vehet fel: ha a TS nem tudja megállapítani, biztosan lesz-e értéke egy változónak, figyelmeztet. Erre egy megoldás a `!` használata, amellyel jelezhetjük, hogy egy változónak biztos nem null értéke lesz, vagy olyan if-check, amellyel garantáljuk, hogy a kérdéses kód csak akkor fut, ha a releváns változónak van valós értéke.
+- a `strictBindCallApply`-val, ha bind-dal adunk meg argumentumot callback függvénynek, ellenőrizni tudja a megadott érték típusát, és figyelmeztetni, ha rossz típust adtunk meg.
+- az `alwaysStrict` hozzáadja a strict módot a JS file-okhoz is.
+
+Kódminőséget érintő opciók:  
+
+- a `noUnusedLocals` és `noUnusedParameters` a deklarált, de nem használt változók és paraméterek esetén eredményez hibát. Ezekért egyébként csak figyelmeztetést kapunk a VS Code-tól.
+- a `noImplicitReturns` hibát jelez, ha egy függvénynek néha van return értéke, néha pedig nincs. Üres return ilyenkor elfogadható.
+
+## Modulok
+
+### Namespace modulok
+
+Ehhez a külön file-ban az exportálandó dolgokat a `namespace NspaceName {}` segítségével becsomagoljuk, és az exportálandó objektumok elé írjuk az `export` kulcsszót.
+
+Az importáló file-ban a `/// <reference path="namespace-file.ts" />` speciális szintaxissal importáljuk az így létrehozott namespace-t, majd az egész kódot, amelynek hozzá kell férnie a külön file-ban deklarált objektumokhoz, szintén egy azonos nevű namespace-be csomagolunk. 
+
+Ezen túl, hogy a kompilált file-ok működjenek, a tsconfig file-ban az `"outFile": "./"` sort élesíteni kell, hogy a namespace-eket konkatenálja. Itt megadhatjuk a file-nevet is pl. `bundle.js`, viszont egyúttal a "module" opciót is módosítani kell, pl. `amd`-re.
+
+A namespace-eknél ugyanakkor probléma, hogy bár hiányoznak importok, attól még lehet, hogy a kompiláció hiba nélkül lefut. A végeredmény attól még működhet, ha egy másik file importálja a szükséges dolgokat, és így bekerülnek a bundle-be, de könnyű hibát véteni a fejlesztés során.
+
+### ES6 modulok
+
+Az ES6 modulok sokkal egyértelműbben működnek. Ehhez a szükséges szintaxis az `export` vagy `export default` az exportálandó dolgok előtt (ld. JS jegyzetek), az importáló file-ban pedig az `import ... from ...` vagy `import * as ...` szintaxis, akár nevesített, akár default exportokkal. A nevesített importokat átnevezhetjük: `import { something as Something } from ...`
+
+Fontos viszont, hogy alapesetben a `.js` file-okat importáljuk, tehát a már kompilált file-okra mutassanak az importok. 
+
+Ebben az esetben, ha valamit nem importálunk explicit módon abba a file-ba, ahol használjuk, hibát jelez a kompiláció során és az IDE is. 
+
+Ezt a funkciót a modern böngészők támogatják. Ahhoz, hogy régebbi böngészőkön is működjön, module bundlereket használhatunk. További előnye a bundlernek, hogy csökkenti az Http requestek számát, ezzel gyorsítva az alkalmazás betöltését.
+
+### Webpack
+
+A webpack egy bundler, amely lehetővé teszi a modulárisan felépített kód egybecsomagolását (TypeScriptnél kompilációt is tud) és optimalizálását (rövidítés, stb.). Emellett a webpack egy development servert is futtat (a `webpack-dev-server` csomaggal). 
+
+A következő csomagokat telepítjük dev dependency-ként: `webpack`, `webpack-cli`, `webpack-dev-server`, `typescript` és `ts-loader`. A TypeScript hozzáadása azért szükséges, hogy együttműködjön a projekt ts verziója a webpack-kel, és ez akkor is így maradjon, ha a globálisan telepített TypeScriptet másik verzióra frissítjük.
+
+A webpack konfigurációjához a tsconfig-ban a target js verziót `es5`-re vagy `es6`-ra kell állítani, attól függően, milyen böngészőkre fejlesztünk. A module-nak is `es2015`-nek kell lennie. Szintén fontos, hogy az `outDir` jól be legyen állítva (pl. `./dist`). Szintén fontos, hogy a `sourceMap` opció éles legyen, ez lehetővé teszi a csomagolt kód debuggolását a böngészőben. Nincs viszont szükség a `rootDir` opcióra, mert ezt a webpack fogja kezelni.
+
+A webpack konfigurációja a `webpack.config.js` file-ban történik.
+
+```{js}
+const path = require('path');
+
+module.exports = {
+  mode: 'development',
+  entry: './src/app.ts',
+  output: {
+    filename: 'bundle.[contenthash].js',
+    path: path.resolve(__dirname, 'dist'),
+    publicPath: '/dist/',
+  },
+  devServer: {
+    static: {
+      directory: path.join(__dirname, '/'),
+    },
+  },
+  devtool: 'inline-source-map',
+  module: {
+    rules: [
+      {
+        test: /\.ts$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
+      },
+    ],
+  },
+  resolve: {
+    extensions: ['.ts', '.js'],
+  },
+};
+
+```
+
+A webpack működéséhez viszont el kell távolítani a `.js` kiterjesztéseket az importok végéről. Ezt a fenti konfigurációs file-ban megadott `resolve` property váltja ki.
+
+A használat bevett módja egy új script a package.json file-ban. Pl.: `"build": "webpack"`.
+Ugyanígy használható a webpack dev server is: pl. `"start": "webpack serve"` (korábbi verzióknál még `webpack-dev-server` volt a parancs. Ez automatikusan újrakompilálja a kódot minden mentett módosításnál, de csak a memóriában hoz létre file-t. Ahhoz, hogy ez jól működjön, a konfigurációs file-ban megadjuk a `publicPath` property-t, amely pl. a `dist` mappára mutat.
+
+A production módhoz külön konfigurációs file-t hozunk létre: pl. `webpack.config.prod.js`, amelyben a módot `production`-re állítjuk, nincs szükségünk a publicPath-ra és a devServer specifikációra, hiszen nem development serverrel dolgozunk, sem pedig a source mapra (webpack 5 óta ilyenkor a devtool property-t elhagyjuk, korábban a `none` string értéket adták neki). Érdemes viszont a `clean-webpack-plugin`-t használni, amellyel minden új build előtt törölhetjük a dist mappát, hogy csak a friss file-ok legyenek ott. Ezt a config file-ban a plugin property alatt használhatjuk:
+
+```{js}
+const path = require('path');
+const CleanPlugin = require('clean-webpack-plugin');
+
+module.exports = {
+  mode: 'production',
+  entry: './src/app.ts',
+  output: {
+    filename: 'bundle.js',
+    path: path.resolve(__dirname, 'dist'),
+  },
+  module: {
+    rules: [
+      {
+        test: /\.ts$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
+      },
+    ],
+  },
+  resolve: {
+    extensions: ['.ts', '.js'],
+  },
+  plugins: [new CleanPlugin.CleanWebpackPlugin()],
+};
+```
+
+Ezen kívül az npm scriptben is jelezzük, hogy ezt a file-t szeretnénk használni a build során: `"build": "webpack --config webpack.config.prod.js"`
+
+A létrejött file-t együtt az index.html és a megfelelő css file-okkal tesszük fel a szerverre.
+
+A webpackről több információt a [hivatalos weboldalán](https://webpack.js.org/) lehet találni.
+
+## 3rd party library-k használata
+
+Sima JavaScript library-ket is telepíthetünk az npm-mel, és importálhatjuk a file-jainkban, de a TypeScript hibát fog jelezni, mert nem találja a deklarációkat. Ettől még a csomag működhet, és ha a tsconfig-ban lehetővé tesszük az emitet hibák esetén is, a kapott file-ok működni fognak.
+
+Ha nincs TypeScript változat egy csomaghoz, elképzelhető, hogy léteznek hozzá TS fordítások, amelyeket definiálják a használt típusokat. Ezeket magunk is megírhatjuk, ha nem léteznek, de a népszerű könyvtárakhoz léteznek ilyenek. Ezeknek a file-oknak `.d.ts` a kiterjesztésük. 
+
+Mivel ezek a fordítások csak a development során szükségesek, dev dependency-ként is telepíthetjük: pl. a `lodash` mellett (sima dependency) a `@types/lodash` csomagot (ezt devDependency-ként)
+
+Ha ilyenek nem érhetők el, vagy saját js scriptet is akarunk használni, végső megoldásként használhatjuk a `declare` kulcsszót, és bizonyos változókat, objektumokat deklarálhatunk, hogy bizonyos típusúak. Ezzel tudathatjuk, hogy ezek léteznek és/vagy bizonyos típusúak. 
+
+Vannak viszont olyan csomagok, amelyek eleve TypeScript támogatással készültek (pl. `class-transformer`), de sima JavaScripttel is működnek, vagy amelyek kifejezetten TypeScriptet használnak (pl. `class-validator`). 
+
+## TS és React
+
+A `create-react-app` alkalmas TS projekt inicializálására is a `--template typescript` opcióval.
+
+A file-ok `.tsx` kiterjesztést kapjanak, ha JSX szintaxist is tartalmaznak.
+
+A komponensekhez típus rendelhetünk: pl. React.FC a függvény komponensek esetében, amelyek generikus típusok, és megadhatjuk hozzájuk, milyen struktúrájó prop objektumot fogadhatnak el, amiért cserébe pl. autocompletiont kapunk az IDE-től. Ez azonban többé nem ajánlott, és ehelyett inkább a függvények paramétereinek típusozásának megfelelően javasolt megadni a propok típusait. Opcionális propoknál használhatjuk a `?:` jelölést. Destrukturálásnál megadhatjuk a default értékeket az adott propoknak.
+
+Ha wrapper komponenst hozunk létre, a children prop `React.ReactNode` típust kaphat. Ha kicsit szigorúbbak akarunk lenni azzal, mit fogadjon el, megadhatunk `React.ReactElement`-et vagy `JSX.Element`-et is, és így csak valid React komponenseket fogad el gyermeknek, sima szöveget, booleant, számot, stb. nem. 
+
+A refeket léterhozó useRef ugyancsak generikus, és megadhatjuk, milyen objektumot kapunk segítségével (pl. tipikusan HTMLInputElement-et). A Form submit eventnek is típust adunk: React.FormEvent-et.
+
+A useState is generikus függvény, és megadjuk neki, milyen típusú lesz a kezelt state, hiszen az indító értékből nem mindig tudja jól kikövetkeztetni.
+
+A további funkciók TS-esítéséhez a dokumentációkhoz, illetve a függvények leírásához érdemes fordulni az IDE-ben. Ha egy csomaghoz nincsenek eleve típusok (pl. react-router) létezhet külön csomag az @types-on belül.
+
+## TS és Node.js
+
+A Node önmagában nem képes TS programkódot kompilálni és futtatni, de a kompilált js file-okat természetesen igen. A `ts-node` csomag lehetővé teszi a TS file-ok futtatását, amely egy lépésben egyesíti a kompilálást (a háttérben) és a futtatást. Ez production környezetben nem optimális. 
+
+TS-ben a szokásos require típusú importok helyett a szokásos ES6 import/export-ot használjuk, amely azonban a kompiláció során át lesz alakítva. Ennek köszönhetően pl. destrukturálva is importálhatjuk a Routert.
+
+A Node és Express típusokat külön telepíteni kell (lehet devDependency-ként).
+
+A munka során a handler függvények paramétereinek típusait megadhatjuk: léteznek erre szolgáló Error, Request, Response, NextFunction típusok. Megtehetjük viszont, hogy nem az egyes paraméterek típusait adjuk meg, hanem a handler függvény típusát: RequestHandler vagy ErrorRequestHandler.
+
+Úgyszintén megadhatjuk a req.body típusát, pl. egy objektum típusként, amely tartalmaz bizonyos típusú property-ket: `const text = (req.body as {text: string}).text`
+
+A RequestHandler is generikus függvénytípus, amelyhez megadhatjuk a request paramétereinek típusait.
+
+Míg az Express és a Fastify is használható TypeScripttel, a Nest.js egy olyan framework, amely kifejezetten épít a TS funkcióira.

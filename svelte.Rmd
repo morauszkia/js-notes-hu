@@ -1,0 +1,417 @@
+---
+title: "svelte"
+output: html_document
+date: "2023-08-18"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+A Svelte egy kompiláló, amely a Svelte szintaxissal írott kódot sima HTML, css és js file-okká konvertálja. A kompilálás során több optimalizálást is végrehajt, például kigyomlálja a nem használat css deklarációkat. Előnye más keretrendszerekhez képest, hogy kisebb kódmennyiséget kell továbbítania, ami gyorsítja a betöltést.
+
+## Svelte használata
+
+## Projektek felépítése
+
+Általában egy fő komponensből álló alkalmazásokat készítünk, amelyek több komponensből állnak. Ezt a fő komponenst az App.svelte file-ban építjük fel, és a main.js file-ban a HTML dokumentum teljes body-jához kötjük, de megtehetnénk, hogy több különálló alkalmazást kötünk a html meghatározott részeihez, pl. különböző id-kkel ellátott div-ekhez. Ebben az esetben azonban a külön hozzáadott alkalmazások nem tudnak egymással kommunikálni, míg a root komponensen belül felépített alkalmazásokban az egyes komponensek kommunikálhatnak.
+
+A komponenseket .svelte kiterjesztésű file-okban hozzuk létre. A file-okban van egy `<script>` rész, ahová JS kódot írhatunk és egy `<style>` rész, ahová a hozzájuk tartozó css kódot. Ezen kívül adhatjuk meg a komponens html struktúráját, amelyben hivatkozhatunk a JS kódra.
+
+A Svelte ebben a Vue-ra hasonlít. Más szempontból is hasonló megoldásokat alkalmaz, például a html elemekhez kapcsolt direktívákat.
+
+## Változók értékének beillesztése
+
+Változókat a `script` részben hozhatunk létre, a `let` kulcsszóval, hogy módosíthatók legyenek. Ezek értékeit aztán (illetve JS kifejezéseket) a `{}` segítségével használhatjuk a HTML-ben, akár a HTML elemek textContentjeként, akár attribútumokat is megadhatunk így. Használhatunk idézőjeleket is, de nem feltétlenül szükséges.
+Ha azt szeretnénk, hogy html-ként kezelje a megadott string-értékeket, a `@html` parancsot írjuk elé.
+
+Ha a változók értéke változik, a DOM megfelelő részei erre reagálnak. Objektum értékű változóknál új objektumot kell hozzárendelnünk (pl. új Array, új Objektum), hogy a Svelte érzékelje a változást. Ezért a `.push()` típusú megoldások nem működnek, ehelyett pl. a spread operátort vagy a `.map()`, `.filter()` és hasonló metódusokat kell használnunk.
+
+Ezen kívül a script részben megadhatunk **reaktív változókat** és **reaktív kódrészleteket**, amelyek automatikusan lefutnak, ha azok a változók, amelyeken alapulnak, megváltoznak.
+
+```{}
+<script>
+  let firstName = 'Peter'
+  let lastName = 'Smith'
+  
+  $: name = `${firstName} ${lastName}`
+  $: (if name === 'Peter Parker') {
+        console.log('Hello, Spiderman!')
+      }
+  $: console.log(name)
+</script>
+```
+
+## Események
+
+A HTML elemekhez különböző speciális attribútumokat adhatunk, hogy reagáljunk az ezekkel kapcsolatos eseményekre.
+
+A html elemekhez az `on:event` formában (pl. `on:click`, `on:input`) adhatunk event listenereket, amelyek értékeiként megadjuk a callback függvényeket, amelyeket ezek esetén élesíteni szeretnénk.
+
+Az eventekhez módosító parancsokat (`event modifier`) is adhatunk: `on:click|once={}`.
+Ezek a modifierek: once (az első futás után eltávolítja az event handlert), passive (scroll eventeknél javíthatja a teljesítményt, Svelte ahol biztonságos, automatikusan hozzáadja), capture, stopPropagation (utóbbi kettő a propagáció módján változtatnak), preventDefault, self (csak akkor élesíti a handlert, ha az `event.target` maga az elem), trusted (csak biztonságos esetben, tényleges user action esetén indítja a függvényt).
+
+Az event handler függvényekre rámutatunk. Ha paramétereket akarunk megadni, akkor az egyik lehetőség a `.bind()` használata, a másik pedig anonim függvények használata, amelyek testében paraméterekkel együtt hívjuk a megfelelő függvényt. Ezt használhatjuk például, ha a törlendő elem id-jét akarjuk megadni, hogy kiszűrhető legyen az elemek listájából. Az event-et automatikusan megkapják a függvények.
+
+### Események továbbítása "felfelé"
+
+Ha az event listenernek nem adunk handlert, akkor az élesedő eseményt a komponens felfelé továbbítja: `<input ... on:input />`
+
+## Feltételes renderelés
+
+A Svelte feltételes rendereléshez az alábbi szintaxist használhatjuk, amelyből az `{#if cond}` és az `{/if}` részek mindenképp kellenek, és közbeszúrhatunk néhány további `{:else if cond}` vagy `{:else}` utasítást.
+
+```{}
+{#if condition1 && condition2 || condition3}
+<p>Render this</p>
+{:else if condition4}
+<p>Render this instead</p>
+{:else}
+<p>Otherwise this will be rendered</p>
+{/if}
+```
+
+## Listák renderelése
+
+A Svelte-ben listák renderléshez az `{#each arrName as itemName}` segítségével tehetjük. A ciklust a `{/each}` segítségével zárjuk le. Ha az array üres, akkor az `{:else}` segítségével renderelhetünk alternatív tartalmat (pl. üzenetet). Az adott iteráció neve mellett az indexhez is hozzáférhetünk: `{#each arr as item, index}` formában.
+
+Ahhoz, hogy a Svelte meg tudja különböztetni a lista elemeit (pl. törléshez), egyedi `key` értékekkel kell ellátnunk az elemeket. Stringeket vagy számokat javasolt használni. A `key`-t a következő módon adjuk meg: `{#each arr as item (key)}`
+
+A key egyedi kell, hogy legyen, ami adatbázisok használata esetén nem probléma, mert az adatbáziskezelők automatikusan létrehoznak egyedi azonosítókat. Ha nem adatbázist használunk, magunknak kell létrehozni. Demo célokra jó lehet a `Math.random()`, vagy használhatunk külső csomagokat (pl. `uuid`).
+
+Ha nem adunk meg key értéket, akkor mindig az utolsó értéket törli, az adatokat pedig az új struktúrába tölti, ami nem optimális. Ezen tudunk javítani a key használatával. 
+
+## Több komponens
+
+A komponeseket különálló file-okban hozhatjuk létre, PascalCase nevekkel látjuk el, és a script részben importálhatjuk, és beilleszthetjük a HTML részbe, ahogy a többi frontend framework-ben is.
+
+Kétféle komponenst hozhatunk létre:  
+
+1. egyrészt olyanokat, amelyek bizonyos adatokat tartalmaznak/fogadnak, és azokkal dolgoznak, adják tovább és jelenítik meg. Ezekből általában kevés van egy alkalmazásban (App, Products, Cart, stb.)
+2. másrészt olyanokat, amelyek csak bizonyos UI elemeket jelentenek, és arra szolgálnak, hogy a tartalmat bizonyos formában jelenítsük meg: pl. Modal, Card, Button, Grid, stb. komponensek
+
+### Kommunikáció "lefelé": Props
+
+A komponensek között kommunikálhatunk: ahhoz, hogy adatokat továbbítsunk, a gyermek komponensben exportáljuk azt a változót, amely értékét kívülről kívánjuk megadni. Ezután a szülő komponensben a beillesztett komponensnek megadjuk a szükséges nevű saját property-értékeket.
+
+Objektumok esetén, ha az objektumok property-jei megegyeznek a Svelte komponens által várt property-kkel, használhatjuk a spread operátort is. Az nem probléma, ha a szükségeseken túl további property-ket is tartalmaz az objektum.
+
+Opcionális propokat úgy hozhatunk létre, hogy az exportálás helyén megadunk neki értéket is. Ezt kívülről felül tudjuk írni, de ha nem adunk meg más értéket felülről, akkor ez lesz érvényben.
+
+### Kommunikáció "lefelé": slot
+
+Egyes komponensek (pl. Modal, Button, stb.) esetében praktikusabban is megadhatjuk a tartalmat, hiszen ezek esetében olykor HTML tartalmat szeretnénk továbbítani, mégpedig potenciálisan változatos formában.
+
+Ehhez a komponens markupjában a `<slot />` elemet használhatjuk. A renderelés során a komponens nyitó és zárótagje közé írt markupot a megfelelő slot-ban fogja renderelni. Ha több slotot használunk, el kell ezeket nevezni, hogy aztán megadhassuk, melyik slotban szeretnénk egy-egy tartalmat renderelni. 
+
+A komponens markupjában a slothoz a `name` attribútumot adjuk hozzá, a felhasználás helyén pedig a HTML elemhez a `slot` attribútumot a megfelelő névértékkel. Csak egy névtelen slotunk lehet: ide rendereli azokat a markup részeket, amelyeknél nem nevesítjük a slotot.
+
+Olyan slotokat is használhatunk, amelyeket nem feltétlenül töltünk fel kívülről tartalommal. A slotoknak alapértelmezett tartalmat is megadhatunk: a slot nyitó és zárótag közép sima HTML markup formájában.
+
+### Kommunikáció "felfelé": custom events
+
+Eventeket továbbíthatunk felfelé úgy is, hogy nem csatolunk hozzá handlert helyben, csak az `on:event` formában adjuk hozzá az elemhez.
+
+Emellett azonban saját eseményeket is élesíthetünk. Ehhez importáljuk (nevesítve) a svelte csomag `createEventDispatcher` függvényt. Ennek return értéke egy függvény, amellyel eventet élesíthetünk. A függvénynek megadjuk a saját esemény nevét, amit aztán a szülőben az `on:custom-event-name` formában fogadhatunk. Második paraméterként hozzáadhatunk adatokat is.
+
+```{}
+<script>
+  import { createEventDispatcher } from "svelte";
+
+  export let productTitle;
+
+  const dispatch = createEventDispatcher();
+
+  function addToCart() {
+    dispatch("add-to-cart", { id: "p1" });
+  }
+</script>
+
+<article>
+  <h1>{productTitle}</h1>
+  <button on:click={addToCart}>Add to Cart</button>
+  <button on:click={() => dispatch("delete", "p1")}>Delete Product</button>
+</article>
+```
+
+A hozzáadaott adatokat az `event` objektumon kapjuk, a `.detail` property-n. Az event objektumot a custom event automatikusan átadja a callback függvénynek.
+
+### Kommunikáció "felfelé": slot propok
+
+Időnként, ha slotos megoldást használunk, a felhasználás helyén hozzá kell férnünk a komponens bizonyos értékeihez. Ehhez a komponens markupjában a sloton megadhatunk bizonyos propokat, és ezeket egyenlővé tehetjük pl. valamely változó értékével.
+
+A felhasználás helyén a komponensen a `let:propName={variableName}` formán új változóba menthetjük az értéket, és felhasználhatjuk.
+
+## Komponensek életciklusa
+
+A komponensek elsődleges életciklusa a létrehozatalukhoz, illetve a DOM-ból való eltávolításukhoz kötődik, és ebbe az
+`onMount()` és `onDestroy()` életciklus metódusokkal tudunk belenyúlni. A másodlagos életciklus a frissüléshez kötődik, és a `beforeUpdate()`, `afterUpdate()` és `tick()` metódusokkal tudunk belenyúlni.
+
+Először a teljes script fut le. Az onMount-ban megadott parancsok csak akkor, amikor megtörtént a renderelés. Ez tökéletes hely pl. a HTTP requestekre. Az onDestroy-ban olyan parancsokat írhatunk, amelyeket akkor akarunk futtatni, amikor az adott komponest eltávolítjuk a DOM-ból (pl. Modalt bezárjuk).
+
+A beforeUpdate() és afterUpdate() használható például, hogy az oldat automatikusan valahová görgessük: a beforeUpdate-ben elmentünk valamilyen előzetes állapotot, majd ennek függvényében teszünk valamit, miután megtörtént a frissülés.
+
+A tick() ellentétben a többiekkel nem csak a script legfelső szintjén, hanem függvényben is használható: a tick egy Promise-t ad, amely akkor teljesül, amikor éppen befejeződik egy feladat, és ekkor a `.then()`-nek futtathatunk egy függvényt. Ritkán használatos, a kurzusban arra használtuk, hogy miután nagybetűsítettük a kijelölt szövegrészt a textarea-ban, a kijelölést visszaállítsuk, de csak a frissítést követően.
+
+## Formok
+
+### Two-way binding
+
+Az inputnak egyrészt adhatunk `value` értéket, amelyet egyenlővé tehetünk egy változóval, másrészt reagálhatunk az `input` eseményre. A kettőt összevonhatjuk a `bind:value` attribútummal.
+
+```{}
+<input type="text" id="name" value={enteredName} on:input={setName} />
+<input type="email" id="email" bind:value={enteredEmail} />
+```
+
+Custom imputoknál is használhatunk two-way bindingot, azonban csak akkor használhatjuk, ha az input típusát nem dinamikusan, kívülről adjuk meg.
+
+```{}
+<TextInput bind:val={enteredVal} />
+
+// TextInput.svelte
+<script>
+  export let val;
+</script>
+
+<input type="text" bind:value={val} />
+```
+
+**bind:prop**: A `bind:` nemcsak beépített property értékekhez használható, mint amilyen a value volt, hanem bármilyen property-hez, tehát pl. exportált propokhoz is: `bind:customProp={var}`. Ha a property és a változónév azonos, rövidebb formában is megadhatjuk
+
+```{}
+<Toggle bind:chosenOption={selectedOption} />
+<Toggle bind:selectedOption />
+```
+
+**Numerikus inputoknál** az alapműködés az, hogy az értéket stringként kapjuk, ha azonban two-way bindinggal olyan változót kötünk hozzá, amely értéke szám, automatikusan konvertálja.
+
+### Egyéb inputtípusok 
+
+A más típusú inputok is köthetők változókhoz: a **önálló checkbox** esetében a `checked`, a **radio** és **checkbox csoport** esetében pedig a `group` értéket kell változóhoz kötni.
+
+```{}
+<label>
+  <input type="checkbox" bind:checked={agreed} />
+  Agree to Terms?
+</label>
+
+<label>
+  <input type="radio" name="color" value="green" bind:group={favoriteColor} />
+  Green
+</label>
+<label>
+  <input type="radio" name="color" value="red" bind:group={favoriteColor} />
+  Red
+</label>
+<label>
+  <input type="radio" name="color" value="blue" bind:group={favoriteColor} />
+  Blue
+</label>
+
+<label>
+  <input type="checkbox" name="pet" value="dog" bind:group={ownedPets} />
+  Dog
+</label>
+<label>
+  <input type="checkbox" name="pet" value="cat" bind:group={ownedPets} />
+  Cat
+</label>
+<label>
+  <input type="checkbox" name="pet" value="fish" bind:group={ownedPets} />
+  Fish
+</label>
+<label>
+  <input type="checkbox" name="pet" value="bird" bind:group={ownedPets} />
+  Bird
+</label>
+
+<select bind:value={language}>
+  <option value="hu">Hungarian</option>
+  <option value="sk">Slovak</option>
+  <option value="en">English</option>
+</select>
+```
+
+### Element hivatkozások
+
+A `bind`-ot nemcsak az értékeknek inputokhoz való kétirányú kötésére használhatjuk, hanem arra is, hogy egy adott elemhez hivatkozást hozzunk létre: `<input type="text" bind:this={nameInput} />`. Ez használható arra pl. hogy az adott elemet fókuszba hozzuk.
+
+### Validáció
+
+A Svelte-nek nincs beépített validáló funkcionalitása. Vagy saját validációt építünk, vagy mások csomagjait használhatjuk (pl. `validate.js`).
+
+Például a submit gombot addig kikapcsolhatjuk, amíg egy változó értéke nem lesz olyan, ami az érvényes kitöltést jelenti. Az inputokhoz osztályokat adhatunk, hogy vizuálisan is jelezzük, ha valamelyik nincs megfelelően kitöltve.
+
+Megadhatunk speciális prop segítségével olyan függvény-array-t is, amelyeket aztán hívhatunk a megfelelő pillanatban. Vagy a speciális proppal megadhatjuk a custom input komponensnek, hogy valid-e, hibaüzeneteket továbbíthatunk, stb.
+
+Hasznos a submit eventhez a `|preventDefault` modifiert használni.
+
+## Osztályok dinamikus hozzáadása
+
+Az egyik lehetőség, hogy az osztály értékeit JS kifejezésként adjuk meg, pl. egy ternary expression vagy egy template literal részeként.
+Másik lehetőség, hogy a mindenképp használandó osztályokat simán megadjuk, majd a `class:conditional-class-name={condition}` formában adjuk hozzá a feltételesen használandó osztályokat.
+
+## State management store-okkal
+
+### Írható store
+
+A store-t legjobb külön .js file-ban létrehozni. Írható store-t a `writable` függvénnyel hozhatunk létre, amelynek argumentuma a kiinduló érték (szám, szöveg, array, bármi). A store-t aztán exportáljuk, akár default exportként, akár nevesített exportként.
+
+```{js}
+// cart-store.js
+
+import { writable } from 'svelte/store';
+
+const cart = writable([]);
+
+export default cart;
+```
+
+Erre fel tudunk iratkozni (`subscribe`), és így a komponens értesül a store változásairól és frissül. A subscribe argumentuma egy függvény, amely akkor fut, amikor frissül a store, és megkapja a store aktuális állapotát. Ezt például változóba menthetjük. 
+
+A subscribe függvény egyúttal ad egy unsubscribe függvényt, amellyel leiratkozhatunk, amit meg kell tenni, ha a komponenst eltávolítjuk a DOM-ból, mert különben a memóriában megmaradnának ezek a feliratkozások is, és ezek is futnának a store frissülésénél, akkor is, ha maga a komponens, amelyben feliratkoztunk már nem létezik.
+
+```{}
+<script>
+  import {onDestroy} from 'svelte'
+  import cartItems from './cart-store'
+  import CartItem from "./CartItem.svelte";
+
+  let items;
+
+  const unsubscribe = cartItems.subscribe(its => {
+    items = its;
+  });
+
+  onDestroy(() => {
+    if (unsubscribe) {
+      unsubscribe();
+    }
+  })
+</script>
+```
+
+A store-t minden olyan komponensbe importálni tudjuk, amelyben hozzá szeretnénk férni. A feliratkozás mellett a komponensekből változtathatjuk is a store-t. A`set` felülírja az adatokat új adatokkal, az `update` pedig frissíti: ez nem új értéket kap argumentumként, hanem egy függvényt, amely megkapja a jelenlegi tartalmat. Fontos, hogy ebben se módosítsuk az eredeti értéket (pl. ha array), hanem egy új értéket return-öljünk.
+
+```{}
+<script>
+  import cartItems from '../Cart/cart-store'
+
+  export let id;
+  export let title;
+  export let price;
+  export let description;
+
+  function addToCart() {
+    cartItems.update(items => [...items, {id, title, price}])
+  }
+</script>
+```
+
+Közvetlenül kapcsolódó komponenseknél azonban továbbra is a propokkal és custom eventekkel való adattovábbítás a célravezető.
+
+### Autosubscription
+
+Ha a store adatait közvetlenül szeretnénk felhasználni a markupban (mert pl. csak egy array-ből áll), akkor azt megtehetjük a fenti lépéseket mellőzve is. Egyszerűen importáljuk a store-t, majd a markupban a `$storeName` formában hivatkozunk rá (pl. `$cartItems`) pl. egy `#each` renderelésben. Ezzel megspóroljuk a subscribe-ot és az unsubscribe-ot is, mert a Svelte mindkettőt automatikusan kezeli.
+
+Ha azonban bármi mást is szeretnénk tenni a store adataival (a script részben), mint megjeleníteni, akkor a szokásos módon kell importálnunk.
+
+### Rövid idejű feliratkozás
+
+Ha nem a teljes store-ra van szükségünk, hanem csak bizonyos részére (pl. egy elem bővebb leírására), akkor a feliratkozás történhet egy függvényben is, amelyet akkor élesítünk, amikor szeretnénk hozzáférni az adatokhoz. A subscribe-on belül bármilyen logikát használni tudunk. Ezután rögtön hívhatjuk az unsubscribe-ot, hogy miután lefutott a függvény, a feliratkozást is törölje.
+
+### Olvasható store
+
+Ezek olyan store-ok, amelyek kívülről nem módosíthatók, csak olvashatók: pl. egy időzítő vagy egy pozíciót figyelő változó lehet ilyen ()
+
+A `readable` függvénnyel hozzuk létre, első paramétere a kiinduló érték, második pedig egy függvény, amely argumentumként automatikusan megkap egy függvényt, amellyel új értéket állíthatunk be. Ezt csak ezen a függvényen belül tudjuk használni, kívülről nem írható a store.
+
+A függvény testében olyan logikát használunk, amely következtében változni fog a store tartalma, amelyet a set függvénnyel változtatunk meg. Pl. a `setInterval`-lal időzítést indítunk, vagy a `navigator.geolocation.watchPosition()` segítségével figyeljük és változóba mentjük a felhasználó földrajzi pozícióját.
+
+```{js}
+import { readable } from 'svelte/store';
+
+let count = 0;
+
+export const timer = readable(count, (set) => {
+  const interval = setInterval(() => {
+    count++;
+
+    // calling set function to set new value to store
+    set(count);
+  }, 1000);
+
+  // cleanup function
+  return () => {
+    clearInterval(interval);
+  };
+});
+```
+
+### Custom store
+
+Jó gyakorlat a store változtatásának logikáját is a store file-jában megírni, és a felhasználás helyén csak valamilyen akciót élesíteni, hogy módosítsuk a store-t. Ehhez a store file-jából nem magát a store-t exportáljuk, hanem egy komplexebb objektumot, amelyben hozzáférhetővé tesszük a subscribe metódust (hogy komponens fel tudjon rá iratkozni, és reagáljon a változásaira), illetve a store módosításához használandó függvényeket.
+
+```{js}
+import { writable } from "svelte/store";
+
+const createCart = () => {
+  const cart = writable([
+    {
+      id: "p1",
+      title: "Test",
+      price: 9.99,
+    },
+    {
+      id: "p2",
+      title: "Test",
+      price: 9.99,
+    },
+  ]);
+
+  return {
+    subscribe: cart.subscribe,
+    addItem: (item) => {
+      cart.update((items) => {
+        return [...items, item];
+      });
+    },
+    removeItem: (id) => {
+      cart.update((items) => {
+        return items.filter((i) => i.id !== id);
+      });
+    },
+  };
+};
+
+export default createCart;
+```
+
+A fenti példa függvényt használ, de ugyanez létrehozható egyszerűen úgy is, hogy a file-ban a cart mellett létrehozunk egy customCart objektumot a szükséges metódusokkal, és azt exportáljuk. A függvény hasznos lehet, ha több store-t kezelül egy file-ban, mert segíti ezek elkülönítését.
+
+### Származtatott store
+
+A `derived` segítségével létrehozható olyan store, amelynek az értéke egy vagy több másik store értékétől függ. A derived első argumentuma a másik store (store-ok array-e), a második argumentum pedig a függvény, amely megkapja paraméterként a másik store(-ok) értékét.
+
+```{js}
+export const elapsed = derived(storeName, ($storeName) => {});
+
+export const summed = derived([a, b], ([$a, $b]) => $a + $b)
+```
+
+Ha aszinkron módon (pl. késleltetve) szeretnénk értéket adni a store-nak, akkor a set vagy az update is megadható, opcionális második és harmadik argumentumként. Ha a függvény egy függvényt ad vissza, akkor ez cleanup függvény lesz, ami akkor fut le, amikor az utolsó feliratkozó is leiratkozik a store-ról.
+
+### Bind store értékhez
+
+Ha a store írható, akkor ugyanúgy köthetünk hozzá a `bind`-dal, mint bármilyen változóhoz. A store-nak új értéket is adhatunk közvetlenül a markupban.
+
+```{}
+<script>
+	import { name, greeting } from './stores.js';
+</script>
+
+<h1>{$greeting}</h1>
+<input bind:value={$name} />
+<button on:click={() => ($name += '!')}> Add exclamation mark! </button>
+```

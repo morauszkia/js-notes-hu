@@ -1,0 +1,33 @@
+---
+title: "Angular 2+"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Telepítés és projektindítás
+
+Az Angulart globális csomatként telepítjük, majd ezzel hozzáférést kapunk a CLI eszközökhöz, amelyekkel új projektet hozhatunk létre. A projekt része a development szerver is.
+
+```{}
+npm install -g @angular/cli
+ng new my-app-name
+cd my-app-name
+ng serve
+```
+
+## Projektek felépítése
+
+Az Angularral, akárcsak más JS framework-ökkel Single Page Application-öket hozunk létre komponensekből. Az oldal, amelybe beépül az alkalmazás az `index.html`. Ebben az `<app-root>` komponens helyére lesz bekötve az alkalmazás, amelyet komponensek formájában hozunk létre.
+
+Ezek között speciális a root komponens az `app` mappában. A komponensek több file-ból épülnek fel: jellemzően a `component-name.component.ts/html/css` neveket adunk ezeknek, és ezekben külön deklaráljuk a komponens logikáját, HTML template-jét és az ehhez kapcsolódó stílusokat.
+
+## AppModule
+
+Az egész alkalmazást az AppModule fogja össze, amely az `app.module.ts` file-ban van deklarálva. Itt jelezzük a bundlernek, hogy milyen modulokból áll az alkalmazásunk, és itt kell megadni azt is, milyen komponensekről kell, hogy tudjon: a `declarations` property alatt. A komponenseket a szokásos módon importálni is kell.
+
+A más modulokat az `imports` alatt adhatjuk meg (pl. Forms, Http, stb.)
+
+## Komponensek

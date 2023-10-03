@@ -1,0 +1,221 @@
+---
+title: "JavaScript Program Flow Control"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    toc_depth: 2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
+```
+
+## Feltételes utasítások
+
+### If/else
+
+A JS if/else szintaxisa az R-re hasonlít: zárójeleket és kapcsos zárójeleket használ. Az `if` utáni kód csak akkor fut, ha az if utáni feltétel igaz. Ha ez nem igaz, van lehetőség `else` paranccsal megadni olyan programutasításokat, amelyek hamis feltétel esetén futnak.
+
+```{js}
+if (age >= 18) {
+  console.log("Elég idős vagy ahhoz, hogy válassz.");
+} else {
+  console.log(`Jöjj vissza ${18 - age} év múlva!`);
+}
+```
+
+Ha az `if` utáni feltétel hamis, van lehetőség további feltételek tesztelésre is az `else if` paranccsal, amelyből akár több blokk is lehet, ha több feltételt akarunk tesztelni.
+
+```{js}
+if (condition1) {
+  console.log("Condition 1 was met.")
+} else if (condition2) {
+  console.log("Condition 2 was met.")
+} else if (condition3) {
+  console.log("Condition 3 was met.")
+} else {
+  console.log("Neither condition was met.")
+}
+```
+
+Akárcsak a többi nyelvben, az if/else blokkok többszintesek is lehetnek
+
+```{js}
+if (age >= 18) {
+  if (driversLicense) {
+    console.log("Would you like to drive my car?")
+  } else {
+    console.log("You should get a drivers license")
+  }
+} else {
+  console.log("You should get a drivers license as soon as you tunr 18.")
+}
+```
+
+Természetesen az if/else blokkokon belül változókat is használhatunk, módosíthatjuk értéküket a feltételek függvényében. A különbség más programnyelvekhez képest, hogy az ezeken belül a `const` vagy `let` paranccsal létrehozott változók nem férhetők hozzá az adott blokkon kívül, ezért a változókat, ha máshol is hozzá akarunk férni, már ezelőtt létre kell hozni a globális környezetben. 
+
+### A feltételek
+
+A leggyakrabban az összehasonlítás műveletekkel dolgozunk: a `>, <, >=, <=` a szokásos módon működik. A JS megkülönbözteti az `==` és `===` egyenlőséget. Előbbi lazább, vagyis a típustól függetlenül tekint egyenlőnek értékeket, míg az utóbbinál a típusnak is egyeznie kell. Ugyanígy működik a laza `!=` és a szigorúbb `!==`.  
+A feltételeket a `!` segítségével negálhatjuk, az `&&` jelenti az ÉS, a `||` pedig a VAGY viszonyt.  
+Vannak értékek, amelyek hamisak: ilyen a 0, az üres string, az `undefined`, `null` és `NaN` (not a number). Minden más, beleértve az üres objektumot igaznak minősül.  
+
+```{js}
+if (a > b)
+if (a >= b)
+if ('18' == 18)       # true
+if ('18' === 18)      # false
+if ('18' != 18)       # false
+if ('18' !== 18)      # true
+if (condition1 && condition2)       # AND
+if (condition1 || condition2)       # OR
+if (!condition1)                    # NOT
+```
+
+### Switch
+
+Sok `===` összehasonlítás kiváltására használható a `switch` is. A szintaxisban nagy szerepük van a `break` kulcsszavaknak, mert ha ezek hiányoznak, akkor minden további sor is fut. Van lehetőség több értékhez is ugyanazokat az utasításokat rendelni. Végül a `default` opcióval megadhatjuk, mit hajtson végre a program, ha egyik eset sem áll fenn.
+
+```{js}
+switch (language) {
+    case "chinese":
+    case "mandarin":
+        console.log("MOST number of native speakers!")
+        break;
+    case "spanish":
+        console.log("2nd place in number of native speakers")
+        break;
+    case "english":
+        console.log("3rd place")
+        break;
+    default:
+        console.log("Great language too :D")
+}
+```
+
+### Ternary operator
+
+Egyszerű `if/else` típusú ellenőrzésre használható a `ternary oprator` is, amely a feltétel teljesülése függvényében az egyik vagy a másik értéket adja eredményül.
+
+```{js}
+const adultOrMinor = age >= 18 ? 'adult' : 'minor';
+```
+
+### Short circuiting
+
+A logikai operátorok az elsődleges használat mellett másképpen is használhatók, például változók értékének dinamikus megadására: az `&&` az összefűzött kifejezésekből az első hamis (`falsy`), a `||` pedig az első igaz (`truthy`) értéket rendeli a változóhoz, a többit nem értékeli. Amennyiben egyik sem felel meg, az utolsó értéket rendeli hozzá. Ehelyett, ha azt szeretnénk, hogy a 0 érték és az üres string is érvényes értéknek számítson, használhatjuk a `??` operátort (`nullish coalescing operator`), amely csak a `null` és `undefined` értékeket tekinti hamisnak. 
+
+```{js}
+// Ha nincs megadva a vendégek száma (false), akkor a második értéket veszi fel
+const guest = restaurant.numGuests || 10; 
+const guest = restaurant.numGuests ?? 10;
+
+// Ha létezik a metódus (true), akkor a második fut
+restaurant.orderPizza && restaurant.orderPizza('ham', 'mushrooms'); 
+```
+
+### Logical assignment operator
+
+Lehetőség van arra is, hogy attól függően, egy property létezik-e, felülírjuk vagy alapértelmezett értéket adjunk meg. Előbbi az `&&=` opearátorral, utóbbi az `||=` vagy `??=` operátorral lehetséges. Működésének alapja a fent bemutatott rövidzárlatolás.
+
+ES2021 újdonság.
+
+```{js}
+const restaurant1 = {
+  name: 'Capri',
+  numGuests: 20,
+};
+
+const restaurant2 = {
+  name: 'La Piazza',
+  owner: 'Giovanni Rossi',
+};
+
+// OR ASSIGNMENT OPERATOR
+// Minden falsy értéket felülír
+restaurant1.numGuests ||= 10;
+restaurant2.numGuests ||= 10;
+
+// NULLISH ASSIGNMENT OPERATOR
+// A 0-t és üres stringet nem írja felül
+restaurant1.numGuests ??= 10;
+restaurant2.numGuests ??= 10;
+
+// AND ASSIGNMENT OPERATOR
+// A truthy értékeket írja felül
+restaurant1.owner &&= '<ANONYMOUS>';
+restaurant2.owner &&= '<ANONYMOUS>';
+```
+
+## Ciklusok
+
+### For ciklus
+
+A for ciklus kicsit bonyolultabb, mint más nyelvekben, de lényege ugyanaz: előre megadott számú iteráció futtatása adott parancsokból:
+
+Az alap szintaxis: `for(initial; condition; step) {}`
+
+```{js}
+for (let i = 0; i < arr.length, i++) {
+  console.log(arr[i])
+}
+
+for (let i = 10; i > 0; i--) console.log(i)
+```
+
+JavaScriptben is használható a `break` és a `continue` parancs, és egymásba ágyazódó ciklusok is létrehozhatók.
+
+### For of ciklus
+
+A `for... of` ciklus az array és objektum elemek iterálásának az egyszerű `for`-ál egyszerűbben használható módja. Array-ekkel könnyen használható, objektumoknál pedig az `Object` statikus metódusai révén, amelyek az adott dolgok (property-k vagy értékek, vagy mindkettő) array-ét adják, amelyen használható a `for...of`.
+
+Működik stringeken és NodeList-eken is (ellentétben a forEach-csel)
+
+```{js}
+// Array
+for (const el of arr) {}
+for (const item of arr.entries) {}    // Array-ek array-a az eredmény, ezért destrukturálható
+for (const [i, el] of arr.entries) {}
+
+// Object
+for (const key of Object.keys(objName)) {}
+for (const val of Object.values(objName)) {}
+for (const [key, val] of Object.entries(objName)) {}
+```
+
+### For in ciklus
+
+Elsősorban objektumokhoz használható. A `for...of`-hoz képest előnye, hogy nem kell az Object statikus metódusait használni.
+
+Array-okon, mivel ezeknél a key-k az indexek, az array indexeihez férhetünk hozzá, ami nem túl hasznos. Stringeken (tkp. karakterek array-ai) az egyes karaktereket iteráljuk.
+
+```{js}
+for (const key in objName) {
+  console.log(key)          // property-k
+  console.log(objName[key]) // értékek
+}
+```
+
+### While ciklus
+
+A while ciklus, akárcsak más nyelvekben, addig futtatja újra és újra a parancso(ka)t, amíg egy feltétel fennáll:
+
+```{js}
+let rep = 1;
+while (rep <= 10) {
+  console.log(`Round ${rep}`);
+  rep++;
+}
+```
+
+### Do while ciklus
+
+Az előzőhöz képest a do... while ciklus arra jó, hogy a parancsokat akkor is végrehajtsuk egyszer, ha a feltétel eleve nem teljesül.
+
+```{js}
+do {
+    // body of loop
+} while(condition)
+```

@@ -1,0 +1,227 @@
+---
+title: "Array műveletek"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    toc_depth: 2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
+```
+
+## Array-ek szabdalása, mutálása
+
+Akárcsak stringeket, array-okat is tudunk szabdalni a `.slice` metódussal, és ez a módszer alkalmas a másolásukra is. A hasonló nevű `.splice` bizonyos szakaszok törlésére, illetve a törölt elemek mással való helyettesítésére használható.
+
+A `.reverse` megfordítja a sorrendet, a `.concat` pedig két vagy több array összefűzésére használható.
+
+A `.join`-t már a stringeknél is tárgyaltuk, az array elemeit a megadott karakterrel stringgé fűzi, a `.split` fordítottja.
+
+**Figyelem**: A `.splice` és a `.reverse` módosítja az eredeti array-t, ezért érdemes másolaton végrehajtani.
+
+```{js}
+arr.slice()   // shallow copy
+arr.slice(startIndex)             // a kezdet inkluzív
+arr.slice(startIndex, endIndex)   // a vége exkluzív
+
+arr.splice(startIndex, deleteCount)
+arr.splice(startIndex, deleteCount, replacement1, replacement2, ...)
+
+arr.reverse()
+```
+
+## Looping a .forEach metódussal
+
+A forEach metódus egy callback függvényt fogad el, és futtat minden egyes elemen. A függvény hozzáfér az adott elemhez, annak index-éhez és a teljes array-hez (ebben a sorrendben lehet megadni.). Ezáltal kiváltható a hasonló célú dekonstrukció párosítva az `.entries` metódussal.
+
+A forEach-nél ugyanakkor nincs lehetőség `break` vagy `continue` használatára, mint a `for... of` ciklusnál
+
+Konvenció: Ha valamelyik köztes paraméterre nincs szükség, azt "_"-sal jelölhetjük
+
+Tipp: Használható az új map és set adatstruktúrákkal is.
+
+```{js}
+arr.forEach(function(el, i, a) {})
+mapName.forEach(function(val, key, map) {})
+setName.forEach(function(val, key, set) {})   // val és key ugyanaz, ezért egyik felesleges
+
+// vagy
+arr.forEach(element => {})  // Nem kell mindhármat használni
+arr.forEach((_, i) => {})   // Csak indexet használjuk
+```
+
+## Haladó array műveletek (.map, .filter, .reduce)
+
+A fentiek mindegyike egy array-t és egy callback függvényt fogad el argumentumként. A `.map` az array minden elemén végrehajt egy függvényt, majd egy array-t ad eredményül. A `.filter` az array elemeit szűri egy feltételnek megfelelően, és ugyancsak egy szűrt array-t ad eredményül. A `.reduce` egy összegző műveletet hajt végre, és eredményül egy számot ad.
+A függvények argumentumként hozzáférnek a soron következő elemhez, annak indexéhez, illetve az egész array-hez is, plusz a `.reduce` egy akkumulátor változót is kap argumentumként, amely eredeti értékét harmadik paraméterként adjuk meg, és amelyet "körönként" frissít.
+
+A callback függvény megadható függvény kifejezésként és arrow függvényként is, anonim függvény és korábban deklarált függvény is használható. Ha függvény kifejezést használunk, akkor kötelezően meg kell adni a `return` értéket. A `.filter` esetében a return érték egy olyan kifejezés kell, hogy legyen, amely igaz/hamis értéket vesz fel.
+
+Az array-en értelmezett és eredményül array-t adó műveletek láncba fűzhetők, a reduce viszont csak a lánc végén használható, mivel számot ad eredményül.
+
+```{js}
+const computedArr = arr.map(function (el, i, arr) {
+  return el / arr.length
+});
+
+
+const positives = arr.filter(function (el) {
+  return el > 0;
+});
+const adult = arr.filter(el => el.age >= 18)
+
+const sum = arr.reduce(function (acc, cur, i, arr) {
+  return acc + cur
+}, 0);
+const product = arr.reduce((acc, cur) => acc*cur, 1);
+```
+
+## Haladó keresés (.find és .findIndex)
+
+A `.find` és a `.findIndex` metódusok array-ben végrehajtott keresésre használhatók. Míg az `.includes` igaz/hamist ad aszerint, tartalmazza-e az array az adott elemet, addig a find és findIndex valamilyen feltételnek megfelelő első elemet, illetve annak indexét adja eredményül. 
+Hasonlít a `.filterre`, de utóbbi az összes megfelelő elemet adja, egy array-ben (akkor is, ha csak egy felelt meg).
+
+```{js}
+const firstMan = arr.find(el => el.gender === "male")
+const firstManIndex = arr.findIndex(el => el.gender === "male")
+```
+
+## Elemek tesztelése (.some és .every)
+
+Míg az `.includes` csak szigorú egyenlőséget tud tesztelni, a `.some` és az `.every` azt vizsgálja, van-e olyan elem, amely megfelel egy bizonyos feltételnek (some), illetve, hogy az összes elem megfelel-e egy feltételnek (every). A return érték boolean.
+
+```{js}
+const isAdult = function(person) {
+  return person.age >= 18
+}
+if (arr.every(isAdult)) {
+  console.log("Have fun!")
+} else if (arr.some(isAdult)) {
+  console.log("The adults should look after the kids.")
+} else {
+  console.log("Sorry, you cannot enter without adult supervision.")
+}
+```
+
+## Többszintű array-ek simítása (.flat és .flatMap)
+
+A fő metódus a `.flat`, amely alapértelmezetten egy szintet simít, de paraméterként megadható, hány szint simítását szeretnénk végrehajtani. A `.flatMap` a `.flat` és a `.map` metódusokat egyesíti egyetlen metódusba.
+
+```{js}
+const books = [
+["1984", "Animal Farm", "Coming up for Air"],
+["Master and Margarita"],
+["The Old Man and the Sea", "Farewell to Arms", "The Sun Also Rises", "For Whom the Bell Tolls"]
+]
+const allBooks = books.flat();
+
+// accounts: array of objects
+const overalBalance = accounts
+  .flatMap(acc => acc.movements)
+  .reduce((acc, mov) => acc + mov, 0);
+```
+
+## Array-ek rendezése (.sort)
+
+A `.sort` metódus nagyság/abc szerint rendezi az array elemeit, mutálva az eredeti array-t. Eredetileg stringek sorbarendezésére szolgál. Argumentumként egy callback függvényt fogad el, amelynek két paramétere a két összehasonlítandó elem. Ha az eredmény pozitív, megcseréli a két elemet, ha pedig negatív, akkor meghagyja az eredeti sorrendjüket.
+
+```{js}
+let numbers = [5, 6, 2, 1, 4, 7, 5, 4]
+numbers.sort((a, b) => a - b) // Növekvő sorrend
+numbers.sort((a, b) => b - a) // Csökkenő sorrend
+
+const words = ["dog", "parrot", "ball", "sunshine"]
+const byLength = words.slice().sort((a, b) => a.length - b.length)   // Legrövidebbtől a leghosszabbig.
+```
+
+## Üres array és .fill
+
+```{js}
+// Üres array n hellyel
+const arr = new Array(n)
+// Feltöltés
+arr.fill(value)
+// Feltöltés -tól (incl.) -ig (excl.)
+arr.fill(value, begin, end)
+```
+
+## Array létrehozása más iterálható objektumból
+
+Az Array prototípusán értelmezett `.from` statikus metódus használható arra, hogy más iterálható objektumokból (string, set, stb.) array-t hozzunk létre. A metódus kiegészíthető egy callback függvénnyel, amellyel előzőleg átalakíthatjuk az elemeket. A callback függvény hozzáfér a soron következő elemhez, indexéhez és az egész array-hez.
+
+Jól alkalmazható pl. nodelistek esetében, amelyeken nem minden array művelet használható. A spread operátorhoz képest az előnye, hogy ehhez rögtön függvényt is tudunk társítani.
+
+```{js}
+const letters = Array.from(string)
+const lowecase = Array.from(string, letter => letter.toLowerCase())
+
+const squares = Array.from([1, 2, 3, 4], function(num) {return num ** 2})
+
+const movements = Array.from(document.querySelectorAll(".movement__value"), mov => Number(mov.textContent.replace("$", "")))
+
+const newArr = Array.from(iterable, (el, idx, iter) => {})
+const newArr = Array.from(iterable, callbackFun, arg)
+const newArr = Array.from(iterable, function(el, idx, iter) => {})
+```
+
+## Összefoglaló
+
+### Meglévő array változtatása
+
+```{js}
+// Elemek hozzáadása
+arr.push(el)              // Végére
+arr.unshift(el)           // Elejére
+// Elemek törlése
+arr.pop()                 // Végéről
+arr.shift()               // Elejéről
+arr.splice(start, n)      // -tól db
+// Egyebek
+arr.reverse()             // Fordított sorrend
+arr.sort((a, b) => {})    // Sorba rendezés
+arr.fill(el, start, end)  // Feltöltés
+```
+
+### Új array
+
+```{js}
+// Függvénnyel módosított
+arr.map(function(el, i, arr) {})
+// Szűrt
+arr.filter(function(el, i, arr) {})
+// Szelet
+arr.slice(start, end)
+// Összefűzött
+arr1.concat(arr2)
+// Simított
+arr.flat(levels)
+arr.flatMap(el => {})
+```
+
+### Keresés
+
+```{js}
+// Index
+arr.indexOf(el)
+arr.findIndex(el => el > 0)
+// Elem
+arr.find(el => el.length > 5)
+// Tartalmazza-e
+arr.includes(el)
+arr.some(el => el > 0)
+arr.every(el => el.age >= 18)
+```
+
+### Egyebek
+
+```{js}
+// Összesítés
+arr.reduce(function (acc, cur, i arr) {})
+// Stringgé fűzés
+arr.join(sep)
+// Loop
+arr.forEach(el => {})
+```

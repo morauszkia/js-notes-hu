@@ -1,0 +1,71 @@
+name: "coding-notes"
+output:
+  html_document:
+    theme: readable
+    highlight: kate
+navbar:
+  title: "Programozás jegyzeteim"
+  type: "inverse"
+  left:
+    - text: "Home"
+      href: index.html
+    - text: "Vanilla JS"
+      menu:
+      - text: "JavaScript alapok"
+        href: vanilla/js-variables.html
+      - text: "Program Flow Control"
+        href: vanilla/js-program-flow.html
+      - text: "Függvények"
+        href: vanilla/js-functions.html
+      - text: "Adatstruktúrák"
+        href: vanilla/js-data-structures.html
+      - text: "Haladó Array műveletek"
+        href: vanilla/js-array-methods.html
+      - text: "DOM manipuláció"
+        href: vanilla/js-dom-manipulation.html
+      - text: "Stringek"
+        href: vanilla/js-strings.html
+      - text: "Számok és dátumok"
+        href: vanilla/js-numbers-dates.html
+      - text: "Reguláris kifejezések"
+        href: vanilla/js-regex.html
+      - text: "Asynchronous JavaScript"
+        href: vanilla/js-async.html
+      - text: "OOP"
+        href: vanilla/js-oop.html
+      - text: "JavaScript Development a gyakorlatban"
+        href: vanilla/js-dev-practice.html
+      - text: "Hasznos API-k"
+        href: vanilla/js-api.html
+    - text: "Typescript"
+      menu:
+        - text: "TypeScript basics"
+          href: ts-basics.html
+    - text: "Front-End JS Libraries&Frameworks"
+      menu:
+      - text: "jQuery"
+        href: front-end/jquery-basics.html
+      - text: "React"
+        href: front-end/react-basics.html
+      - text: "Redux"
+        href: front-end/redux-basics.html
+      - text: "Next"
+        href: front-end/next.html
+      - text: "Vue.js"
+        href: front-end/vue-basics.html
+      - text: "Angular"
+        href: front-end/angular.html
+      - text: "Svelte"
+        href: front-end/svelte.html
+    - text: "Back-End JS"
+      menu:
+      - text: "Node.js"
+        href: back-end/node-js.html
+      - text: "Express.js"
+        href: back-end/express-js.html
+    - text: "Miscellaneous"
+      menu:
+      - text: "JS libraries"
+        href: misc/js-libraries.html
+      - text: "JS Testing"
+        href: misc/js-testing.html

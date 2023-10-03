@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>JavaScript Program Flow Control</title>
+
+<script src="site_libs/header-attrs-2.24/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/readable.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    background-color: #ffffff;
+    color: #a0a0a0;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #a0a0a0;  padding-left: 4px; }
+div.sourceCode
+  { color: #1f1c1b; background-color: #ffffff; }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span { color: #1f1c1b; } /* Normal */
+code span.al { color: #bf0303; background-color: #f7e6e6; font-weight: bold; } /* Alert */
+code span.an { color: #ca60ca; } /* Annotation */
+code span.at { color: #0057ae; } /* Attribute */
+code span.bn { color: #b08000; } /* BaseN */
+code span.bu { color: #644a9b; font-weight: bold; } /* BuiltIn */
+code span.cf { color: #1f1c1b; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #924c9d; } /* Char */
+code span.cn { color: #aa5500; } /* Constant */
+code span.co { color: #898887; } /* Comment */
+code span.cv { color: #0095ff; } /* CommentVar */
+code span.do { color: #607880; } /* Documentation */
+code span.dt { color: #0057ae; } /* DataType */
+code span.dv { color: #b08000; } /* DecVal */
+code span.er { color: #bf0303; text-decoration: underline; } /* Error */
+code span.ex { color: #0095ff; font-weight: bold; } /* Extension */
+code span.fl { color: #b08000; } /* Float */
+code span.fu { color: #644a9b; } /* Function */
+code span.im { color: #ff5500; } /* Import */
+code span.in { color: #b08000; } /* Information */
+code span.kw { color: #1f1c1b; font-weight: bold; } /* Keyword */
+code span.op { color: #1f1c1b; } /* Operator */
+code span.ot { color: #006e28; } /* Other */
+code span.pp { color: #006e28; } /* Preprocessor */
+code span.re { color: #0057ae; background-color: #e0e9f8; } /* RegionMarker */
+code span.sc { color: #3daee9; } /* SpecialChar */
+code span.ss { color: #ff5500; } /* SpecialString */
+code span.st { color: #bf0303; } /* String */
+code span.va { color: #0057ae; } /* Variable */
+code span.vs { color: #bf0303; } /* VerbatimString */
+code span.wa { color: #bf0303; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Programozás jegyzeteim</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Vanilla JS
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="vanilla/js-variables.html">JavaScript alapok</a>
+    </li>
+    <li>
+      <a href="vanilla/js-program-flow.html">Program Flow Control</a>
+    </li>
+    <li>
+      <a href="vanilla/js-functions.html">Függvények</a>
+    </li>
+    <li>
+      <a href="vanilla/js-data-structures.html">Adatstruktúrák</a>
+    </li>
+    <li>
+      <a href="vanilla/js-array-methods.html">Haladó Array műveletek</a>
+    </li>
+    <li>
+      <a href="vanilla/js-dom-manipulation.html">DOM manipuláció</a>
+    </li>
+    <li>
+      <a href="vanilla/js-strings.html">Stringek</a>
+    </li>
+    <li>
+      <a href="vanilla/js-numbers-dates.html">Számok és dátumok</a>
+    </li>
+    <li>
+      <a href="vanilla/js-regex.html">Reguláris kifejezések</a>
+    </li>
+    <li>
+      <a href="vanilla/js-async.html">Asynchronous JavaScript</a>
+    </li>
+    <li>
+      <a href="vanilla/js-oop.html">OOP</a>
+    </li>
+    <li>
+      <a href="vanilla/js-dev-practice.html">JavaScript Development a gyakorlatban</a>
+    </li>
+    <li>
+      <a href="vanilla/js-api.html">Hasznos API-k</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Typescript
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="ts-basics.html">TypeScript basics</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Front-End JS Libraries&amp;Frameworks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="front-end/jquery-basics.html">jQuery</a>
+    </li>
+    <li>
+      <a href="front-end/react-basics.html">React</a>
+    </li>
+    <li>
+      <a href="front-end/redux-basics.html">Redux</a>
+    </li>
+    <li>
+      <a href="front-end/next.html">Next</a>
+    </li>
+    <li>
+      <a href="front-end/vue-basics.html">Vue.js</a>
+    </li>
+    <li>
+      <a href="front-end/angular.html">Angular</a>
+    </li>
+    <li>
+      <a href="front-end/svelte.html">Svelte</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Back-End JS
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="back-end/node-js.html">Node.js</a>
+    </li>
+    <li>
+      <a href="back-end/express-js.html">Express.js</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Miscellaneous
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="misc/js-libraries.html">JS libraries</a>
+    </li>
+    <li>
+      <a href="misc/js-testing.html">JS Testing</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">JavaScript Program Flow Control</h1>
+
+</div>
+
+
+<div id="feltételes-utasítások" class="section level2">
+<h2>Feltételes utasítások</h2>
+<div id="ifelse" class="section level3">
+<h3>If/else</h3>
+<p>A JS if/else szintaxisa az R-re hasonlít: zárójeleket és kapcsos
+zárójeleket használ. Az <code>if</code> utáni kód csak akkor fut, ha az
+if utáni feltétel igaz. Ha ez nem igaz, van lehetőség <code>else</code>
+paranccsal megadni olyan programutasításokat, amelyek hamis feltétel
+esetén futnak.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="cf">if</span> (age <span class="op">&gt;=</span> <span class="dv">18</span>) {</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>  <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&quot;Elég idős vagy ahhoz, hogy válassz.&quot;</span>)<span class="op">;</span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>  <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="vs">`Jöjj vissza </span><span class="sc">${</span><span class="dv">18</span> <span class="op">-</span> age<span class="sc">}</span><span class="vs"> év múlva!`</span>)<span class="op">;</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>}</span></code></pre></div>
+<p>Ha az <code>if</code> utáni feltétel hamis, van lehetőség további
+feltételek tesztelésre is az <code>else if</code> paranccsal, amelyből
+akár több blokk is lehet, ha több feltételt akarunk tesztelni.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="cf">if</span> (condition1) {</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&quot;Condition 1 was met.&quot;</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>} <span class="cf">else</span> <span class="cf">if</span> (condition2) {</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>  <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&quot;Condition 2 was met.&quot;</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>} <span class="cf">else</span> <span class="cf">if</span> (condition3) {</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>  <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&quot;Condition 3 was met.&quot;</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>  <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&quot;Neither condition was met.&quot;</span>)</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>}</span></code></pre></div>
+<p>Akárcsak a többi nyelvben, az if/else blokkok többszintesek is
+lehetnek</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="cf">if</span> (age <span class="op">&gt;=</span> <span class="dv">18</span>) {</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="cf">if</span> (driversLicense) {</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>    <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&quot;Would you like to drive my car?&quot;</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>    <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&quot;You should get a drivers license&quot;</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>  }</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>  <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&quot;You should get a drivers license as soon as you tunr 18.&quot;</span>)</span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>}</span></code></pre></div>
+<p>Természetesen az if/else blokkokon belül változókat is használhatunk,
+módosíthatjuk értéküket a feltételek függvényében. A különbség más
+programnyelvekhez képest, hogy az ezeken belül a <code>const</code> vagy
+<code>let</code> paranccsal létrehozott változók nem férhetők hozzá az
+adott blokkon kívül, ezért a változókat, ha máshol is hozzá akarunk
+férni, már ezelőtt létre kell hozni a globális környezetben.</p>
+</div>
+<div id="a-feltételek" class="section level3">
+<h3>A feltételek</h3>
+<p>A leggyakrabban az összehasonlítás műveletekkel dolgozunk: a
+<code>&gt;, &lt;, &gt;=, &lt;=</code> a szokásos módon működik. A JS
+megkülönbözteti az <code>==</code> és <code>===</code> egyenlőséget.
+Előbbi lazább, vagyis a típustól függetlenül tekint egyenlőnek
+értékeket, míg az utóbbinál a típusnak is egyeznie kell. Ugyanígy
+működik a laza <code>!=</code> és a szigorúbb <code>!==</code>.<br />
+A feltételeket a <code>!</code> segítségével negálhatjuk, az
+<code>&amp;&amp;</code> jelenti az ÉS, a <code>||</code> pedig a VAGY
+viszonyt.<br />
+Vannak értékek, amelyek hamisak: ilyen a 0, az üres string, az
+<code>undefined</code>, <code>null</code> és <code>NaN</code> (not a
+number). Minden más, beleértve az üres objektumot igaznak minősül.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="cf">if</span> (a <span class="op">&gt;</span> b)</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="cf">if</span> (a <span class="op">&gt;=</span> b)</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="cf">if</span> (<span class="st">&#39;18&#39;</span> <span class="op">==</span> <span class="dv">18</span>)       # <span class="kw">true</span></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="cf">if</span> (<span class="st">&#39;18&#39;</span> <span class="op">===</span> <span class="dv">18</span>)      # <span class="kw">false</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="cf">if</span> (<span class="st">&#39;18&#39;</span> <span class="op">!=</span> <span class="dv">18</span>)       # <span class="kw">false</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="cf">if</span> (<span class="st">&#39;18&#39;</span> <span class="op">!==</span> <span class="dv">18</span>)      # <span class="kw">true</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a><span class="cf">if</span> (condition1 <span class="op">&amp;&amp;</span> condition2)       # AND</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="cf">if</span> (condition1 <span class="op">||</span> condition2)       # OR</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="cf">if</span> (<span class="op">!</span>condition1)                    # NOT</span></code></pre></div>
+</div>
+<div id="switch" class="section level3">
+<h3>Switch</h3>
+<p>Sok <code>===</code> összehasonlítás kiváltására használható a
+<code>switch</code> is. A szintaxisban nagy szerepük van a
+<code>break</code> kulcsszavaknak, mert ha ezek hiányoznak, akkor minden
+további sor is fut. Van lehetőség több értékhez is ugyanazokat az
+utasításokat rendelni. Végül a <code>default</code> opcióval
+megadhatjuk, mit hajtson végre a program, ha egyik eset sem áll
+fenn.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="cf">switch</span> (language) {</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>    <span class="cf">case</span> <span class="st">&quot;chinese&quot;</span><span class="op">:</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>    <span class="cf">case</span> <span class="st">&quot;mandarin&quot;</span><span class="op">:</span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>        <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&quot;MOST number of native speakers!&quot;</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>        <span class="cf">break</span><span class="op">;</span></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>    <span class="cf">case</span> <span class="st">&quot;spanish&quot;</span><span class="op">:</span></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>        <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&quot;2nd place in number of native speakers&quot;</span>)</span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>        <span class="cf">break</span><span class="op">;</span></span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>    <span class="cf">case</span> <span class="st">&quot;english&quot;</span><span class="op">:</span></span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>        <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&quot;3rd place&quot;</span>)</span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>        <span class="cf">break</span><span class="op">;</span></span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>    <span class="cf">default</span><span class="op">:</span></span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a>        <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="st">&quot;Great language too :D&quot;</span>)</span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+<div id="ternary-operator" class="section level3">
+<h3>Ternary operator</h3>
+<p>Egyszerű <code>if/else</code> típusú ellenőrzésre használható a
+<code>ternary oprator</code> is, amely a feltétel teljesülése
+függvényében az egyik vagy a másik értéket adja eredményül.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="kw">const</span> adultOrMinor <span class="op">=</span> age <span class="op">&gt;=</span> <span class="dv">18</span> <span class="op">?</span> <span class="st">&#39;adult&#39;</span> <span class="op">:</span> <span class="st">&#39;minor&#39;</span><span class="op">;</span></span></code></pre></div>
+</div>
+<div id="short-circuiting" class="section level3">
+<h3>Short circuiting</h3>
+<p>A logikai operátorok az elsődleges használat mellett másképpen is
+használhatók, például változók értékének dinamikus megadására: az
+<code>&amp;&amp;</code> az összefűzött kifejezésekből az első hamis
+(<code>falsy</code>), a <code>||</code> pedig az első igaz
+(<code>truthy</code>) értéket rendeli a változóhoz, a többit nem
+értékeli. Amennyiben egyik sem felel meg, az utolsó értéket rendeli
+hozzá. Ehelyett, ha azt szeretnénk, hogy a 0 érték és az üres string is
+érvényes értéknek számítson, használhatjuk a <code>??</code> operátort
+(<code>nullish coalescing operator</code>), amely csak a
+<code>null</code> és <code>undefined</code> értékeket tekinti
+hamisnak.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co">// Ha nincs megadva a vendégek száma (false), akkor a második értéket veszi fel</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="kw">const</span> guest <span class="op">=</span> restaurant<span class="op">.</span><span class="at">numGuests</span> <span class="op">||</span> <span class="dv">10</span><span class="op">;</span> </span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="kw">const</span> guest <span class="op">=</span> restaurant<span class="op">.</span><span class="at">numGuests</span> <span class="op">??</span> <span class="dv">10</span><span class="op">;</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="co">// Ha létezik a metódus (true), akkor a második fut</span></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>restaurant<span class="op">.</span><span class="at">orderPizza</span> <span class="op">&amp;&amp;</span> restaurant<span class="op">.</span><span class="fu">orderPizza</span>(<span class="st">&#39;ham&#39;</span><span class="op">,</span> <span class="st">&#39;mushrooms&#39;</span>)<span class="op">;</span> </span></code></pre></div>
+</div>
+<div id="logical-assignment-operator" class="section level3">
+<h3>Logical assignment operator</h3>
+<p>Lehetőség van arra is, hogy attól függően, egy property létezik-e,
+felülírjuk vagy alapértelmezett értéket adjunk meg. Előbbi az
+<code>&amp;&amp;=</code> opearátorral, utóbbi az <code>||=</code> vagy
+<code>??=</code> operátorral lehetséges. Működésének alapja a fent
+bemutatott rövidzárlatolás.</p>
+<p>ES2021 újdonság.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="kw">const</span> restaurant1 <span class="op">=</span> {</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>  <span class="dt">name</span><span class="op">:</span> <span class="st">&#39;Capri&#39;</span><span class="op">,</span></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  <span class="dt">numGuests</span><span class="op">:</span> <span class="dv">20</span><span class="op">,</span></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>}<span class="op">;</span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="kw">const</span> restaurant2 <span class="op">=</span> {</span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>  <span class="dt">name</span><span class="op">:</span> <span class="st">&#39;La Piazza&#39;</span><span class="op">,</span></span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>  <span class="dt">owner</span><span class="op">:</span> <span class="st">&#39;Giovanni Rossi&#39;</span><span class="op">,</span></span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>}<span class="op">;</span></span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a></span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a><span class="co">// OR ASSIGNMENT OPERATOR</span></span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a><span class="co">// Minden falsy értéket felülír</span></span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a>restaurant1<span class="op">.</span><span class="at">numGuests</span> <span class="op">||=</span> <span class="dv">10</span><span class="op">;</span></span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a>restaurant2<span class="op">.</span><span class="at">numGuests</span> <span class="op">||=</span> <span class="dv">10</span><span class="op">;</span></span>
+<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a></span>
+<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a><span class="co">// NULLISH ASSIGNMENT OPERATOR</span></span>
+<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a><span class="co">// A 0-t és üres stringet nem írja felül</span></span>
+<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a>restaurant1<span class="op">.</span><span class="at">numGuests</span> <span class="op">??=</span> <span class="dv">10</span><span class="op">;</span></span>
+<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a>restaurant2<span class="op">.</span><span class="at">numGuests</span> <span class="op">??=</span> <span class="dv">10</span><span class="op">;</span></span>
+<span id="cb8-20"><a href="#cb8-20" tabindex="-1"></a></span>
+<span id="cb8-21"><a href="#cb8-21" tabindex="-1"></a><span class="co">// AND ASSIGNMENT OPERATOR</span></span>
+<span id="cb8-22"><a href="#cb8-22" tabindex="-1"></a><span class="co">// A truthy értékeket írja felül</span></span>
+<span id="cb8-23"><a href="#cb8-23" tabindex="-1"></a>restaurant1<span class="op">.</span><span class="at">owner</span> <span class="op">&amp;&amp;=</span> <span class="st">&#39;&lt;ANONYMOUS&gt;&#39;</span><span class="op">;</span></span>
+<span id="cb8-24"><a href="#cb8-24" tabindex="-1"></a>restaurant2<span class="op">.</span><span class="at">owner</span> <span class="op">&amp;&amp;=</span> <span class="st">&#39;&lt;ANONYMOUS&gt;&#39;</span><span class="op">;</span></span></code></pre></div>
+</div>
+</div>
+<div id="ciklusok" class="section level2">
+<h2>Ciklusok</h2>
+<div id="for-ciklus" class="section level3">
+<h3>For ciklus</h3>
+<p>A for ciklus kicsit bonyolultabb, mint más nyelvekben, de lényege
+ugyanaz: előre megadott számú iteráció futtatása adott parancsokból:</p>
+<p>Az alap szintaxis: <code>for(initial; condition; step) {}</code></p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="cf">for</span> (<span class="kw">let</span> i <span class="op">=</span> <span class="dv">0</span><span class="op">;</span> i <span class="op">&lt;</span> arr<span class="op">.</span><span class="at">length</span><span class="op">,</span> i<span class="op">++</span>) {</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>  <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(arr[i])</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>}</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="cf">for</span> (<span class="kw">let</span> i <span class="op">=</span> <span class="dv">10</span><span class="op">;</span> i <span class="op">&gt;</span> <span class="dv">0</span><span class="op">;</span> i<span class="op">--</span>) <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(i)</span></code></pre></div>
+<p>JavaScriptben is használható a <code>break</code> és a
+<code>continue</code> parancs, és egymásba ágyazódó ciklusok is
+létrehozhatók.</p>
+</div>
+<div id="for-of-ciklus" class="section level3">
+<h3>For of ciklus</h3>
+<p>A <code>for... of</code> ciklus az array és objektum elemek
+iterálásának az egyszerű <code>for</code>-ál egyszerűbben használható
+módja. Array-ekkel könnyen használható, objektumoknál pedig az
+<code>Object</code> statikus metódusai révén, amelyek az adott dolgok
+(property-k vagy értékek, vagy mindkettő) array-ét adják, amelyen
+használható a <code>for...of</code>.</p>
+<p>Működik stringeken és NodeList-eken is (ellentétben a
+forEach-csel)</p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode js"><code class="sourceCode javascript"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co">// Array</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="cf">for</span> (<span class="kw">const</span> el <span class="kw">of</span> arr) {}</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="cf">for</span> (<span class="kw">const</span> item <span class="kw">of</span> arr<span class="op">.</span><span class="at">entries</span>) {}    <span class="co">// Array-ek array-a az eredmény, ezért destrukturálható</span></span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a><span class="cf">for</span> (<span class="kw">const</span> [i<span class="op">,</span> el] <span class="kw">of</span> arr<span class="op">.</span><span class="at">entries</span>) {}</span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a></span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a><span class="co">// Object</span></span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a><span class="cf">for</span> (<span class="kw">const</span> key <span class="kw">of</span> <span class="bu">Object</span><span class="op">.</span><span class="fu">keys</span>(objName)) {}</span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a><span class="cf">for</span> (<span class="kw">const</span> val <span class="kw">of</span> <span class="bu">Object</span><span class="op">.</span><span class="fu">values</span>(objName)) {}</span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a><span class="cf">for</span> (<span class="kw">const</span> [key<span class="op">,</span> val] <span class="kw">of</span> <span class="bu">Object</span><span class="op">.</span><span class="fu">entries</span>(objName)) {}</span></code></pre></div>
+</div>
+<div id="for-in-ciklus" class="section level3">
+<h3>For in ciklus</h3>
+<p>Elsősorban objektumokhoz használható. A <code>for...of</code>-hoz
+képest előnye, hogy nem kell az Object statikus metódusait
+használni.</p>
+<p>Array-okon, mivel ezeknél a key-k az indexek, az array indexeihez
+férhetünk hozzá, ami nem túl hasznos. Stringeken (tkp. karakterek
+array-ai) az egyes karaktereket iteráljuk.</p>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode js"><code class="sourceCode javascript"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="cf">for</span> (<span class="kw">const</span> key <span class="kw">in</span> objName) {</span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>  <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(key)          <span class="co">// property-k</span></span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>  <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(objName[key]) <span class="co">// értékek</span></span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+<div id="while-ciklus" class="section level3">
+<h3>While ciklus</h3>
+<p>A while ciklus, akárcsak más nyelvekben, addig futtatja újra és újra
+a parancso(ka)t, amíg egy feltétel fennáll:</p>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode js"><code class="sourceCode javascript"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="kw">let</span> rep <span class="op">=</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="cf">while</span> (rep <span class="op">&lt;=</span> <span class="dv">10</span>) {</span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>  <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="vs">`Round </span><span class="sc">${</span>rep<span class="sc">}</span><span class="vs">`</span>)<span class="op">;</span></span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a>  rep<span class="op">++;</span></span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+<div id="do-while-ciklus" class="section level3">
+<h3>Do while ciklus</h3>
+<p>Az előzőhöz képest a do… while ciklus arra jó, hogy a parancsokat
+akkor is végrehajtsuk egyszer, ha a feltétel eleve nem teljesül.</p>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode js"><code class="sourceCode javascript"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="cf">do</span> {</span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>    <span class="co">// body of loop</span></span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>} <span class="cf">while</span>(condition)</span></code></pre></div>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

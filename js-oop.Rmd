@@ -1,0 +1,425 @@
+---
+title: "Object Oriented Programming"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    toc_depth: 2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
+```
+
+A JavaScript objektumok egy konstrukcióban egyesítik az adatokat (property-k) és a viselkedést (metódusok), önálló kódrészletek, amelyek lehetővé teszik, hogy a nagyobb mennyiségű kódot rendszerezzük, strukturáljuk, ami által könnyebbé válik a nagy kódbázisok kezelése. Az objektumok egymással interakcióba tudnak lépni.
+
+Az OOP egy olyan programozási mód, amellyel programatikusan hozunk létre objekutmokat úgy, hogy létrehozzuk ezek alaprajzát (`class`), amelyek később töltünk fel adatokkal (`instance`). Egy classból több objektum is létrehozható, amelyek különböző adatokat tárolnak, de ugyanazt "tudják".
+
+## Az OOP 4 alapelve  
+
+1. Absztrakció: szükségtelen részletek elrejtése
+2. Encapsulation: kívülről nem minden property és metódus férhető hozzá, egy részük pedig API révén közzétehető, ami segít elkerülni a bugokat. Csak a legszükségesebbek legyenek nyilvánosak
+3. Öröklődés: lehetséges a `parent class`-t kiterjeszteni további funkciókkal, property-kkel, és ezáltal létrehozni új objektumokat, amelyek hozzáférnek a szülő funkcióihoz
+4. Polimorfizmus: a child class felül is írhatja a parent bizonyos részleteit
+
+## Prototípusok létrehozása a JavaScriptben
+
+Minden objektumnak van prototípusa - olyan metódusok és property-k, amelyeket örökölnek az ehhez kapcsolódó objektumok.
+
+Prototípus három módon hozható létre:  
+
+1. Constructor függvénnyel
+2. ES6 class-ként
+3. Object.create révén
+
+### Objektumok constructor függvénnyel
+
+Tulajdonképpen függvényt hozunk létre, amely argumentumai az objektum property-jei lesznek. Ezt követően pedig a `new` kulcsszóval hozhatunk létre adott instanciákat a constructor függvény használatával.
+Az objektumok neveit nagy kezdőbetűkkel szokás írni (ld. Person). Szintén szokás, hogy a függvény argumentumainak nevei megegyezzenek az objektum property-jeinek nevével (ld. firstName, birthYear)
+
+A `new` a következő lépéseket hajtja végre:  
+
+1. Létrehoz egy új üres objektumot
+2. Futtatja a függvényt, amelyben a `this` az új objektumra mutat
+3. Prototípushoz köti az új objektumot
+4. Az új objektumot adja vissza (return)
+
+```{js}
+const Person = function(firstName, surname, birthYear) {
+  this.firstName = firstName
+  this.surname = surname
+  this.birthYear = birthYear
+}
+
+const peter = new Person('Peter', 'Smith', 1983)
+const susan = new Person('Susan', 'Hawkins', 1992)
+
+console.log(peter instanceof Person);  // true
+console.log(peter instanceof Object);  // true
+```
+
+#### Metódusok hozzáadása  
+
+Bár lehetséges a metódusokat is a constructor függvényben hozzáadni, ez nem jó megoldás, mert minden instancia másolná a függvényt, ami nem hatékony. Ehelyett a függvényt **a prototípusnak adjuk**.
+
+```{js}
+const Car = function (make, speed) {
+  this.make = make;
+  this.speed = speed;
+};
+
+Car.prototype.accelerate = function () {
+  this.speed += 10;
+  console.log(this.speed);
+};
+
+Car.prototype.brake = function () {
+  this.speed -= 5;
+  console.log(this.speed);
+};
+
+const bmw = new Car('BMW', 120);
+const mercedes = new Car('Mercedes', 95);
+
+bmw.accelerate();
+mercedes.brake();
+```
+
+Minden, amit constructorral hozunk létre, hozzáfér a saját prototípusához, amelyet a `.prototype` property révén érhetünk el, és ehhez adhatunk hozzá metódusokat, amelyekhez aztán minden instancia hozzá fog tudni férni. Ebben is használható a `this`, amely az objektumra fog mutatni. A prototípushoz is adhatók tulajdonságok, amelyek nem az objektumok saját tulajdonságai lesznek. Az objektumok saját tulajdonságai a `.hasOwnProperty()` metódussal ellenőrizhetők.
+
+Az adott objektum prototípusát az `Object.getPrototypeOf()` metódussal tudhatjuk meg, és az `Object.setPrototypeOf()` metódussal változtathatjuk, de ez nem hatékony, ezért kerülendő.
+
+*Megjegyzés: az objektum struktúrát a console.dir függvénnyel lehet jól kiíratni.*
+
+#### Öröklés  
+
+Sokszor a létrehozott osztályokon belül további alosztályokat szeretnénk létrehozni, amelyek speciálisabbak, és az általánosabb osztályok funkcióit kiterjesztik vagy felülírják.
+
+A constructorral létrehozott objektum prototípusok esetében ennek módja, hogy  
+
+1. a costructor függvényben a call segítségével a szülő osztályt futtassuk először a megfelelő argumentumokkal az új kontextusban, ami révén nem kell ismételni magunkat a kódban. Erre csak akkor van szükség, ha a szülő osztály paraméterekből kapja a property értékeit. 
+2. Ezt követően töltjük fel az új argumentumokat. 
+3. Ezek után viszont az új osztály prototípusát hozzá kell kötni a szülő prototípusához, hogy örökölje annak metódusait. Ez azonban az új osztály prototípusának a constructorává teszi a szülő constructor függvényét, ezért meg kell adni, mi legyen az új osztály constructor függvénye.
+4. Végül létrehozhatók az új metódusok is, amelyek a gyermek osztályhoz fognak kapcsolódni. Ezeket szintén a prototípushoz kell rendelni.
+
+```{js}
+// Közös és saját property-kkel
+const EV = function (make, speed, charge) {
+
+  // Közös property-k
+  Car.call(this, make, speed);
+  // Saját
+  this.charge = charge;
+};
+
+// Prototípus hozzáköktése a szülő prototípusához és constructor függvény megadása
+EV.prototype = Object.create(Car.prototype);
+EV.prototype.constructor = EV;
+
+// vagy
+Object.defineProperty(EV.prototype, 'constructor', {
+    value: EV,
+    enumerable: false, // so that it does not appear in 'for in' loop
+    writable: true });
+
+// Saját metódusok
+EV.prototype.chargeBattery = function (chargeTo) {
+  this.charge = chargeTo;
+};
+
+// Felülírja a Car metódusát
+EV.prototype.accelerate = function () {
+  this.speed += 20;
+  this.charge -= 1;
+  console.log(
+    `${this.make} going at ${this.speed} km/h, whith a charge of ${this.charge}%`
+  );
+};
+
+const tesla = new EV('Tesla', 120, 23);
+```
+
+### ES6 class objektumok
+
+A másik lehetőség az ES6 által behozott class szintaxis, amely a háttérben ugyanazokat a műveleteket hajtja végre, csak a szintaxis szintjén különbözik. Az osztályokat kétféle formában osztálydeklaráció és osztály kifejezés formában hozhatjuk létre:
+
+```{js}
+class Person {
+  ...
+}
+
+const Person = class {
+  ...
+}
+```
+
+Az osztályt deklaráló blokkban először a constructor függvény kap helyet, majd ezután hozzáadhatók rögtön a prototípuson létrehozandó metódusok is. A constructor metódus lehetővé teszi, hogy megadjuk a logikát, amelyet végre akarunk hajtani, amikor új instanciát hozunk létre a class alapján.
+
+```{js}
+class Person {
+  constructor(firstName, surname, birthYear) {
+    this.firstName = firstName
+    this.surname = surname
+    this.birthYear = birthYear
+  }
+  
+  greet () {
+    console.log(`Hello ${this.firstName}`);
+  },
+  computeAge(currentYear) {
+    return currentYear - birthYear;
+  }
+}
+```
+
+Ezek után az instanciát ugyanúgy hozhatjuk létre, mint az előző esetben:
+
+```{js}
+const peter = new Person('Peter', 'Smith', 1983)
+```
+
+#### Getter és setter  
+
+Az objektumok bizonyos tulajdonságainak felfedésére, hozzáférhetővé tételére használhatók. Ezek olyan metódusok, amelyeket property-kként hívunk (`accessor property`). Sima objektumokhoz is hozzáadható, de classokon is definiálható.
+
+```{js}
+class Person {
+  constructor(firstName, surname, birthYear) {
+    this.firstName = firstName
+    this.surname = surname
+    this.birthYear = birthYear
+  }
+  
+  get fullName() {
+    return `${this.firstName} ${this.surname}`
+  },
+  set fullName(name) {
+    [this.firstName, this.surname] = name.split(' ');
+  }
+}
+
+console.log(peter.fullName)
+peter.fullName = "Peter Parker"
+
+// másik példa
+class CarCl {
+  constructor(make, speed) {
+    this.make = make;
+    this.speed = speed;
+  }
+
+  accelerate() {
+    this.speed += 10;
+    console.log(`Current speed: ${this.speed}`);
+    return this;
+  }
+
+  brake() {
+    this.speed -= 5;
+    console.log(`Current speed: ${this.speed}`);
+    return this;
+  }
+
+  get speedUS() {
+    return this.speed / 1.6;
+  }
+
+  set speedUS(speed) {
+    this.speed = speed * 1.6;
+  }
+}
+```
+
+A getter és setter függvények felhasználhatók adatvalidációra: olyan settert hozunk létre, amely egy létező property-vel egyezik, és ebben egy feltételt fogalmazunk meg, amely teljesülése esetén a kapott adatot beírja, különben pedig pl. figyelmezteti a felhasználót, hogy nem megfelelő információt adott meg.
+
+Mivel azonban, ha ugyanaz lenne a két változó neve, végtelen hurok indulna, ezért a setterben `_`-t adunk a property név elé, és írunk hozzá egy gettert is, mert különben a fullName property nem jönne létre.
+Ez azért van, mert amikor a constructor függvény lefut, a `this.fullName = fullName` a megadott settert futtatja, amely viszont a _fullName property-t hozza csak létre.
+
+```{js}
+class Person {
+  constructor(fullName, birthYear) {
+    this.fullName = fullName
+    this.birthYear = birthYear
+  }
+  
+  set fullName(name) {
+    if (name.includes(' ')) this._fullName = name;
+    else alert(`${name} is not a full name!`);
+    
+  get fullName() {
+    return this._fullName
+  }
+  }
+}
+```
+
+#### Objektumosztályok közötti öröklődés
+
+Az ES6 class szintaxissal az öröklődés is könnyebben megoldható. A kulcs, hogy az új osztály a szülő osztályt kibővíti (`extends`). A constructor metódusban futtatni tudjuk a szülő constructor függvényét a `super()` függvénnyel. Ezek után az új property-k és metódusok, illetve a felülírni kívánt metódusok a szokott módon adhatók meg.
+
+```{js}
+class EVCl extends CarCl {
+  constructor(make, speed, charge) {
+  
+    // Szülő property-jei
+    super(make, speed);
+    
+    // Új property
+    this.charge = charge;
+  }
+
+  // Új metódusok
+  chargeBattery(chargeTo) {
+    this.charge = chargeTo;
+    return this;
+  }
+
+  // Felülírt metódus
+  accelerate() {
+    this.speed += 20;
+    this.charge -= 1;
+    console.log(
+      `${this.make} going at ${this.speed} km/h, whith a charge of ${
+        this.charge
+      }%`
+    );
+    return this;
+  }
+}
+
+const rivian = new EVCl('Rivian', 120, 23);
+```
+
+#### Class field
+
+A property-k és metódusok class fieldekként is megadhatók, a constructor előtt, ami jobban olvasható kódot eredményez.
+Egyelőre még nem műkökdik, de várhatóan előbb-utóbb fog, hogy a `#`-tel jelölt class fieldek `private class field`-ek lesznek. 
+Ha a class field argumentum alapján kapja az értékét, akkor először üresen dekaráljuk, majd a constructorban átírjuk az értékét.
+
+Mindezekből létezik statikus változat is: ha a `static` kulcsszót írjuk elé, akkor nem az instancián, hanem a constructoron fogjuk tudni használni.
+
+#### Metódusok láncba fűzhetővé tétele
+
+Ha azt akarjuk, hogy a metódusok egymás után láncban hívhatók legyenek, akkor a metódus végén az objektumot kell adni, a `this` kulcsszó segítségével.
+
+```{js}
+class EVCl extends CarCl {
+  #charge;
+
+  constructor(make, speed, charge) {
+    super(make, speed);
+    this.#charge = charge;
+  }
+
+  chargeBattery(chargeTo) {
+    this.#charge = chargeTo;
+    return this;
+  }
+
+  accelerate() {
+    this.speed += 20;
+    this.#charge -= 1;
+    console.log(
+      `${this.make} going at ${this.speed} km/h, whith a charge of ${
+        this.#charge
+      }%`
+    );
+    return this;
+  }
+}
+```
+
+### Object.create()
+
+A harmadik lehetőség az `Object.create()` használata, amely manuálisan rendel hozzá manuálisan létrehozott prototípust egy adott objektumhoz. Ez a legkevésbé használt módszer. Az `Object.create()` viszont szükséges volt a constructor függvénnyel létrehozott osztályok közötti öröklődés megoldásához.  
+
+Osztály létrehozásához a prototípust létre kell hoznunk egyszerű JS objektumként, amelyen definiáljuk a kívánt metódusokat. Ezek után az instanciát az Object.create(prototypeName) formában hozzuk létre, és így az adott instancia örökli a prototípus metódusait és property-jeit. Ezek után az instanciát feltölthetjük a saját property-jeivel. Ennek alternatívája, ha létrehozunk egy iniciáló metódust a prototípusként szolgáló objektumon.
+
+```{js}
+const PersonProto = {
+  calcAge() {
+  const year = new Date().getFullYear;
+    console.log(year - this.birthYear)
+  }
+  
+  init(firstName, birthYear) {
+    this.firstName = firstName
+    this.birthYear = birthYear
+  }
+}
+  
+const steven = Object.create(PersonProto)
+
+steven.firstName = 'Steven';
+steven.birthYear = 1973;
+
+// vagy
+steven.init('Steven', 1973)
+```
+
+#### Öröklődés
+
+Ez is megoldható ezen a módon: az új osztály prototípusát a szülő osztály prototípusának instanciájaként hozzuk létre, majd az új osztály instanciáját az új osztály prototípusának instanciájaként. Ugyancsak használhatunk `init` metódust, amelyet hozzáadhatunk az új osztály prototípus objektumához. A szülő iniciáló metódusát használhatjuk ebben. Végül, az új prototípushoz is adhatunk hozzá újabb metódusokat.
+
+```{js}
+// Új prototípus hozzákötése a régihez
+const newClProto = Object.create(oldClProto)
+
+// Új instancia hozzákötése a prototípusához
+const newClInstance = Object.create(newClProto)
+
+// Init függvény az új prototípushoz
+newClProto.init = function(arg1, arg2, newArg1, newArg2) {
+
+  // Szülő init függvényének futtatása
+  oldClProto.init.call(this, arg1, arg2)
+  
+  // Új argumentumok feltöltése
+  this.newArg1 = newArg1
+  this.newArg2 = newArg2
+}
+
+// Új inscancia feltöltése adatokkal
+newClInstance.init(par1, par2, par3, par4)
+
+// Új metódus
+newClProto.methodName = function() {}
+```
+
+## Statikus metódusok  
+
+A statikus metódusok olyan metódusok, amelyek nem az instanciákhoz, hanem a constructor függvényhez kötődnek (pl. `Array.from()`, `Object.assign()`, `Number.parseFloat()`). Leggyakrabban segédmetódusokként használjuk constructorokhoz.
+
+```{js}
+// Constructorral létrehozott objektumoknál
+Person.staticMethodName = function() {}
+
+// ES6 class
+class Person {
+  constuctor() {}
+  
+  regularMethodName() {}
+  
+  static staticMethodName() {}
+}
+```
+
+Ezek viszont nem öröklődnek, ezért az instanciákon nem működik, de ez azt is jelenti, hogy nem függ a Person típusú objektumok semmilyen tulajdonságától sem. Ezekben az esetekben a `this` magára a constructorra vonatkozik. Ha egy statikus metódust akarunk egy class constructor függvényén vagy instancia metóduson belül hívni, akkor a class nevét kell használni vagy a `this.constructor.staticMethodName()` formában hivatkozhatunk rá.
+
+```{js}
+Person.createAnonymous = function(gender) {
+  let name = gender = 'male' ? 'John Doe' : 'Jane Doe';
+  return new Person(name);
+}
+
+const unidentified = Person.createAnonymous('male')
+```
+
+## API és encapsulation
+
+A jó gyakorlat az, hogy az objektumok property-jeit nem közvetlenül módosítjuk, hanem metódusokat hozunk létre ehhez. Ha a mások kódja a közzétett metódusokat használja, akkor nem kell attól félni, hogy a programban véghezvitt változtatások miatt ne működne a kód.
+
+Azokat a property-ket, amelyeket nem javasolt közvetlenül használni, úgy jelölhetjük, hogy a nevük elé `_`-t teszünk. Ettől még a property ódosítható marad, de jelezzük, hogy ez nem feltétlenül jó ötlet.
+
+

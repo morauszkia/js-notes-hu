@@ -1,0 +1,63 @@
+---
+title: "JS Tesztelés"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    toc_depth: 2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
+```
+
+Az automatizált tesztek előnye, hogy a program változtatása esetén könnyen ellenőrizhetjük, nem hajtottunk-e végre olyan változtatásokat, amelyek működésképtelenné tették a kódunkat. Különösen nagybb kódbázisoknál egyszerűbb ez a folyamat, mint manuálisan ellenőrizni.
+
+Az automatizált teszteknek több formája van: `unit`, `integration`, `end-to-end`.
+
+A teszteléshez szükségünk van a tesztet futtató (`test runner`) programra, amely egy álszervert hoz létre, amelyben a tesztelés lezajlik. 
+
+Ezen belül fut egy `testing framework`, amely tartalmazza a beállításokat, és a tesztelés struktúráját (bármit is jelentsen ez - majd megértem).
+
+Ezen belül fut egy `assertion library`, amely ténylegesen lefuttatja a függvényeket, és megnézni, mely feltételek teljesülnek, és melyek nem. Az assertion library lehet külön csomag a testing frameworktől, de lehet integrált is. 
+
+Végül, az assertion library használhat `testing plugin`-t, hogy szofisztikáltabb teszteket hajthassunk végre. 
+
+Néhány tesztelési csomag, mint a Jest és a Vitest integrálja ezeket, mások, mint a `Karma` (runner), `Mocha` (framework) és `Chai` (assertion library) csak egy-egy szintet jelentenek.
+
+## Unit Testing
+
+A `unit test` az alkalmazás legapróbb alkotóelemeit magukban teszteli: ezek általában függvények vagy osztályok.
+A feltételezés, hogy ha az összes építőelem működik, akkor az alkalmazás maga is működik.
+
+A teszteléshez többféle program közül választhatunk. A leggyarkabban használt tesztelő csomag a Jest, de a Vitest bizonyos tekintetekben jobb: pl. jobban kezeli a modulrendszert.
+
+### Vitest telepítés és tesztelés indítása
+
+A Vitest telepítése a js projekthez a `npm install vitest --save-dev` paranccsal történik. Ezt követően létrehozhatók a teszt futtatására scriptek a `package.json` file-ban: pl. `"test": "vitest --run --reporter verbose"`, ami az `npm (run) test` paranccsal futtatható (a run nem szükséges, de azzal is működik). A `--reporter verbose` flag révén részletesebb eredményeket kapunk: pl. hogy melyik tesztek voltak sikeresek.
+
+### Tesztek megírása
+
+A teszt file-oknak ugyanazt a nevet adjuk, mint a tesztelendő kódot tartalmazó file-oknak, de a kiterjesztésük `.test.js` lesz, hogy a Jest/Vitest felismerje ezeket. 
+
+A teszt file-ba importáljuk a szükséges függvényeket a tesztelő csomagból, illetve a tesztelendő függvényeket. A tesztelést az `it()` vagy `test()` függvénnyel hajtjuk végre.
+
+#### Egy egyszerű teszt
+
+Az `it/test` függvény első argumentuma egy string, amely leírja, mit kell végrehajtania a tesztelt unitnak. 
+A második argumentum egy függvény, amely testében hajtjuk végre a tesztet.
+Az `expect()` függvénnyel és metódusaival tudjuk megadni, hogy milyen eredményt várunk. A függvénynek számtalan metódusa van a különböző esetek kezelésére.
+
+```{js}
+// math.test.js
+
+import { it, expect } from "vitest";
+
+import { add } from "./math";
+
+it("should summarize all number values in an array", () => {
+  const result = add([1, 2, 3]);
+  expect(result).toBe(6);
+});
+```

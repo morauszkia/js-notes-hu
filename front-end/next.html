@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Next</title>
+
+<script src="site_libs/header-attrs-2.24/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/readable.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Programozás jegyzeteim</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Vanilla JS
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="vanilla/js-variables.html">JavaScript alapok</a>
+    </li>
+    <li>
+      <a href="vanilla/js-program-flow.html">Program Flow Control</a>
+    </li>
+    <li>
+      <a href="vanilla/js-functions.html">Függvények</a>
+    </li>
+    <li>
+      <a href="vanilla/js-data-structures.html">Adatstruktúrák</a>
+    </li>
+    <li>
+      <a href="vanilla/js-array-methods.html">Haladó Array műveletek</a>
+    </li>
+    <li>
+      <a href="vanilla/js-dom-manipulation.html">DOM manipuláció</a>
+    </li>
+    <li>
+      <a href="vanilla/js-strings.html">Stringek</a>
+    </li>
+    <li>
+      <a href="vanilla/js-numbers-dates.html">Számok és dátumok</a>
+    </li>
+    <li>
+      <a href="vanilla/js-regex.html">Reguláris kifejezések</a>
+    </li>
+    <li>
+      <a href="vanilla/js-async.html">Asynchronous JavaScript</a>
+    </li>
+    <li>
+      <a href="vanilla/js-oop.html">OOP</a>
+    </li>
+    <li>
+      <a href="vanilla/js-dev-practice.html">JavaScript Development a gyakorlatban</a>
+    </li>
+    <li>
+      <a href="vanilla/js-api.html">Hasznos API-k</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Typescript
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="ts-basics.html">TypeScript basics</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Front-End JS Libraries&amp;Frameworks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="front-end/jquery-basics.html">jQuery</a>
+    </li>
+    <li>
+      <a href="front-end/react-basics.html">React</a>
+    </li>
+    <li>
+      <a href="front-end/redux-basics.html">Redux</a>
+    </li>
+    <li>
+      <a href="front-end/next.html">Next</a>
+    </li>
+    <li>
+      <a href="front-end/vue-basics.html">Vue.js</a>
+    </li>
+    <li>
+      <a href="front-end/angular.html">Angular</a>
+    </li>
+    <li>
+      <a href="front-end/svelte.html">Svelte</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Back-End JS
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="back-end/node-js.html">Node.js</a>
+    </li>
+    <li>
+      <a href="back-end/express-js.html">Express.js</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Miscellaneous
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="misc/js-libraries.html">JS libraries</a>
+    </li>
+    <li>
+      <a href="misc/js-testing.html">JS Testing</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Next</h1>
+
+</div>
+
+
+<p>A Next egy Reactra épülő framework, amely fő előnyei a szerveroldali
+renderelés, a file-alapú routing, illetve a fullstack jellege.</p>
+<div id="file-alapú-routing" class="section level2">
+<h2>File-alapú routing</h2>
+<p>Ahelyett, hogy a kódban kellene megadnunk a különböző útvonalakat,
+hagyjuk, hogy a Next kikövetkeztesse a <code>pages</code> mappa
+struktúrájából. Ha létrehozunk egy file-t adott névvel, akkor azt az
+azonos útvonalhoz fogja megnyitni: pl. egy <code>about.js</code> file-t,
+amelyben egy React komponenst definiálunk, akkor a <code>/about</code>
+url ezt fogja renderelni.</p>
+<p>Ha a file neve <code>index.js</code>, ezt rendereli a <code>/</code>
+útvonal esetén.</p>
+<p>A file-okat létrehozhatjuk könyvtárakban is: pl. a <code>about</code>
+könyvtárban létrehozott <code>index.js</code> az <code>/</code> útvonal
+esetén fog megjelenni, az <code>info.js</code> pedig az
+<code>about/info</code> útvonalnál.</p>
+<p>Dinamikus oldalneveket is támogat: ebben az esetben az oldalnév
+<code>[id].js</code> formájú, ahol az <code>id</code> bármi lehet, ami
+még nem foglalt, és ezt a komponenst fogja renderelni. Az
+<code>id</code> hozzáférhető a <code>useRouter</code> hook segítségével.
+Ez egy router objektumot ad, amelyen különböző property-k érhetők
+el:</p>
+<ul>
+<li>a <code>pathname</code> az útvonalat: pl.
+<code>.../projects/[id]</code></li>
+<li>a <code>query</code> egy objektumot, amelyen elérhető az
+<code>id</code> property, amelynek értéke maga az id érték.</li>
+</ul>
+<p>Maguk a könyvtárak is lehetnek dinamikus nevűek: pl.
+<code>[clientId]</code>. A beágyazódó oldalakon a router az összes
+dinamikus szegmenshez hozzáférést biztosít a query property
+segítségével.</p>
+<p>Előfordul, hogy egy komponenst többféle útvonal esetén is renderelni
+szeretnénk: pl. szeretnénk kilistázni az összes adott évben vagy adott
+év adott hónapjában megjelent blogbejegyzést: a <code>/2022</code>
+esetén az összes 2022-est, a <code>/2022/10</code> esetén csak az
+októberieket. Ilyenkor a dinamikus részt a következőképpen írhatjuk:
+<code>[...slug].js</code>, és ilyenkor a query objektum slug
+property-jének értéke egy array lesz az összes szegmenssel külön-külön,
+amit felhasználhatunk pl. szűrésre, vagy adatbázis hívásra.</p>
+<pre><code>import { useRouter } from &#39;next/router&#39;;
+
+const ProjectPage = () =&gt; {
+  const router = useRouter();
+  
+  const projectId = router.query.id;
+  
+  return ...
+}
+
+</code></pre>
+<div id="navigálás-a-link-komponenssel" class="section level3">
+<h3>Navigálás a Link komponenssel</h3>
+<p>A navigáláshoz a hagyományos <code>&lt;a&gt;</code> tagek helyett a
+<code>Link</code> elementet használjuk, amely amellett, hogy nem küld új
+http kérést a szervernek, és így nem törli a state-et, még különböző
+speciális propokat is fogadhat: pl. a <code>replace</code> segítségével
+úgy navigálhatunk át, hogy az új url a történetben felváltja a régit, és
+így nem oda tudunk visszalépni.</p>
+<p>Ugyanígy dinamikus útvonalakra is navigálhatunk, és a linkeket
+programatikusan is generálhatjuk, pl. a <code>.map</code> metódussal, és
+a href értékeket template literallal is létrehozhatjuk, de megadhatunk
+objektumot is, amelyben pl. megadhatjuk a <code>pathname</code>
+propertyt, pl. <code>/clients/[id]</code> és a <code>query</code>
+property-t, amelynek értéke a query objektum, és ezen létrehozzuk az
+<code>id</code> property-t és ennek adjuk a megfelelő értéket.</p>
+<p>Mindehhez a hagyományos React szintaxist használhatjuk.</p>
+</div>
+<div id="programatikus-navigálás" class="section level3">
+<h3>Programatikus navigálás</h3>
+<p>Időnként nem linkkel, hanem programmatikusan akarunk navigálni, pl.
+ha valamilyen folyamat lefutott.</p>
+<p>Ehhez is a <code>router</code> objektumot használhatjuk, amely
+<code>push</code> vagy <code>replace</code> metódusaival lecserélhetjük
+az url-t. Ebben az esetben is stringként vagy objektumként is
+megadhatjuk az útvonalat.</p>
+</div>
+<div id="oldal" class="section level3">
+<h3>404 oldal</h3>
+<p>A root könyvtárban létrehozhatunk egy <code>404.js</code> file-t,
+amelyet akkor renderel, ha 404 hibát kapunk, mert olyan oldalt próbálunk
+megnyitni, amely nem létezik.</p>
+</div>
+<div id="a-public-mappa" class="section level3">
+<h3>A public mappa</h3>
+<p>Ez is egy speciális mappa, ide tehetjük a statikus tartalmakat, mert
+a Next ezeket is elérhetővé teszi a weboldal látogatóinak.</p>
+</div>
+</div>
+<div id="szerveroldali-és-statikus-renderelés" class="section level2">
+<h2>Szerveroldali és statikus renderelés</h2>
+<p>A Next másik kulcsfunkciója, hogy képes a React által működtetett
+weboldalakat, alkalmazásokat előrenderelni, ami SEO szempontból is
+előnyös, és az oldalak betöltését is gyorsítja. Ez az alapértelmezett
+viselkedése is: ellentétben a React-tal, a HTML vázat elküldi a
+böngészőnek, és nem csak a JavaScript kódot, amely feltölti az egyébként
+üres HTML-t (Reacttal a root div-et küldi csak)</p>
+<div id="getstaticprops" class="section level3">
+<h3>getStaticProps</h3>
+<p>Ha a Next oldal komponensből exportáljuk a
+<code>getStaticProps</code> async függvényt, akkor még a renderelés
+előtt tudunk adatokat lekérni, és az oldalt már ezekkel létrehozni. A
+Next a build során először ezt a függvényt futtatja, majd a komponenst
+úgy rendereli, hogy felhasználja hozzá a függvény által visszaadott
+objektum props property-jét.</p>
+<p>Ezért a függvénynek mindig egy objektum kell, hogy a return értéke
+legyen, amelyben van egy props property. Ezt töltjük fel a szükséges
+propokkal, amelyeket az oldal komponensnek szeretnénk továbbítani.</p>
+<pre><code>function PageName(props) {
+  return ...
+}
+
+export async function getStaticProps() {
+  return {
+    props: {
+      products: [...]
+    },
+  };
+};
+</code></pre>
+<p>A getStaticProps-ba írt kódot nem kapja meg a kliens böngészője,
+ezért olyan kódot is beleírhatunk, amelyben például adatbázis
+hozzáférési adatokat adunk meg.</p>
+<p>Ebben a függvényben futtathatjuk az adatok fetch-elését is, vagy
+hozzáférhetünk a file rendszerhez, vagy bármilyen, cska a backenden
+működő kódot is futtathatunk. Pl. importálhatjuk a Node.js
+<code>fs</code> vagy <code>fs/promises</code> modulját, és használhatjuk
+a getStaticProps-on belül, vagy használhatjuk a <code>process</code>
+objektumot. A csak ebben használt importokat a Next kiszűri a
+kliensoldalnak továbbított kódból.</p>
+<p>A build során a Next jelzi, melyik oldalt hogyan hozta létre.</p>
+<p>A build során az átadott adatokat JSON formátumban hozzáadja a
+HTML-hez egy script tagben.</p>
+<p>A fenti megoldás nem végleges, ha a felhasznált adatok gyakran
+változnak. Ilyenkor az egyik megoldás, hogy a getStaticProps mellett
+hagyományos React módon is kezeljük az adatok betöltését (pl.
+useEffect), egy másik lehetőség pedig, hogy a getStaticProps a props
+property mellett a <code>revalidate</code> property-t is tartalmazza,
+amelynek értéke másodpercben megadja, hány másodperc után renderelje
+újra az oldalt egy beérkező http kérésnél. Vagyis, ha a kérés az előző
+után a megadott időtartamon belül érkezik, a korábban renderelt oldalt
+szolgálja ki, de ha később, akkor újrarendereli, az újat szolgálja ki,
+és a szerveren is cseréli a file-okat.</p>
+<p>További key, amit megadhatunk, a <code>notFound</code>, ami ha
+<code>true</code>, akkor a 404-es oldalt fogja renderelni. Ez
+használható arra, hogy bizonyos feltételek esetén ezt rendereltessük
+(pl. ha a fetch sikertelen volt) A másik a <code>redirect</code>, amely
+szintén hasznos lehet, ha valami nem sikerült.</p>
+<div id="dinamikus-paraméterek" class="section level4">
+<h4>Dinamikus paraméterek</h4>
+<p>A getStaticProps kaphat egy argumentumot: általában
+<code>context</code> nevet adnak neki, és ezen elérhetők különböző
+információk, így például a <code>params</code> property, amelyen
+elérhetők a megadott dinamikus szegmentek key-value párokként.</p>
+<p>A dinamikus című oldalakat viszont nem előrendereli
+alapértelmezettként, mivel a Next.js nem tudja, mely értékekre kell
+létrehoznia az oldalakat. Ezeket mindig éppen időben rendereli
+alapértelmezett esetben. Ha azonban a getStaticProps-szal jelezzük, hogy
+szeretnénk előrenderelni, akkor egy másik függvénnyel jelezni kell, mely
+útvonalakhoz.</p>
+<p>A <code>getStaticPaths</code> async függvényt is exportálni kell az
+oldal file-jában: ez is egy objektumot ad, <code>paths</code> key-vel,
+amely értéke egy array olyan objektumokkal, amelyek jelzik, milyen
+dinamikus szegmensekhez kell előrenderelni: pl.
+<code>{ params: { pid: 'p1' } }</code>, stb. Ezt dinamikusan is
+meghetetjük, valamilyen adatforrás alapján.</p>
+<p>Emellett meg kell rajta adni a <code>fallback</code> key-t. Ez arra
+szolgál, hogy ha sok az előgenerálandó oldal, akkor nem érdemes mindet
+előrenderelni. Ha ezt <code>true</code>-ra állítjuk, megtehetjük, hogy
+nem az összes oldalt készítjük el előre, csak a legnépszerűbbeket.
+Ilyenkor csak ezeket listázzuk, a többit pedig <code>just in time</code>
+rendereli. Ilyenkor, ha olyan oldalat próbálnak elérni, amelyhez
+nincsenek adatok, használhatjuk a <code>notFound</code> key-t a
+getStaticProps-ban, és ezekben az esetekben a 404-es oldalt
+rendereltetjük.</p>
+<p>Ha minden oldalt előrenderelünk, <code>false</code> értéket is
+adhatunk a <code>fallback</code> key-nek.</p>
+<p>Ha így építjük fel az oldalt, akkor az oldalak betöltésekor a
+böngésző előfetch-cseli a linkelt és előrenderelt oldalakhoz szükséges
+adatokat, és így azok nem igényelnek egy új http requestet, hanem a már
+betöltött adatokból építi fel az oldal JavaScript kódja.</p>
+<p>Ha azonban nem minden lehetséges oldalt készíttetünk elő előre, akkor
+a többi oldal esetében kell valamilyen fallback state a komponens
+függvényben, pl. Loading állapot, hogy a Next-nek időt adjunk a
+szükséges adatok betöltésére és az oldal felépítésére, ha az oldalt
+közvetlenül, erre mutató linkkel nyitjuk meg. Ha beérkeznek a szükséges
+adatok, a Next automatikusan lecseréli a fallback állapotot a felépített
+oldalra.</p>
+<p>Másik megoldás, hogy a <code>fallback: 'blocking'</code> opciót
+használjuk, és ebben az esetben az oldal csak akkor jelenik meg, ha
+készen lesz az oldal generálásával.</p>
+</div>
+</div>
+<div id="getserversideprops" class="section level3">
+<h3>getServerSideProps</h3>
+<p>Mivel a <code>getStaticProps</code> a build során fut, ezért ezzel
+nem tudunk hozzáférni a http request adataihoz. Ehhez a
+<code>getServerSideProps</code>-ot tudjuk használni, amelyben
+ténylegesen szerveroldali kódot tudunk futtatni és felhasználni a Next
+oldalaink rendereléséhez, és így ennél sem kell kliensoldali
+adatfetch-csel megoldani az adatok betöltését.</p>
+<p>A <code>getServerSideProps</code> ugyanolyan felépítésű lehet, mint a
+getStaticProps esetében, a revalidate kivételével, amely itt nem
+működik, hiszen eleve minden requestnél újrarenderelődik az oldal.</p>
+<p>Ezek az oldalak a szerveren renderelődnek. Ezt érdemes használni
+akkor is, ha az oldalunk nagyon gyakran változik, és ezért nem érdemes
+előrenderelni az oldalakat.</p>
+<p>A <code>context</code> argumentummal nemcsak a paraméterekhez
+(<code>params</code>) férünk hozzá, hanem a teljes requesthez
+(<code>req</code>) és a response (<code>res</code>) objektumhoz. Ezek
+megfelelnek a Node.js request és respose objektumainak.</p>
+<p>Ellentétben a statikus rendereléssel, itt nincs szükség a
+<code>getStaticPaths</code>-hoz hasonló megoldásra dinamikus címek
+rendereléséhez.</p>
+</div>
+<div id="kliensoldali-adatbetöltés" class="section level3">
+<h3>Kliensoldali adatbetöltés</h3>
+<p>Ennek akkor van értelme, ha az adatok olyan gyorsan változnak, hogy
+nem érdemes előrenderelni. Szintén ezt érdemes használni, ha a szükséges
+adatok kifejezetten a felhasználóhoz kötődnek (pl. legutóbbi
+rendelések). Ebben az esetben a React-ban használatos módon, pl. a
+<code>useEffect</code> hookban történik a fetch.</p>
+<p>Használhatjuk a <code>useSWR</code> hookot is, amelyet a Next
+fejlesztői írtak, és amely hasznos plusz funkciókat tartalmaz (pl.
+újrafut, ha változik az oldal fókusz állapota). Ezt külön csomagként
+tudjuk telepíteni: <code>npm install swr</code>, majd importálni tudjuk
+a hookot az swr csomagból.</p>
+<p>A <code>useSWR</code> argumentumai az url és egy default fetch-er
+függvény: pl.
+<code>(url) =&gt; fetch(url).then(data =&gt; data.json())</code>. Ebben
+a használt forráshoz szabhatjuk a fetch folyamatát, és pl.
+tranzformálhatjuk a kapott adatokat, hogy megfelelő formátumúak
+legyenek. A második argumentum opcionális? A hookreturn értéke egy
+objektum, amelyen <code>data</code> és <code>error</code> key-kkel
+elérhetők az adatok, illetve az esetleges hibák.</p>
+<p>Az adatok betöltésének statikus előrendereléses és kliensoldali
+módjai kombinálhatók. A fetch API használható a getServersidePros és
+getStaticProps függvényekben is. A fetchelt adatokat a return objektum
+részeként adhatjuk át a komponensnek a props key segítségével, és
+használhatjuk pl. kiinduló state-ként.</p>
+</div>
+</div>
+<div id="optimalizálás" class="section level2">
+<h2>Optimalizálás</h2>
+<div id="metaadatok-hozzáadása-az-oldalhoz" class="section level3">
+<h3>Metaadatok hozzáadása az oldalhoz</h3>
+<p>Ehhez a Next egy speciális komponenst tesz elérhetővé, amelyet
+importálhatunk: <code>import Head from 'next/head'</code> Ezt a
+komponensen belül bárhová tehetjük, és az ezek közé írt html elemek az
+oldal <code>&lt;head&gt;</code> részébe kerülnek.</p>
+<p>Ezen belül ugyanúgy működik a szokásos szintaxis, vagyis
+felhasználhatjuk a propokat, változókat, JS kifejezéseket, stb. Ha egy
+komponensnek többféle return értéke lehet, akkor mindegyikbe teszünk
+<code>Head</code>-et, vagy külön létrehozzuk változóként és csak
+beillesztjük az egyes helyekre.</p>
+<p>A közös metaadatokat (pl. a viewport meta-taget) az
+<code>_app.js</code> file-ban is megadhatjuk. Ezt az egyes oldalak
+Head-jeivel összemergeli, és a konfliktusokat is feloldja: a legutóbb
+megadottak veszi alapul. Ezért pl. az <code>_app.js</code>-ben is
+megadhatunk címet, amit minden olyan oldal kap, ahol nem adunk meg saját
+címet.</p>
+<p>A főkönyvtárban létre is hozhatunk egy <code>_document.js</code>
+file-t, amellyel módosíthatjuk az egész dokumentum felépítését, és nem
+csak az alkalmazás konténerét. Például megadhatjuk az oldal nyelvét,
+illetve létrehozhatunk elemeket az app konténeren kívül a body-n
+belül.</p>
+<pre><code>import Document, { Html, Head, Main, NextScript } from &#39;next/document&#39;;
+
+class MyDocument extends Document {
+  render() {
+    return (
+      &lt;Html lang=&quot;en&quot;&gt;
+        &lt;Head&gt;&lt;/Head&gt;
+        &lt;body&gt;
+          &lt;div id=&quot;overlays&quot; /&gt;
+          &lt;Main /&gt;
+          &lt;NextScript /&gt;
+        &lt;/body&gt;
+      &lt;/Html&gt;
+    );
+  }
+}
+
+export default MyDocument;</code></pre>
+</div>
+<div id="képek-optimalizálása" class="section level3">
+<h3>Képek optimalizálása</h3>
+<p>A Next tartalmaz egy Image komponenst:
+<code>import Image from 'next/image'</code> Ez elfogadja az
+<code>img</code> szokásos tulajdonságait, de ezeken túl meg kell adnunk
+egy szélességet és magasságot is pixelben, hogy mekkora képeket hozzon
+létre (css alapján ki tudjuk számítani, de próba-hiba alapján módosítani
+tudjuk, ha nem elég éles). Ezek alapján a Next új képeket hoz létre,
+amelyek optimalizáltak (beleértve a formátumot is, pl. Chrome-nál
+webp-re konvertálja a jpg-t), de úgy, hogy ne látszódjon rajtuk, és
+ezeket cache-eli. Ezen túl ezek a képek lazy módon vannak letöltve,
+vagyis csak akkor, ha látszanak.</p>
+<p>A további lehetőségek megtalálhatók a <a
+href="https://nextjs.org/docs/api-reference/next/image">hivatalos
+dokumentációban</a></p>
+</div>
+</div>
+<div id="backend-kód" class="section level2">
+<h2>Backend kód</h2>
+<p>A <code>pages</code> könyvtáron belül létrehozható egy külön
+<code>api</code> könyvtár (kötelező így nevezni), amelyben nem Next
+komponenseket exportálunk, hanem olyan függvényeket, amelyek az adott (a
+könyvtárnak és file-névnek) megfelelő url-re beérkező kéréseket és a
+küldött válaszokat kezeli. Ezért ezt a függvényt jellemzően
+<code>handler</code>-nek nevezik. Ebben a függvényben Node.js-hez és
+Express.js-hez hasonló kódot használhatunk.</p>
+<p>Az útvonalakat, hasonlóan az oldalakhoz, létrehozhatjuk a file-nevek
+segítségével, vagy a könyvtárnevekkel, amelyekben <code>index.js</code>
+file-ok kezelik az adott könyvtárnak megfelelő útvonalat.</p>
+<p>A <code>req</code> objektumon hozzáférünk például a HTTP módhoz
+(<code>req.method</code>), amely függvényében más-más kódot futtathatunk
+az adatok küldésére/fogadására. Az adatokhoz a <code>req.body</code>
+révén férhetünk hozzá.</p>
+<p>Dinamikus útvonalakat is létrehozhatunk: a file-névben a
+<code>[]</code>-et használhatjuk, a kódban pedig a
+<code>req.query</code> révén férünk hozzá a dinamikus szegmensekhez,
+amelyen a <code>[]</code>-ben megadott key segítségével érhetjük el a
+dinamikus szegmens értékét. Akárcsak az oldalaknál, az API útvonalaknál
+is használhatjuk a <code>[...slug].js</code> file-neveket, hogy több
+dinamikus szegmenst kezeljünk.</p>
+<p>A <code>res</code> objektumon megadhatjuk a státuszt
+(<code>req.status()</code>), illetve elküldhetjük az adatokat
+(<code>res.json()</code>).</p>
+<div id="api-elérése-next-oldalról" class="section level3">
+<h3>API elérése Next oldalról</h3>
+<p>Ha a saját, ugyanazon projekt keretében lekódolt API-unkat
+használjuk, akkor nem a <code>fetch()</code> API segítségével töltjük be
+az adatokat, hanem exportáljuk a Node parancsokat függvényként, és
+azokat importálva futtatjuk a <code>getStaticProps</code>-ban. A Next
+érzékeli, hogy ezeket csak a backenden futó függvényekben használjuk, és
+ezért nem lesznek részei a kliensnek kiküldött kódnak.</p>
+</div>
+</div>
+<div id="autentikáció-és-autorizáció" class="section level2">
+<h2>Autentikáció és autorizáció</h2>
+<div id="server-side-session" class="section level3">
+<h3>Server-side session</h3>
+<p>Egyedi azonosító tárolva a szerveren (pl. adatbázisban), és ugyanez
+elküldve a kliensnek, ahol szintén elmentik (jellemzően egy cookie-ban),
+és minden requesttel együtt elküldik. A kapcsolat során SSL titkosítást
+kell használni, hogy ne lehessen ellopni, és a kliensoldalon a cookie-t
+úgy kell konfigurálni, hogy csak a szerver tudja olvasni, ha a
+requesthez csatolják. Védekezni kell cross-site scripting attack
+ellen!</p>
+</div>
+<div id="authentication-token" class="section level3">
+<h3>Authentication token</h3>
+<p>Itt nincsenek mentett azonosítók, hanem a szerver hoz létre és ír alá
+olyan tokeneket, amelyeket aztán a kliensnek is elküld. Ezeket a kliens
+menti, és elküldi a requestekkel együtt. Bár a token nincs mentve, a
+szerver tudja, hogy írta alá a tokent és így ellenőrizni tudja, hogy
+valid-e a kapott token.</p>
+<p>Az SPA-k jellemzően tokenekkel dolgoznak, mert ezek általában nem
+eredményeznek requesteket, amikor új “oldalakat” nyitunk meg. Ezért a
+szerver nem lát minden új oldalnyitást. Ezen kívül a használt API-k is
+“stateless”-ek, nem mentenek információkat semmilyen kapcsolódó
+kliensről.</p>
+<p>A JSON Web Token a legjellemzőbb formája ezeknek a tokeneknek. Ezek
+használatához külön könyvtárakat használunk. Ezek három részből állnak:
+Issuer data + custom data + secret key (aláíráshoz). Ez utóbbit a kliens
+nem látja, csak a szerver ismeri. Az adatok viszont nincsenek
+titkosítva, azok kiolvashatók a tokenből, a secret viszont nem.</p>
+<p>A szerver a beérkező tokeneket ellenőrzi, hogy létrehozhatók-e ezek a
+szerver által ismert key segítségével. Ha igen, akkor hitelesnek fogadja
+el a tokent.</p>
+</div>
+<div id="a-nextauth-csomag" class="section level3">
+<h3>A NextAuth csomag</h3>
+<p>Szerver- és kliensoldalon is nyújt funkciókat, és különböző harmadik
+szolgáltatókkal is lehetővé teszi a bejelentkezést (Google, Apple,
+stb.).</p>
+</div>
+</div>
+<div id="deployment" class="section level2">
+<h2>Deployment</h2>
+<p>Kétféle lehetőség közül választhatunk: <code>standard build</code> és
+<code>full static build</code>. A standard a <code>next build</code>
+segítségével történik. Ennek eredményeképp a Next egy optimalizált
+bundle-t hoz létre és egy szerveroldali alkalmazást, amely futtatásához
+Node.js szerverre van szükség. Ettől függetlenül, az oldalak, amelyek
+esetében ez lehetséges, előre lesznek építve, de a Node.js szerver fogja
+kezelni az API útvonalakat, szerveroldali renderelést és az oldalak
+revalidációját (ha használjuk), illetve a fallback oldalak renderelését,
+ha ezt az opciót használjuk a getStaticPath-ban. Ezért az ilyen
+alkalmazásokat olyan szolgáltatónál kell deploy-olni, ahol lehetőség van
+szerveroldali kódot is deploy-olni.</p>
+<p>A statikust a <code>next export</code> segítségével futtathatjuk a
+<code>build</code> után. Ez is létrehoz egy optimalizált változatot, de
+ebben az esetben csak statikus alkalmazás jön létre (HTML, CSS és JS),
+és így nincs szükség Node.js szerverre. Ebben az esetben viszont nem
+használhatjuk a beépített Next API útvonalakat, szerveroldali
+renderelést, illetve a revalidációt.</p>
+<div id="deployment-előtt" class="section level3">
+<h3>Deployment előtt</h3>
+<ol style="list-style-type: decimal">
+<li>Metaadatok hozzáadása, kódoptimalizálás (pl. console.log-ok
+törlése), szükségtelen dependency-k eltávolítása.</li>
+<li>Környezeti változók használata: pl. adatbázis belépési adatok, API
+kulcsok, stb.</li>
+<li>Teszt build és saját gépen vagy valamilyen tesztszerveren való
+tesztelés.</li>
+<li>Deployment</li>
+</ol>
+</div>
+<div id="a-next.config.js-file" class="section level3">
+<h3>A next.config.js file</h3>
+<p>Ez egy speciális file, amelyből a <code>module.exports</code>
+segítségével exportálhatunk különböző opciókat. Ez is használható a
+környezeti változókhoz.</p>
+</div>
+<div id="a-build-során" class="section level3">
+<h3>A build során</h3>
+<p>A build során láthatjuk, melyik oldalakat milyen módon hozta létre,
+illetve azt is jelzi, ha valamelyik oldal túl nagy adatmennyiséget
+jelent: ez általában JS miatt, és sokszor a használt mások által írt
+csomagok miatt van. Ilyenkor lehet, hogy van lehetőség csak kisebb
+csomagokat, illetve a csomagoknak csak meghatározott részeit importálni,
+ami csökkenti a méretet.</p>
+<p>A build eredményeként létrejön a <code>.next</code> mappa. Ezt
+átmásolhatjuk a szerverre, lefuttathatjuk az <code>npm install</code>-t
+és az <code>npm start</code>-tal elindíthatjuk a szervert.</p>
+<p>Sok hostingot nyújtó szolgáltatás lehetővé teszi a
+Githubról/Gitlabról/Bitbucketről való deploy-olást, illetve ezeknek a
+repoknak az állandó figyelését és a változás esetén az
+újradeploy-olást.</p>
+<p>Arra figyelni kell, hogy ha adatbázist használunk, engedélyezzük a
+hozzáférést a szerverek IP címéről vagy bárhonnan.</p>
+<p>Szintén figyelni kell arra, hogy a Githubon ne legyenek elérhetők
+olyan adatok, amelyekkel visszaélhetnek, olyanok számára, akiknek
+ezekhez nem lenne szabad hozzáférniük. Ilyen esetekben a szolgáltatók
+lehetővé teszik, hogy a környezeti változókat ne a config file-ok
+részeként, hanem a szolgáltató felületein adjuk meg.</p>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

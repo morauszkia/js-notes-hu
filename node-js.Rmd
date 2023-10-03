@@ -1,0 +1,322 @@
+---
+title: "Node.js"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    toc_depth: 2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
+```
+
+A Node.js egy JavaScript futtatási környezet, amely lehetővé teszi, hogy JavaScript programokat futtassunk a böngészőn kívül, és így például egy szerveren. Ezáltal a funkciók köre a böngészőben használt JS-hez képest részben bővebb (pl. file-rendszerhez való hozzáférés), részben szűkebb (pl. DOM manipuláció, böngésző API-k).
+
+## Mi van a motorháztető alatt?
+
+Alapja a Google V8 engine-je, amely a Chrome-ban is fut, és a libuv. 
+
+A V8 motor felelős a JS kód gépi kóddá való alakításáért. A libuv egy open-source library, amely aszinkron input/outputra összpontosít, és ez teszi lehetővé az Event Loopot és a Thread poolt. Előbbi a gyors feladatok elvégzésének ütemezéséért felel, utóbbi pedig az időigényesebb feladatok elvégzéséért. Mindkettő C++ kódra támaszkodik: a libuv abban íródott, a V8 pedig C++-ban és JS-ban. A Node.js e kettőt összekötve magas szintű absztrakciót tesz lehetővé.
+
+Ezeken túl a Node.js további csomagokra is támaszkodik, különböző feladatok elvégzéséért (http-parser, c-ares, OpenSSL, zlib, stb.)
+
+### Event loop és thread pool
+
+A Node.js egyetlen szálon fut (ellentétben pl. a php-vel), ezért könnyen blokkolható a futása, és ezért ajánlatos aszinkron műveleteket használni. De ez teszi kevésbé erőforrásigényessé. 
+
+A Node futása a program indítását követően a legfelső szintű kód futtatásával indul, amelynek része a szükséges könyvtárak betöltése, a callback függvények regisztrálása, majd az Event loop elindítása. Ebben történnek az alapvető műveletek. 
+
+A Thread pool kapja az időigényes feladatokat: alapbeállításként 4 szálat futtat párhuzamosan, ami általában elég is. Ide kerül a kriptográfia, file-okkal való munka, tömörítés, DNS keresés. Ennek célja, hogy ezek ne blokkolják a kód futását.
+
+A szálak számát a `process.env.UV_THREADPOOL_SIZE = num` paranccsal változtatható.
+
+A Node.js nagyrészt callback függvények használatára épül, amelyek különböző eventek esetén élesednek. Ezek futtatása az Event loopban történik. Az időigényes feladatok is ilyen eventeket élesítenek, amikor lefutottak, és az Event loop ezeket felfogja, és élesíti a megfelelő függvényeket. 
+
+#### Műveletek sorrendje az event loopban
+
+1. Az első fázis a lejárt időzítők függvényeivel foglalkozik. A második fázis csak azután indul, ha nincs több lejárt időzítő.
+2. A második fázis az input/output eventekkel foglalkozik. 
+3. Ezt követik a setImmediate callback-ek
+4. A close eventek: pl. ha a web szerver lekapcsol
+
+De ezek mellett futnak a process.nextTick() queue és az egyéb mikrofeladatok sora, amelyek aktuális feladatai rögtön lefutnak, ahogy bármelyik fázis lezárul.
+
+A negyedik fázis után, ha maradtak még háttérben futó tevékenységek, akkor újraindul az event loop, és csak akkor áll le, ha már nem maradt feladat. Ha bejövő http requestekre hallgatunk, akkor mindig marad legalább egy futó tevékenység, ezért az event loop nem áll le. 
+
+Tippek, hogy ne blokkoljuk a futást:  
+
+Ne használjuk az fs, crypto, zlib könyvtárak függvényeinek szinkron változatait callback függvényekben. A legfelső szinten használhatók, hiszen az még az event loop előtt fut le.
+Kerüljük a komplex számításokat, legyünk óvatosak a JSON-nal nagy objektumok esetén, és kerüljük a túl komplex reguláris kifejezéseket.
+
+## A Node.js használata
+
+A Node-ot először telepíteni kell a számítógépre. Ezt követően a parancssorról futtathatóak a .js kiterjesztésű file-ok a `node filename.js` paranccsal. 
+
+A Node alapcsomag része a Node Package Manager (npm) is, amely hozzáférést biztosít a JS könyvtárakhoz. Ezzel tudunk további könyvtárakat telepíteni lokálisan (adott projekthez) vagy globálisan (a gépre, az összes projekthez).
+
+### Projekt alapok, npm scriptek
+
+Az új projektek az `npm init` paranccsal iniciálhatók, mely után számos metaadat megadható, és ez létrehozza a `package.json` file-t, amely tartalmazza ezeket, valamint az npm scripteket és a telepített könyvtárakat is.
+
+Hasznos dev dependency a `nodemon`, amely lehetővé teszi, hogy a script változása esetén automatikusan újrainduljon az alkalmazás. Ez a parancssorból csak akkor futtatható, ha globálisan telepítettük, de lokális telepítés futtatható npm script segítségével: `"start": "nodemon app.js"`.
+
+A scriptek az `npm run script-name` paranccsal futtathatók. A `start` script kiemelt, és az `npm start` paranccsal is futtatható.
+
+### Modulok telepítése
+
+Az npm révén számtalan mások által írt könyvtárhoz férhetünk hozzá, amelyeket az npm révén telepíthetünk is: lokálisan (a projekthez) simán vagy dev dependency-ként (olyan csomagok, amelyek a fejlesztéshez szükségesek, de a futáshoz nem), illetve globálisan. Lehetőség van konkrét verzió telepítésére is.
+
+```{}
+// Local dependency (project)
+npm install slugify
+npm i jwt
+
+// Dev dependency
+npm install nodemon --save-dev
+npm install typescript -D
+
+// Global dependency
+npm install express -g
+npm install typescript --global
+
+// Version
+npm install module-name@2
+npm install next@latest
+
+// From package.json
+npm install
+npm i
+
+// From tarball
+npm install ./package.tar
+npm install <tarball url>
+
+// From scope
+npm install @types/react
+```
+
+A `package.json` file tartalmazza a dependency-ket, azok verziószámaival is. Ennek révén ellenőrizhető, melyikből áll rendelkezésre frissebb változat és frissíthetők. A könyvtárakat törölhetjük is.
+
+```{}
+npm outdated
+npm update
+npm uninstall module-name
+```
+
+A frissítéseket szabályozhatjuk a verziószám elé írt karakterekkel: a `^` bármilyen minor verziót elfogad (alapbeállítás), a `~` csak patch update-eket, a `*` pedig a fő verziók közül is elfogad újabbakat (óvatosan: ezek a kód futását érinthetik)
+
+#### Yarn
+
+A `yarn` az npm alternatívája, amely egy időben jobban működött. Az alábbi parancsokat jó ismerni. 
+
+```{}
+// package.json-ból
+yarn
+
+// local
+yarn add express
+
+// devDependency
+yarn add typescript --dev
+
+// global
+yarn global add typescript
+
+// uninstall, update
+yarn remove jwt
+yarn upgrade express
+```
+
+### Import/export
+
+Akárcsak a böngészőben használt JS, a Node esetében is hasznos, hogy támaszkodhatunk mások által készített modulokra, illetve saját kódunk bizonyos részeit külön modulokban tárolhatjuk, és így többféle helyzetben használhatjuk. A Node a Common.js modulrendszerét használja, ellentétben a böngészőben futó JS-szel, amely az ES modulrendszert.
+
+A modulok importja a `require()` függvénnyel történik. Ennek return értékét egy objektumba mentjük, és így férhetünk hozzá a modulban lévő elemekhez. Jellemzően a változó neve ugyanaz lesz, mint az importált modulé.
+
+```{js}
+// Core modulok
+const fs = require('fs');
+
+// Mások moduljai telepítést követően
+const slugify = require('slugify');
+
+// Saját modulok file-ból
+const moduleName = require('./moduleName.js');
+
+```
+
+Az exportálás egy modulból a beépített `module.exports` objektum révén történik. Ehhez hozzárendelhetünk egy-egy objektumot (pl. függvényt), egy olyan objektumot, amely property-eit az exportálás során fel kívánjuk tölteni, illetve egyenként is létrehozhatjuk az objektumot a property-ket.
+
+```{js}
+module.exports = funNameToExport;
+
+module.exports = {
+  fun1: function1,
+  fun2: function2,
+  obj: obj1
+}
+
+module.exports.obj2 = { ... }
+```
+
+A modulok betöltése a megfelelő út értelmezésével kezdődik: először a `core` modulok között keres, ha az útvonal eleje `./` vagy `../`, akkor saját modult keres a megadott névvel (.js kiterjesztést nem kell írni), ha nincs, akkor pedig `index.js` file-t az adott nevű mappában, végül a `node_modules` mappában keresi a megadott nevű letöltött könyvtárat.
+Következő lépésben a modul kódját egy IIFE-be csomagolva futtatja, és így teszi számára közvetlenül elérhetővé a require függvényt, az exports objektumot, illetve a module objektum egészét. Ezt követően futtatja a modul kódját, return-öli az exportált objektumokat, és cache-eli a modult, hogy ismételt `require` esetén innen töltse be. 
+
+## File-rendszerrel való interakció
+
+A Node.js egyik hozadéka a file-rendszerrel való interakció. Ennek vannak szinkron, és ezáltal a program futását blokkoló és aszinkron, a futást nem blokkoló (és ezért preferált) változatai. 
+
+Callback függvényeken kívül, *top-level* kódban használhatók a szinkron változatok, hiszen ezek még az *event loop* indítása előtt lefutnak. Callback függvényekben viszont az aszinkron változatokat kell használni, hogy ne blokkolják a programkód futását, és ezáltal - időigényesebb feladatok esetén - ne tegyék lehetetlenné mások számára az alkalmazás használatát.
+
+```{js}
+const fs = require('fs');
+
+// Sync
+
+// fs.readFileSync(path, enc)
+const textIn = fs.readFileSync('./txt/input.txt', 'utf-8');
+
+// fs.writeFileSync(path, text)
+const textOut = `This is what we know about the avocado: ${textIn}.\nCreated on ${Date.now()}`;
+fs.writeFileSync('./txt/output.txt', textOut);
+
+// Async
+
+// fs.readFile(path, enc, function (err, data) {...})
+// fs.writeFile(path, text, enc, function (err) {...})
+
+fs.readFile('./txt/start.txt', 'utf-8', (err, data1) => {
+  if (err) return console.log('ERROR! ☹')
+
+  fs.readFile(`./txt/${data1}.txt`, 'utf-8', (err, data2) => {
+    console.log(data2);
+    fs.readFile('./txt/append.txt', 'utf-8', (err, data3) => {
+      console.log(data3);
+
+      fs.writeFile('./txt/final.txt', `${data2}\n${data3}`, 'utf-8', (err) => {
+        console.log('File written!');
+      });
+    });
+  });
+});
+```
+
+## Web server és szerveroldali renderelés
+
+A Node használatának egyik fő iránya a webszerver működtetése. A szervert a `http` modul `createServer()` függvényével hozhatjuk létre, és a létrehozott szerveren lévő `.listen` metódussal figyelhetjük a beérkező kéréseket. A listen kötelezően vár egy port számot (fejlesztés céljára tipikusan 3000, 8000, stb.), ahol elérhető a szerver, ezen kívül megadható egy IP-cím (alapértelmezett: localhost) és egy callback függvény, amelyet futtat a szerver indulásánál, amikor figyelni kezdi a beérkező kéréseket.
+
+A szervernek kapnia kell egy callback függvényt, amelyet beérkező kérés esetén (`request` event) futtat, és amely kezeli a beérkező kérésekre küldött válaszokat. Ezt többféleképpen adhatjuk meg. A szerver létrehozható a `http` modul klasszikus betöltése után a modult rejtő objektum használatával, vagy közvetlenül a betöltéssel egyidőben.
+
+```{js}
+const http = require('http');
+const server = http.createServer();
+// vagy egyidőben
+const server = require('http').createServer();
+
+// request kezelése külön
+server.on('request', (req, res) => {...})
+
+// vagy anonim függvénnyel létrehozve
+const server = http.createServer((req, res) => {...})
+
+// vagy külön létrehozott függvénnyel
+const requestHandler = (req, res) => {...}
+const server = http.createServer(requestHandler)
+
+// végül
+server.listen(3000, 127.0.0.1, () => {
+  console.log("Listening on port 3000")
+})
+```
+
+### Routing
+
+A szerver handler függvényében adhatjuk meg a logikát, amely függhet különböző feltételektől, így elsősorban attól, milyen url-t kér a böngésző, vagy attól, milyen metódus tartozik a kérelemhez. Az url és a method a request objektumon elérhető property. 
+
+```{js}
+const server = http.createServer((req, res) => {
+  if (req.url === "/") {
+    ...
+  }
+  
+  if (req.url === "/create-user" && req.method === "POST") {
+    ...
+  }
+})
+```
+
+Az url sokszor egyéb adatokat is tartalmazhat, pl. query-ket. Ilyenkor hasznos eszköz az `url` modul, amely képes az urlből kiolvasni az útvonalat és a query-ket. Ezeket pl. objektum destrukturálással változóba menthetjük.
+
+```{js}
+  const { query, pathname } = url.parse(req.url, true);
+```
+
+### Response objektum
+
+Az elküldött választ is többféleképpen konfigurálhatjuk, például megadhatunk státuszkódot (`res.status`, alapértelmezettként 200), módosíthatjuk a metaadatokat (`res.writeHead()`, a státusz ide is kerülhet), írhatunk a válaszba (`res.write()`), és lezárhatjuk, elküldhetjük a választ (`res.end()`). A html/szöveg a res.end paramétereként is megadható, ezt követően viszont már további adatot nem írhatunk a válaszba.
+
+```{js}
+res.status = 200;   // OK
+res.status = 404;   // Not found
+res.writeHead(200, {
+  'Content-type': 'text/html'
+})
+res.writeHead(200, {
+  'Content-type': 'application/json'
+})
+res.write('<h1>Welcome from the Server!</h1>')
+res.end();
+```
+
+### Form adatok kezelése bufferrel 
+
+Ha egy honlapon web kérdőívet használunk, és az adatokat elküldjük, a request objektum `data` eseményt élesít, illetve ha már az összes adat megérkezett, `end` eseményt. Ezeket is kezelni tudjuk.
+
+```{js}
+...
+if (url === '/create-user' && method === 'POST') {
+    const body = [];
+    req.on('data', (chunk) => {
+      body.push(chunk);
+    });
+    return req.on('end', () => {
+      const parsedBody = Buffer.concat(body).toString();
+      const userName = parsedBody.split('=')[1];
+      console.log(userName);
+      res.statusCode = 302;
+      res.setHeader('Location', '/');
+      return res.end();
+    });
+  }
+...
+```
+
+### Templating
+
+Szerveroldali renderelésnél html sablonokkal dolgozunk sokszor. A html file-ban elhelyezünk helykitöltőket, amelyeket a JS-tel programatikusan lecserélünk a megfelelő adatokra. Ezek szerepelhetnek a tagek között, de a tagek attribútumait, illetve az elemek osztályait is megadhatjuk így dinamikusan. 
+Ilyen helykitöltő lehet pl. `{%NAME%}`. Ezeket aztán regurális kifejezések vagy a `.replace_all` metódus segítségével lecserélhetjük.
+
+## EventEmitter
+
+A Node.js működése eventekhez, és ezek hatására futtatott függvényekhez kötődik. A legtöbb tevékenység ilyen eventet élesít: pl. request, data, end, stb. eventeket. Ezek a beépített EventEmitter osztály instanicái. Lehetőség van custom eventek manuális élesítésére is, ilyenkor az adott event bármi lehet (pl. új eladás), amelyet bizonyos feltétek mellett a JS program élesít, és ezeket felfoghatjuk az `.on` metódussal. Az `.emit` metódus további argumentumokat is kaphat, amelyeket a callback függvényben használhatunk.
+
+```{js}
+const EventEmitter = require('events');
+
+const myEmitter = new EventEmitter();
+
+myEmitter.emit("newSale")
+myEmitter.emit("newSale", "book", 1, 12.99)
+
+myEmitter.on("newSale", (product, quantity, price) => {...})
+```
+
+## Streamelés
+
+Nagyobb adatmennyiséget célszerű nem egészben beolvasni, hanem streamelni. A streameknek többféle változata van Node.js-ben: vannak olvasható, írható, duplex és átalakító (olyan duplex, amely módosítja, pl. tömöríti az adatokat) streamek.
+
+Olvasható streamek a request objektumok, és létrehozhatók pl. a 'fs' modullal, a file-ok olvasására: `const readable = fs.createReadStream(path)`. Ezek az EventEmitter osztály instanciái, amelyek pl. `data`, `end` és `error` eventeket élesítenek, amelyek felfoghatók a létrehozott stream objektumon az `.on` metódussal. A `data` event akkor élesedik, ha egy új adatrészlet (chunk) be lett olvasva. Ezt a callback függvényben továbbíthatjuk egy írható streambe, optimálisan a `.pipe` metódussal: `readale.pipe(writeable)`.
+
+Írható stream például a response objektum is, illetve az 'fs' modulban is létrehozhatók ilyenek streamelt file-ok írására. Duplex stream például a net modul web socketjei.

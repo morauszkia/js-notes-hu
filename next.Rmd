@@ -1,0 +1,254 @@
+---
+title: "Next"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    toc_depth: 2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+A Next egy Reactra épülő framework, amely fő előnyei a szerveroldali renderelés, a file-alapú routing, illetve a fullstack jellege.
+
+## File-alapú routing
+
+Ahelyett, hogy a kódban kellene megadnunk a különböző útvonalakat, hagyjuk, hogy a Next kikövetkeztesse a `pages` mappa struktúrájából. Ha létrehozunk egy file-t adott névvel, akkor azt az azonos útvonalhoz fogja megnyitni: pl. egy `about.js` file-t, amelyben egy React komponenst definiálunk, akkor a `/about` url ezt fogja renderelni.
+
+Ha a file neve `index.js`, ezt rendereli a `/` útvonal esetén.
+
+A file-okat létrehozhatjuk könyvtárakban is: pl. a `about` könyvtárban létrehozott `index.js` az `/` útvonal esetén fog megjelenni, az `info.js` pedig az `about/info` útvonalnál.
+
+
+Dinamikus oldalneveket is támogat: ebben az esetben az oldalnév `[id].js` formájú, ahol az `id` bármi lehet, ami még nem foglalt, és ezt a komponenst fogja renderelni. Az `id` hozzáférhető a `useRouter` hook segítségével. Ez egy router objektumot ad, amelyen különböző property-k érhetők el:
+
+- a `pathname` az útvonalat: pl. `.../projects/[id]`
+- a `query` egy objektumot, amelyen elérhető az `id` property, amelynek értéke maga az id érték.
+
+Maguk a könyvtárak is lehetnek dinamikus nevűek: pl. `[clientId]`. A beágyazódó oldalakon a router az összes dinamikus szegmenshez hozzáférést biztosít a query property segítségével.
+
+Előfordul, hogy egy komponenst többféle útvonal esetén is renderelni szeretnénk: pl. szeretnénk kilistázni az összes adott évben vagy adott év adott hónapjában megjelent blogbejegyzést: a `/2022` esetén az összes 2022-est, a `/2022/10` esetén csak az októberieket. Ilyenkor a dinamikus részt a következőképpen írhatjuk: `[...slug].js`, és ilyenkor a query objektum slug property-jének értéke egy array lesz az összes szegmenssel külön-külön, amit felhasználhatunk pl. szűrésre, vagy adatbázis hívásra.
+
+```{}
+import { useRouter } from 'next/router';
+
+const ProjectPage = () => {
+  const router = useRouter();
+  
+  const projectId = router.query.id;
+  
+  return ...
+}
+
+
+```
+
+### Navigálás a Link komponenssel
+
+A navigáláshoz a hagyományos `<a>` tagek helyett a `Link` elementet használjuk, amely amellett, hogy nem küld új http kérést a szervernek, és így nem törli a state-et, még különböző speciális propokat is fogadhat: pl. a `replace` segítségével úgy navigálhatunk át, hogy az új url a történetben felváltja a régit, és így nem oda tudunk visszalépni.
+
+Ugyanígy dinamikus útvonalakra is navigálhatunk, és a linkeket programatikusan is generálhatjuk, pl. a `.map` metódussal, és a href értékeket template literallal is létrehozhatjuk, de megadhatunk objektumot is, amelyben pl. megadhatjuk a `pathname` propertyt, pl. `/clients/[id]` és a `query` property-t, amelynek értéke a query objektum, és ezen létrehozzuk az `id` property-t és ennek adjuk a megfelelő értéket. 
+
+Mindehhez a hagyományos React szintaxist használhatjuk.
+
+### Programatikus navigálás
+
+Időnként nem linkkel, hanem programmatikusan akarunk navigálni, pl. ha valamilyen folyamat lefutott.
+
+Ehhez is a `router` objektumot használhatjuk, amely `push` vagy `replace` metódusaival lecserélhetjük az url-t. Ebben az esetben is stringként vagy objektumként is megadhatjuk az útvonalat.
+
+### 404 oldal
+
+A root könyvtárban létrehozhatunk egy `404.js` file-t, amelyet akkor renderel, ha 404 hibát kapunk, mert olyan oldalt próbálunk megnyitni, amely nem létezik.
+
+### A public mappa
+
+Ez is egy speciális mappa, ide tehetjük a statikus tartalmakat, mert a Next ezeket is elérhetővé teszi a weboldal látogatóinak.
+
+## Szerveroldali és statikus renderelés
+
+A Next másik kulcsfunkciója, hogy képes a React által működtetett weboldalakat, alkalmazásokat előrenderelni, ami SEO szempontból is előnyös, és az oldalak betöltését is gyorsítja. Ez az alapértelmezett viselkedése is: ellentétben a React-tal, a HTML vázat elküldi a böngészőnek, és nem csak a JavaScript kódot, amely feltölti az egyébként üres HTML-t (Reacttal a root div-et küldi csak) 
+
+### getStaticProps
+
+Ha a Next oldal komponensből exportáljuk a `getStaticProps` async függvényt, akkor még a renderelés előtt tudunk adatokat lekérni, és az oldalt már ezekkel létrehozni. A Next a build során először ezt a függvényt futtatja, majd a komponenst úgy rendereli, hogy felhasználja hozzá a függvény által visszaadott objektum props property-jét.
+
+Ezért a függvénynek mindig egy objektum kell, hogy a return értéke legyen, amelyben van egy props property. Ezt töltjük fel a szükséges propokkal, amelyeket az oldal komponensnek szeretnénk továbbítani.
+
+```{}
+function PageName(props) {
+  return ...
+}
+
+export async function getStaticProps() {
+  return {
+    props: {
+      products: [...]
+    },
+  };
+};
+
+```
+
+A getStaticProps-ba írt kódot nem kapja meg a kliens böngészője, ezért olyan kódot is beleírhatunk, amelyben például adatbázis hozzáférési adatokat adunk meg.
+
+Ebben a függvényben futtathatjuk az adatok fetch-elését is, vagy hozzáférhetünk a file rendszerhez, vagy bármilyen, cska a backenden működő kódot is futtathatunk. Pl. importálhatjuk a Node.js `fs` vagy `fs/promises` modulját, és használhatjuk a getStaticProps-on belül, vagy használhatjuk a `process` objektumot. A csak ebben használt importokat a Next kiszűri a kliensoldalnak továbbított kódból. 
+
+A build során a Next jelzi, melyik oldalt hogyan hozta létre.
+
+A build során az átadott adatokat JSON formátumban hozzáadja a HTML-hez egy script tagben.
+
+A fenti megoldás nem végleges, ha a felhasznált adatok gyakran változnak. Ilyenkor az egyik megoldás, hogy a getStaticProps mellett hagyományos React módon is kezeljük az adatok betöltését (pl. useEffect), egy másik lehetőség pedig, hogy a getStaticProps a props property mellett a `revalidate` property-t is tartalmazza, amelynek értéke másodpercben megadja, hány másodperc után renderelje újra az oldalt egy beérkező http kérésnél. Vagyis, ha a kérés az előző után a megadott időtartamon belül érkezik, a korábban renderelt oldalt szolgálja ki, de ha később, akkor újrarendereli, az újat szolgálja ki, és a szerveren is cseréli a file-okat.
+
+További key, amit megadhatunk, a `notFound`, ami ha `true`, akkor a 404-es oldalt fogja renderelni. Ez használható arra, hogy bizonyos feltételek esetén ezt rendereltessük (pl. ha a fetch sikertelen volt)
+A másik a `redirect`, amely szintén hasznos lehet, ha valami nem sikerült.
+
+#### Dinamikus paraméterek
+
+A getStaticProps kaphat egy argumentumot: általában `context` nevet adnak neki, és ezen elérhetők különböző információk, így például a `params` property, amelyen elérhetők a megadott dinamikus szegmentek key-value párokként.
+
+A dinamikus című oldalakat viszont nem előrendereli alapértelmezettként, mivel a Next.js nem tudja, mely értékekre kell létrehoznia az oldalakat. Ezeket mindig éppen időben rendereli alapértelmezett esetben. Ha azonban a getStaticProps-szal jelezzük, hogy szeretnénk előrenderelni, akkor egy másik függvénnyel jelezni kell, mely útvonalakhoz.
+
+A `getStaticPaths` async függvényt is exportálni kell az oldal file-jában: ez is egy objektumot ad, `paths` key-vel, amely értéke egy array olyan objektumokkal, amelyek jelzik, milyen dinamikus szegmensekhez kell előrenderelni: pl. `{ params: { pid: 'p1' } }`, stb. Ezt dinamikusan is meghetetjük, valamilyen adatforrás alapján.
+
+Emellett meg kell rajta adni a `fallback` key-t. Ez arra szolgál, hogy ha sok az előgenerálandó oldal, akkor nem érdemes mindet előrenderelni. Ha ezt `true`-ra állítjuk, megtehetjük, hogy nem az összes oldalt készítjük el előre, csak a legnépszerűbbeket. Ilyenkor csak ezeket listázzuk, a többit pedig `just in time` rendereli. Ilyenkor, ha olyan oldalat próbálnak elérni, amelyhez nincsenek adatok, használhatjuk a `notFound` key-t a getStaticProps-ban, és ezekben az esetekben a 404-es oldalt rendereltetjük.
+
+Ha minden oldalt előrenderelünk, `false` értéket is adhatunk a `fallback` key-nek.
+
+Ha így építjük fel az oldalt, akkor az oldalak betöltésekor a böngésző előfetch-cseli a linkelt és előrenderelt oldalakhoz szükséges adatokat, és így azok nem igényelnek egy új http requestet, hanem a már betöltött adatokból építi fel az oldal JavaScript kódja. 
+
+Ha azonban nem minden lehetséges oldalt készíttetünk elő előre, akkor a többi oldal esetében kell valamilyen fallback state a komponens függvényben, pl. Loading állapot, hogy a Next-nek időt adjunk a szükséges adatok betöltésére és az oldal felépítésére, ha az oldalt közvetlenül, erre mutató linkkel nyitjuk meg. Ha beérkeznek a szükséges adatok, a Next automatikusan lecseréli a fallback állapotot a felépített oldalra. 
+
+Másik megoldás, hogy a `fallback: 'blocking'` opciót használjuk, és ebben az esetben az oldal csak akkor jelenik meg, ha készen lesz az oldal generálásával.
+
+### getServerSideProps
+
+Mivel a `getStaticProps` a build során fut, ezért ezzel nem tudunk hozzáférni a http request adataihoz. Ehhez a `getServerSideProps`-ot tudjuk használni, amelyben ténylegesen szerveroldali kódot tudunk futtatni és felhasználni a Next oldalaink rendereléséhez, és így ennél sem kell kliensoldali adatfetch-csel megoldani az adatok betöltését.
+
+A `getServerSideProps` ugyanolyan felépítésű lehet, mint a getStaticProps esetében, a revalidate kivételével, amely itt nem működik, hiszen eleve minden requestnél újrarenderelődik az oldal.
+
+Ezek az oldalak a szerveren renderelődnek. Ezt érdemes használni akkor is, ha az oldalunk nagyon gyakran változik, és ezért nem érdemes előrenderelni az oldalakat.
+
+A `context` argumentummal nemcsak a paraméterekhez (`params`) férünk hozzá, hanem a teljes requesthez (`req`) és a response (`res`) objektumhoz. Ezek megfelelnek a Node.js request és respose objektumainak.
+
+Ellentétben a statikus rendereléssel, itt nincs szükség a `getStaticPaths`-hoz hasonló megoldásra dinamikus címek rendereléséhez. 
+
+### Kliensoldali adatbetöltés
+
+Ennek akkor van értelme, ha az adatok olyan gyorsan változnak, hogy nem érdemes előrenderelni. Szintén ezt érdemes használni, ha a szükséges adatok kifejezetten a felhasználóhoz kötődnek (pl. legutóbbi rendelések). Ebben az esetben a React-ban használatos módon, pl. a `useEffect` hookban történik a fetch.
+
+Használhatjuk a `useSWR` hookot is, amelyet a Next fejlesztői írtak, és amely hasznos plusz funkciókat tartalmaz (pl. újrafut, ha változik az oldal fókusz állapota). Ezt külön csomagként tudjuk telepíteni: `npm install swr`, majd importálni tudjuk a hookot az swr csomagból. 
+
+A `useSWR` argumentumai az url és egy default fetch-er függvény: pl. `(url) => fetch(url).then(data => data.json())`. Ebben a használt forráshoz szabhatjuk a fetch folyamatát, és pl. tranzformálhatjuk a kapott adatokat, hogy megfelelő formátumúak legyenek. A második argumentum opcionális? A hookreturn értéke egy objektum, amelyen `data` és `error` key-kkel elérhetők az adatok, illetve az esetleges hibák.
+
+Az adatok betöltésének statikus előrendereléses és kliensoldali módjai kombinálhatók. A fetch API használható a getServersidePros és getStaticProps függvényekben is. A fetchelt adatokat a return objektum részeként adhatjuk át a komponensnek a props key segítségével, és használhatjuk pl. kiinduló state-ként.
+
+## Optimalizálás
+
+### Metaadatok hozzáadása az oldalhoz
+
+Ehhez a Next egy speciális komponenst tesz elérhetővé, amelyet importálhatunk: `import Head from 'next/head'`
+Ezt a komponensen belül bárhová tehetjük, és az ezek közé írt html elemek az oldal `<head>` részébe kerülnek.
+
+Ezen belül ugyanúgy működik a szokásos szintaxis, vagyis felhasználhatjuk a propokat, változókat, JS kifejezéseket, stb. Ha egy komponensnek többféle return értéke lehet, akkor mindegyikbe teszünk `Head`-et, vagy külön létrehozzuk változóként és csak beillesztjük az egyes helyekre.
+
+A közös metaadatokat (pl. a viewport meta-taget) az `_app.js` file-ban is megadhatjuk. Ezt az egyes oldalak Head-jeivel összemergeli, és a konfliktusokat is feloldja: a legutóbb megadottak veszi alapul. Ezért pl. az `_app.js`-ben is megadhatunk címet, amit minden olyan oldal kap, ahol nem adunk meg saját címet.
+
+A főkönyvtárban létre is hozhatunk egy `_document.js` file-t, amellyel módosíthatjuk az egész dokumentum felépítését, és nem csak az alkalmazás konténerét. Például megadhatjuk az oldal nyelvét, illetve létrehozhatunk elemeket az app konténeren kívül a body-n belül.
+
+```{}
+import Document, { Html, Head, Main, NextScript } from 'next/document';
+
+class MyDocument extends Document {
+  render() {
+    return (
+      <Html lang="en">
+        <Head></Head>
+        <body>
+          <div id="overlays" />
+          <Main />
+          <NextScript />
+        </body>
+      </Html>
+    );
+  }
+}
+
+export default MyDocument;
+```
+
+### Képek optimalizálása
+
+A Next tartalmaz egy Image komponenst: `import Image from 'next/image'`
+Ez elfogadja az `img` szokásos tulajdonságait, de ezeken túl meg kell adnunk egy szélességet és magasságot is pixelben, hogy mekkora képeket hozzon létre (css alapján ki tudjuk számítani, de próba-hiba alapján módosítani tudjuk, ha nem elég éles). Ezek alapján a Next új képeket hoz létre, amelyek optimalizáltak (beleértve a formátumot is, pl. Chrome-nál webp-re konvertálja a jpg-t), de úgy, hogy ne látszódjon rajtuk, és ezeket cache-eli. Ezen túl ezek a képek lazy módon vannak letöltve, vagyis csak akkor, ha látszanak.
+
+A további lehetőségek megtalálhatók a [hivatalos dokumentációban](https://nextjs.org/docs/api-reference/next/image)
+
+## Backend kód
+
+A `pages` könyvtáron belül létrehozható egy külön `api` könyvtár (kötelező így nevezni), amelyben nem Next komponenseket exportálunk, hanem olyan függvényeket, amelyek az adott (a könyvtárnak és file-névnek) megfelelő url-re beérkező kéréseket és a küldött válaszokat kezeli. Ezért ezt a függvényt jellemzően `handler`-nek nevezik. Ebben a függvényben Node.js-hez és Express.js-hez hasonló kódot használhatunk.
+
+Az útvonalakat, hasonlóan az oldalakhoz, létrehozhatjuk a file-nevek segítségével, vagy a könyvtárnevekkel, amelyekben `index.js` file-ok kezelik az adott könyvtárnak megfelelő útvonalat.
+
+A `req` objektumon hozzáférünk például a HTTP módhoz (`req.method`), amely függvényében más-más kódot futtathatunk az adatok küldésére/fogadására. Az adatokhoz a `req.body` révén férhetünk hozzá.
+
+Dinamikus útvonalakat is létrehozhatunk: a file-névben a `[]`-et használhatjuk, a kódban pedig a `req.query` révén férünk hozzá a dinamikus szegmensekhez, amelyen a `[]`-ben megadott key segítségével érhetjük el a dinamikus szegmens értékét. Akárcsak az oldalaknál, az API útvonalaknál is használhatjuk a `[...slug].js` file-neveket, hogy több dinamikus szegmenst kezeljünk. 
+
+A `res` objektumon megadhatjuk a státuszt (`req.status()`), illetve elküldhetjük az adatokat (`res.json()`).
+
+### API elérése Next oldalról
+
+Ha a saját, ugyanazon projekt keretében lekódolt API-unkat használjuk, akkor nem a `fetch()` API segítségével töltjük be az adatokat, hanem exportáljuk a Node parancsokat függvényként, és azokat importálva futtatjuk a `getStaticProps`-ban. A Next érzékeli, hogy ezeket csak a backenden futó függvényekben használjuk, és ezért nem lesznek részei a kliensnek kiküldött kódnak.
+
+## Autentikáció és autorizáció
+
+### Server-side session
+
+Egyedi azonosító tárolva a szerveren (pl. adatbázisban), és ugyanez elküldve a kliensnek, ahol szintén elmentik (jellemzően egy cookie-ban), és minden requesttel együtt elküldik. A kapcsolat során SSL titkosítást kell használni, hogy ne lehessen ellopni, és a kliensoldalon a cookie-t úgy kell konfigurálni, hogy csak a szerver tudja olvasni, ha a requesthez csatolják. Védekezni kell cross-site scripting attack ellen!
+
+### Authentication token
+
+Itt nincsenek mentett azonosítók, hanem a szerver hoz létre és ír alá olyan tokeneket, amelyeket aztán a kliensnek is elküld. Ezeket a kliens menti, és elküldi a requestekkel együtt. Bár a token nincs mentve, a szerver tudja, hogy írta alá a tokent és így ellenőrizni tudja, hogy valid-e a kapott token.
+
+Az SPA-k jellemzően tokenekkel dolgoznak, mert ezek általában nem eredményeznek requesteket, amikor új "oldalakat" nyitunk meg. Ezért a szerver nem lát minden új oldalnyitást. Ezen kívül a használt API-k is "stateless"-ek, nem mentenek információkat semmilyen kapcsolódó kliensről. 
+
+A JSON Web Token a legjellemzőbb formája ezeknek a tokeneknek. Ezek használatához külön könyvtárakat használunk. Ezek három részből állnak: Issuer data + custom data + secret key (aláíráshoz). Ez utóbbit a kliens nem látja, csak a szerver ismeri. Az adatok viszont nincsenek titkosítva, azok kiolvashatók a tokenből, a secret viszont nem.
+
+A szerver a beérkező tokeneket ellenőrzi, hogy létrehozhatók-e ezek a szerver által ismert key segítségével. Ha igen, akkor hitelesnek fogadja el a tokent.
+
+### A NextAuth csomag
+
+Szerver- és kliensoldalon is nyújt funkciókat, és különböző harmadik szolgáltatókkal is lehetővé teszi a bejelentkezést (Google, Apple, stb.).
+
+## Deployment
+
+Kétféle lehetőség közül választhatunk: `standard build` és `full static build`.
+A standard a `next build` segítségével történik. Ennek eredményeképp a Next egy optimalizált bundle-t hoz létre és egy szerveroldali alkalmazást, amely futtatásához Node.js szerverre van szükség. Ettől függetlenül, az oldalak, amelyek esetében ez lehetséges, előre lesznek építve, de a Node.js szerver fogja kezelni az API útvonalakat, szerveroldali renderelést és az oldalak revalidációját (ha használjuk), illetve a fallback oldalak renderelését, ha ezt az opciót használjuk a getStaticPath-ban. Ezért az ilyen alkalmazásokat olyan szolgáltatónál kell deploy-olni, ahol lehetőség van szerveroldali kódot is deploy-olni.
+
+A statikust a `next export` segítségével futtathatjuk a `build` után. Ez is létrehoz egy optimalizált változatot, de ebben az esetben csak statikus alkalmazás jön létre (HTML, CSS és JS), és így nincs szükség Node.js szerverre. Ebben az esetben viszont nem használhatjuk a beépített Next API útvonalakat, szerveroldali renderelést, illetve a revalidációt.
+
+### Deployment előtt
+
+1. Metaadatok hozzáadása, kódoptimalizálás (pl. console.log-ok törlése), szükségtelen dependency-k eltávolítása.
+2. Környezeti változók használata: pl. adatbázis belépési adatok, API kulcsok, stb.
+3. Teszt build és saját gépen vagy valamilyen tesztszerveren való tesztelés.
+4. Deployment
+
+### A next.config.js file
+
+Ez egy speciális file, amelyből a `module.exports` segítségével exportálhatunk különböző opciókat. Ez is használható a környezeti változókhoz.
+
+### A build során
+
+A build során láthatjuk, melyik oldalakat milyen módon hozta létre, illetve azt is jelzi, ha valamelyik oldal túl nagy adatmennyiséget jelent: ez általában JS miatt, és sokszor a használt mások által írt csomagok miatt van. Ilyenkor lehet, hogy van lehetőség csak kisebb csomagokat, illetve a csomagoknak csak meghatározott részeit importálni, ami csökkenti a méretet.
+
+A build eredményeként létrejön a `.next` mappa. Ezt átmásolhatjuk a szerverre, lefuttathatjuk az `npm install`-t és az `npm start`-tal elindíthatjuk a szervert.
+
+Sok hostingot nyújtó szolgáltatás lehetővé teszi a Githubról/Gitlabról/Bitbucketről való deploy-olást, illetve ezeknek a repoknak az állandó figyelését és a változás esetén az újradeploy-olást.
+
+Arra figyelni kell, hogy ha adatbázist használunk, engedélyezzük a hozzáférést a szerverek IP címéről vagy bárhonnan. 
+
+Szintén figyelni kell arra, hogy a Githubon ne legyenek elérhetők olyan adatok, amelyekkel visszaélhetnek, olyanok számára, akiknek ezekhez nem lenne szabad hozzáférniük. Ilyen esetekben a szolgáltatók lehetővé teszik, hogy a környezeti változókat ne a config file-ok részeként, hanem a szolgáltató felületein adjuk meg.

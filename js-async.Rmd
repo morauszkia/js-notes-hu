@@ -1,0 +1,199 @@
+---
+title: "Asynchronous JavaScript"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    toc_depth: 2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
+```
+
+Az eddigiekben olyan JS kódról volt csak szó, amely azonnal lefut: az egyes parancssorok egymás után. Vannak azonban esetek, amikor az adott parancs futása későbbi időpontban történik. Ennek legegyszerűbb esete az időzítés, de ugyanez történik, ha egy parancs teljesüléséhez valamely API által szolgáltatott adatokra van szükség.
+
+Ilyenkor a szinkron JS kód tovább fut, és az aszinkron kódot ezután futtatja, így ezek eredménye is csak később férhető hozzá, de így nem akad meg a program többi részének futtatása.
+
+## Időzítések
+
+Az aszinkron JavaScript legalapvetőbb formáit az időzített műveletek jelentik.
+
+A `setTimeout(callback, ms, ...args)` függvény az argumentumként megadott callback függvény végrehajtását a megadott ideig késlelteti. A `setInterval(callback, ms, ...args)` függvény pedig megadott időközönként addig futtatja a megadott függvényt, míg nem töröljük. Az első futás csak a megadott idő után történik, ezért, ha rögtön futtatni akarjuk, érdemes a callback függvényt változóba mentés után előbb hívni, majd utána indítani az időzítést.
+
+A törlés a `clearTimeout(timerVarname)` és `clearInterval(timerVarname)` függvényekkel történik.
+
+*Megjegyzés: Kompatibilitási okokból jobb lehet a paraméteres függvényeket anonim függvényként megadni.*
+
+```{js}
+const timer = setTimeout(switchMode, 2000);
+clearTimeout(timer);
+const clock = setInterval(increase, 1000);
+clearInterval(clock)
+
+const timer = setTimeout(function(){ callback(...parameters) })
+```
+
+## Http Request
+
+Az aszinkron JS kód másik jellemző formája, ha webes API-n keresztül kérünk adatokat. Ezeket manapság jellemzően JSON (JavaScript Object Notation) formájában kapjuk, amely hasonlít a JS objektumok szintaxisára, de nem teljesen azonos.
+
+### Old-school: XMLHttpRequest
+
+Ez az Http requestek régi módja, amelyet ma már ritkán használnak.
+Lépések: új HMLHttpRequest() objektum, amely rendelkezik `.open()` metódussal. Ennek paraméterei a request típusa (pl. 'GET'), illetve az url. A konfigurálás után a `.send()` metódussal küldhető el, és event listenerrel nyerhető ki az eredmény ('load' eventet élesít).
+
+```{js}
+const getCountryAndNeighbour = function (country) {
+  // AJAX call country1
+  const request = new XMLHttpRequest();
+  request.open('GET', `https://restcountries.eu/rest/v2/name/${country}`);
+  request.send();
+
+  request.addEventListener('load', function () {
+    const [data] = JSON.parse(this.responseText);
+
+    // Render country 1: insert data into html template
+    renderCountry(data);
+
+    // Get neighbour country
+    const neighbours = data.borders;
+    // console.log(neighbours);
+
+    if (!neighbours) return;
+
+    // AJAX call country 2
+    neighbours.forEach(neighbour => {
+      const request2 = new XMLHttpRequest();
+      request2.open(
+        'GET',
+        `https://restcountries.eu/rest/v2/alpha/${neighbour}`
+      );
+      request2.send();
+
+      request2.addEventListener('load', function () {
+        const data2 = JSON.parse(this.responseText);
+
+        renderCountry(data2, 'neighbour');
+      });
+    });
+  });
+};
+
+getCountryAndNeighbour('slovakia');
+```
+
+### fetch API
+
+Az http requestek modernebb módja a fetch használata. A `fetch` függvény két argumentumot fogad el: egy urlt és egy opciók objektumot (nem kötelező), amelyben például megadhatjuk az http request metódusát (GET, POST, PUT, stb.), a továbbítandó adatokat, és más dolgokat, az API követelményeitől függően. A return értéke egy promise, amely ha teljesül, egy response objektumot eredményez. Ezzel elsősorban a GET requestek esetében szeretnénk tovább dolgozni.
+
+```{js}
+fetch('http://example.com/movies.json')
+  .then(response => response.json())
+  .then(data => console.log(data))
+  
+fetch(
+  'https://react-sw-movie-app-default-rtdb.firebaseio.com/cart.json',
+  {
+    method: 'PUT',
+    body: JSON.stringify(cart),
+  }
+);
+```
+
+## Ígéretek (Promise)
+
+Az aszinkron műveletek megértéséhez kulcsfontosságú az ígéretek megértése. Ezek helyettesítő értékek, amíg megérkeznek az adatok, pl. egy http kérésből. Három állapotuk van: `pending`, `resolved/fulfilled`, `rejected`. Utóbbi kettő összevonva a `settled` állapot.
+
+Ilyen ígéretet ad a fetch, illetve a Response objektumhoz kapcsolódó `.json` metódus. A fetch és json return értéke a success érték.
+
+### Ígéretek kezelése metódusokkal
+
+Az ígéret kifutásától függően különböző dolgokat tehetünk az eredménnyel.
+
+A `.then` metódus, amely minden ígéreten használható siker esetén teszi lehetővé a return érték kezelését. Láncolható. Ehhez a callback függvény return értéke új ígéret kell, hogy legyen (return-nel).
+A `.catch` metódus az elutasított ígéret értékéhez fér hozzá.
+A `.finally` metódus a legvégéhez adható, és minden esetben lefut, függetlenül az ígéretek kimenetelétől.
+
+#### Hibák
+
+Időnként szükséges, hogy manuálisan hozzuk létre a hibát. Pl. A fetch nem mindent kezel hibaként, alapesetként csak azt, ha nincs internetkapcsolat. Egyébként minden más nem megfelelő eredményt manuálisan kell kezelni, és új hiba objektumot létrehozni. Ezt aztán felfogja a lánc végén lévő catch.
+
+```{js}
+throw new Error(errorMsg)
+```
+
+### Async/await
+
+A hagyományos ígéret-kezelés mellé az ES2017-tel bekerült az async/await is. Ennek módja, hogy az aszinkron műveletet végrehajtó függvényt aszinkronná tesszük az `async` kulcsszóval, majd az aszinkron művelet elé az `await` kulcsszót írva, immár változóba menthetjük az ígéret eredményét (siker esetén). Ahhoz, hogy egy függvényben az `await`-et használjuk, aszinkron függvényként kell definiálnunk.
+
+A hibákat úgy kezelhetjük, hogy az egészet `try...catch` blokkokba tesszük.
+
+```{js}
+const sendRequest = async () => {
+      const response = await fetch(
+        'https://react-sw-movie-app-default-rtdb.firebaseio.com/cart.json',
+        {
+          method: 'PUT',
+          body: JSON.stringify(cart),
+        }
+      );
+
+      if (!response.ok) throw new Error('Sending cart data failed.');
+    };
+```
+
+Async függvény bármelyik módon deklarálható, és IIFE is lehet aszinkron:
+
+```{js}
+async function funName() {}
+const funName = async function() {}
+const funName = async () => {}
+
+(async function() {})()
+```
+
+Az IIFE praktikus lehet, ha a felső szintű kódban aszinkron művelet eredményéhez akarunk hozzáférni, és nem szeretnénk ehhez a `.then`-t használni. Ezen belül try/catch-csel kezelhetjük a hibákat.
+
+### Manuálisan létrehozott ígéretek
+
+```{js}
+const myPromise = new Promise(function(resolve, reject) {
+  if (condition) {
+    resolve('')
+  } else {
+    reject('')
+    // Vagy
+    // throw new Error(message)
+  }
+})
+
+
+
+```
+
+A Promise constructor argumentuma egy függvény, amelyet futtat. Pl. ebbe kerülhet az a függvény, amelyet futtatni akarunk (pl. Node.js-ben readFile). A függvény eredménye a feltételek teljesülésétől függően a resolve vagy a reject, amely mindkettő return értéket kap argumentumként (pl. üzenet, objektum, stb.). Ha a resolve feltétele teljesül, akkor az ígéret teljesül, ha nem, akkor elutasítódik 
+
+A teljesült ígéret return értékéhez a szokásos módon, a `.then`-nel, az elutasított ígéret értékéhez a `.catch`-csel férhetünk hozzá, vagy az async/await révén.
+
+Lehetőség van úgy létrehozni az ígéretet, hogy rögtön teljesüljön / elvetődjön:
+
+```{js}
+Promise.resolve(returnValue).then()
+Promise.reject(returnValue.then())
+```
+
+### Ígéretek kombinálása
+
+A Promise constructoron megadott statikus metódusok révén lehetséges az ígéretek kombinálása.
+
+```{js}
+// ES2015+
+Promise.all(arrOfPromises)        // ha egy reject, az egész reject (rövidzárlat)
+Promise.race(arrOfPromises)       // ha egyik lefut, rövidre zár (akár resolve, akár reject)
+// ES2020+
+Promise.allSettled(arrOfPromises) // arrayt ad az összes lefutott ígérettel, nem zár rövidre
+// ES2021+
+Promise.any(arrOfPromises)        // az első sikeres ígéretet (csak resolve) adja, rövidre zár
+```

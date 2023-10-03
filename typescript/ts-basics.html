@@ -1,0 +1,1709 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Typescript alapok</title>
+
+<script src="site_libs/header-attrs-2.24/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/readable.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    background-color: #ffffff;
+    color: #a0a0a0;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #a0a0a0;  padding-left: 4px; }
+div.sourceCode
+  { color: #1f1c1b; background-color: #ffffff; }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span { color: #1f1c1b; } /* Normal */
+code span.al { color: #bf0303; background-color: #f7e6e6; font-weight: bold; } /* Alert */
+code span.an { color: #ca60ca; } /* Annotation */
+code span.at { color: #0057ae; } /* Attribute */
+code span.bn { color: #b08000; } /* BaseN */
+code span.bu { color: #644a9b; font-weight: bold; } /* BuiltIn */
+code span.cf { color: #1f1c1b; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #924c9d; } /* Char */
+code span.cn { color: #aa5500; } /* Constant */
+code span.co { color: #898887; } /* Comment */
+code span.cv { color: #0095ff; } /* CommentVar */
+code span.do { color: #607880; } /* Documentation */
+code span.dt { color: #0057ae; } /* DataType */
+code span.dv { color: #b08000; } /* DecVal */
+code span.er { color: #bf0303; text-decoration: underline; } /* Error */
+code span.ex { color: #0095ff; font-weight: bold; } /* Extension */
+code span.fl { color: #b08000; } /* Float */
+code span.fu { color: #644a9b; } /* Function */
+code span.im { color: #ff5500; } /* Import */
+code span.in { color: #b08000; } /* Information */
+code span.kw { color: #1f1c1b; font-weight: bold; } /* Keyword */
+code span.op { color: #1f1c1b; } /* Operator */
+code span.ot { color: #006e28; } /* Other */
+code span.pp { color: #006e28; } /* Preprocessor */
+code span.re { color: #0057ae; background-color: #e0e9f8; } /* RegionMarker */
+code span.sc { color: #3daee9; } /* SpecialChar */
+code span.ss { color: #ff5500; } /* SpecialString */
+code span.st { color: #bf0303; } /* String */
+code span.va { color: #0057ae; } /* Variable */
+code span.vs { color: #bf0303; } /* VerbatimString */
+code span.wa { color: #bf0303; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Programozás jegyzeteim</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Vanilla JS
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="vanilla/js-variables.html">JavaScript alapok</a>
+    </li>
+    <li>
+      <a href="vanilla/js-program-flow.html">Program Flow Control</a>
+    </li>
+    <li>
+      <a href="vanilla/js-functions.html">Függvények</a>
+    </li>
+    <li>
+      <a href="vanilla/js-data-structures.html">Adatstruktúrák</a>
+    </li>
+    <li>
+      <a href="vanilla/js-array-methods.html">Haladó Array műveletek</a>
+    </li>
+    <li>
+      <a href="vanilla/js-dom-manipulation.html">DOM manipuláció</a>
+    </li>
+    <li>
+      <a href="vanilla/js-strings.html">Stringek</a>
+    </li>
+    <li>
+      <a href="vanilla/js-numbers-dates.html">Számok és dátumok</a>
+    </li>
+    <li>
+      <a href="vanilla/js-regex.html">Reguláris kifejezések</a>
+    </li>
+    <li>
+      <a href="vanilla/js-async.html">Asynchronous JavaScript</a>
+    </li>
+    <li>
+      <a href="vanilla/js-oop.html">OOP</a>
+    </li>
+    <li>
+      <a href="vanilla/js-dev-practice.html">JavaScript Development a gyakorlatban</a>
+    </li>
+    <li>
+      <a href="vanilla/js-api.html">Hasznos API-k</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Typescript
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="ts-basics.html">TypeScript basics</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Front-End JS Libraries&amp;Frameworks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="front-end/jquery-basics.html">jQuery</a>
+    </li>
+    <li>
+      <a href="front-end/react-basics.html">React</a>
+    </li>
+    <li>
+      <a href="front-end/redux-basics.html">Redux</a>
+    </li>
+    <li>
+      <a href="front-end/next.html">Next</a>
+    </li>
+    <li>
+      <a href="front-end/vue-basics.html">Vue.js</a>
+    </li>
+    <li>
+      <a href="front-end/angular.html">Angular</a>
+    </li>
+    <li>
+      <a href="front-end/svelte.html">Svelte</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Back-End JS
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="back-end/node-js.html">Node.js</a>
+    </li>
+    <li>
+      <a href="back-end/express-js.html">Express.js</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Miscellaneous
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="misc/js-libraries.html">JS libraries</a>
+    </li>
+    <li>
+      <a href="misc/js-testing.html">JS Testing</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Typescript alapok</h1>
+
+</div>
+
+
+<p>A TypeScript a JavaScriptre épülő programnyelv, amely a JS-tel
+ellentétben típusrendszert használ, és nem teszi lehetővé, hogy egy
+bizonyos típusú változót más típusú értékhez rendeljünk. Az első
+hozzárendelésnél a TS rögzíti a változó típusát, és később, ha más
+típusú változóval szeretnénk felülírni, jelzi a hibát.</p>
+<p>A TS programfile-ok <code>.ts</code> kiterjesztésűek. A TS-tel együtt
+járó <code>transcompiler</code> ezeket <code>.js</code> file-okká
+alakítja. A transcompiler a parancssorból a <code>tsc</code> paranccsal
+indítható. Futtatáskor jelzi a hibákat, ezzel elősegítve, hogy
+elkerüljük a program futása alatti hibákat, amelyek például abból
+erednek, hogy az adott változótípuson nem létező metódust hívunk.</p>
+<p>A fordítás Babellel is történhet.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="kw">let</span> myNum <span class="op">=</span> <span class="dv">42</span><span class="op">;</span>  <span class="co">// szám lesz</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>myNum <span class="op">=</span> <span class="st">&quot;thirteen&quot;</span><span class="op">;</span>  <span class="co">// hibát jelez</span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="kw">let</span> myString <span class="op">=</span> <span class="st">&quot;Hello, World!&quot;</span><span class="op">;</span> <span class="co">// string lesz</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="kw">let</span> myBool <span class="op">=</span> <span class="kw">true</span><span class="op">;</span>  <span class="co">// boolean</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="kw">let</span> emptyVar<span class="op">;</span>   <span class="co">// any típusú lesz</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>emptyVar <span class="op">=</span> <span class="fl">5.2</span><span class="op">;</span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>emptyVar <span class="op">=</span> <span class="st">&quot;Hasta la vista, baby!&quot;</span>    <span class="co">// nem jelez hibát</span></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="kw">let</span> mustBeNum<span class="op">:</span> numeric<span class="op">;</span>   <span class="co">// típusdeklaráció</span></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>mutBeNum <span class="op">=</span> <span class="st">&quot;whatever&quot;</span>     <span class="co">// hibát jelez</span></span></code></pre></div>
+<div id="fő-típusok" class="section level2">
+<h2>Fő típusok</h2>
+<p>A TypeScript legalapvetőbb típusai megegyeznek a JS alaptípusaival
+is:</p>
+<p><code>number</code>: bármilyen egész vagy tizedes szám
+<code>string</code>: rövidebb/hosszabb szövegek <code>boolean</code>:
+igen/nem (<code>true</code> vagy <code>false</code>) logikai értékek</p>
+<p>A változók típusát egyértelműen megadhatjuk deklarációnál, vagy
+például függvény paramétereknél is megadhatjuk, milyen típust várunk. Ha
+változót értékkel inicializálunk, akkor a TS megpróbálja felismerni,
+milyen típusú, és ezentúl nem adhatunk meg más típust az adott változó
+értékeként.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode ts"><code class="sourceCode typescript"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="kw">let</span> num<span class="op">:</span> <span class="dt">number</span><span class="op">;</span> <span class="co">// type assignment</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="kw">const</span> num2 <span class="op">=</span> <span class="dv">5</span><span class="op">;</span> <span class="co">// type  inference</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="kw">const</span> num3<span class="op">:</span> <span class="dt">number</span> <span class="op">=</span> <span class="dv">5</span>  <span class="co">// nem szükséges, de lehetséges</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="kw">const</span> add <span class="op">=</span> <span class="kw">function</span>(num1<span class="op">:</span> <span class="dt">number</span><span class="op">,</span> num2<span class="op">:</span> <span class="dt">number</span>) {</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>  <span class="cf">return</span> n1 <span class="op">+</span> n2<span class="op">;</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>}</span></code></pre></div>
+<p>A megadott típusok nem feltétlenül jelennek meg bármilyen formán a
+kompilált JS kódban, de a fejlesztés során segítenek a typescriptnek és
+az IDE-nek, és például hibaüzenetet kapunk az IDE-től, ha nem megfelelő
+típusú értéket készülünk a változónak adni.</p>
+<div id="objektumok-típusai" class="section level3">
+<h3>Objektumok típusai</h3>
+<p>Objektumok esetén megadható, hogy milyen property-jei lehetnek, és
+azok milyen típusúak lehetnek. Az objektum egyik értéke is lehet másik
+objektum, amelynek típusait szintén megadhatjuk. Array esetén megadható,
+milyen típusú adatokat tartalmazhat.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode ts"><code class="sourceCode typescript"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="kw">const</span> person1<span class="op">:</span> {</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  name<span class="op">:</span> <span class="dt">string</span><span class="op">,</span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  age<span class="op">:</span> <span class="dt">number</span><span class="op">,</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  friends<span class="op">:</span> <span class="dt">string</span>[]<span class="op">,</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>  spouse<span class="op">:</span> {</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>    name<span class="op">:</span> <span class="dt">string</span><span class="op">,</span></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>    age<span class="op">:</span> <span class="dt">number</span></span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>  }</span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>}</span></code></pre></div>
+<p>Objektum típusok megadhatók a <code>Record&lt;Keys, Values&gt;</code>
+formában is, ahol a property nevek Keys típusúak lehetnek csak, értékeik
+pedig Values típusúak, és a Key-k lehetséges értékeit megadhatjuk union
+típusként vagy enumként (ld. később).</p>
+<p>Csak a TS-ben fellelhető objektum a Tuple, amely fix elemű array, és
+rögzíthető, az egyes elemek milyen típusúak lehetnek. Ezek esetében az
+automatikus felismerés nem tudja eltalálni, hanem pl. union típust
+rendel hozzá (ld. később)</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode ts"><code class="sourceCode typescript"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="kw">let</span> tuple1<span class="op">:</span> [<span class="dt">number</span><span class="op">,</span> <span class="dt">string</span>] </span></code></pre></div>
+</div>
+<div id="enum" class="section level3">
+<h3>Enum</h3>
+<p>Vannak esetek, amikor azt szeretnénk, hogy egy változó meghatározott
+értékeket vehessen fel. Vannak numerikus és string enumok is.</p>
+<p>Numerikus esetben, ha nem adjuk meg az értékeket, automatikusan 0-tól
+kezdi számozni az egyes eseteket. Ha megadjuk néhány enum értékét, a meg
+nem adottak az utolsó megadottól kezdődően egyesével növekednek.</p>
+<p>String enumoknál minden értéket meg kell adnunk.</p>
+<p>Az értékek lehetnek számítottak is, ebben az esetben viszont a később
+megadottaknak meg kell adnunk értéket, vagy a számítottaknak kell a
+végére kerülniük.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode ts"><code class="sourceCode typescript"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="kw">enum</span> Direction {</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  Up<span class="op">,</span>     <span class="co">// 0</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  Down<span class="op">,</span>   <span class="co">// 1</span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>  Left<span class="op">,</span>   <span class="co">// 2</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>  Right   <span class="co">// 3</span></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>}</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a><span class="kw">enum</span> Direction2 {</span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>  Up <span class="op">=</span> <span class="dv">1</span><span class="op">,</span></span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>  Down<span class="op">,</span>   <span class="co">// 2</span></span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>  Left<span class="op">,</span>   <span class="co">// 3</span></span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>  Right   <span class="co">// 4</span></span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a>}</span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a></span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a><span class="kw">enum</span> PokemonType {</span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a>  FIRE <span class="op">=</span> <span class="st">&quot;fire&quot;</span><span class="op">,</span></span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a>  WATER <span class="op">=</span> <span class="st">&quot;water&quot;</span><span class="op">,</span></span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a>  POISON <span class="op">=</span> <span class="st">&quot;poison&quot;</span><span class="op">,</span></span>
+<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a>  GRASS <span class="op">=</span> <span class="st">&quot;grass&quot;</span><span class="op">,</span></span>
+<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a>  MISC <span class="op">=</span> <span class="st">&quot;miscellaneous&quot;</span><span class="op">,</span></span>
+<span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a>}</span></code></pre></div>
+<p>Az így deklarált enumok objektumokként jönnek létre a kompilált JS
+kódban. Ha viszont <code>const enum {}</code> formában deklaráljuk,
+akkor nem jön létre objektum, hanem a JS kódban a megadott értéket
+veszik fel a változók.</p>
+<p>A deklarálást követően objektumként használhatjuk az enumot TS-ben,
+és rajta property-kként elérhetőek az egyes lehetőségek, ami csökkenti a
+hibázás lehetőségét, és autocomplete segítséget is kapunk.</p>
+</div>
+<div id="any-és-unknown-típus" class="section level3">
+<h3>any és unknown típus</h3>
+<p>Ha akarjuk, megadhatjuk, hogy egy változó bármilyen típusú lehet, de
+ebben az esetben elveszítjuk a TS használatából eredő előnyöket, hiszen
+a TS nem tud segíteni, hogy ne kövessünk el valami hibát a változó
+értékeinek megadásánál.</p>
+<p>Ennél egy fokkal szigorúbb az <code>unknown</code> típus, amely
+szintén azt jelenti, hogy nem tudjuk, milyen típusú lesz a változó, de
+ezt már nem tudjuk olyan egyszerűen például másik, meghatározott típusú
+változóhoz rendelni, csak a típus ellenőrzése után.</p>
+</div>
+<div id="union-típusok" class="section level3">
+<h3>union típusok</h3>
+<p>Két vagy több típusból létrehozhatunk egy speciális
+<code>union</code> típust a <code>|</code> operátor segítségével. Ezzel
+azt jelezzük a TypeScriptnek, hogy a változó a megadott típusok
+valamelyike lehet. Ez kombinálható az objektum-típusokkal is, így
+például megadható egy array, amely string és number típusú változókat
+tartalmazhat: <code>(string | number)[]</code>.</p>
+</div>
+<div id="literal-típusok" class="section level3">
+<h3>literal típusok</h3>
+<p>Ha const-tal hozunk létre literális változót (string, number,
+boolean), akkor annak típusa nem egyszerűen number vagy string, stb.
+lesz, hanem maga az érték lesz a típusa, amely az adott általános típus
+speciális esetének számít type-checking szempontjából.</p>
+<p>Ha egy változó csak bizonyos értékeket vehet fel, akkor enum helyett
+literal típusok unionját is használhatjuk.</p>
+</div>
+<div id="alias-és-custom-típusok" class="section level3">
+<h3>alias és custom típusok</h3>
+<p>Ha valamilyen komplexebb típusdeklarációt többször is használunk,
+ezeket elnevezhetjük, és így tulajdonképpen saját típusokat hozhatunk
+létre.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode ts"><code class="sourceCode typescript"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="kw">type</span> Pokemon <span class="op">=</span> {</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>  name<span class="op">:</span> <span class="dt">string</span><span class="op">,</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  types<span class="op">:</span> PokemonType[]<span class="op">,</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+<div id="függvények" class="section level3">
+<h3>Függvények</h3>
+<p>Megadható, milyen típusú eredményt ad a függvény. A TS ezt is ki
+tudja találni, ha egyértelmű, vagy megadható, és a TS figyelmeztet, ha a
+program alapján a TS úgy gondolja, mégsem olyan lesz az eredmény.</p>
+<p>Ha a függvénynek nincs return értéke, akkor <code>void</code> típusú
+lesz, hiába <code>undefined</code> a return érték ilyenkor, és ez létező
+TS típus, ezt nem fogadja el return típusként, csak voidot.</p>
+<p>Ezen kívül, ha a függvény soha nem ad return értéket, mert pl. olyan
+utility függvényről van szó, amely custom hibát dob, a return típusa
+<code>never</code> is lehet.</p>
+<p>A <code>Function</code> maga is egy típus TS-ben, amely használható,
+hogy a változó csak függvényt kaphasson értékként. Ez részletezhető
+is:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode ts"><code class="sourceCode typescript"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co">// (parameterTypes) =&gt; returnType;</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="kw">let</span> combineValues<span class="op">:</span> (a<span class="op">:</span> <span class="dt">number</span><span class="op">,</span> b<span class="op">:</span> <span class="dt">number</span>) <span class="kw">=&gt;</span> <span class="dt">number</span><span class="op">;</span></span></code></pre></div>
+<p>Ezzel megadhatjuk azt is, pl. milyen típusú callback függvényeket
+fogadhatunk el egy függvény paramétereként.</p>
+<p>A függvény argumentuma lehet objektum is, és megadhatjuk, milyen
+property-kkel kell rendelkeznie, és azoknak milyen típusúakna kell
+lenniük. Ebben az esetben, ha a függvénynek object literalt adunk
+paraméterként, akkor az szigorúan a megadott formátumú kell, hogy
+legyen, nem tartalmazhat további mezőket. Ha viszont egy változót adunk,
+amely egy olyan objektum, amely tartalmazza a szükséges property-ket, és
+megfelelő típusú értéket vesznek fel, ez az objektum további mezőket is
+tartalmazhat, amelyek nem szükségesek a függvényhez.</p>
+</div>
+</div>
+<div id="interface-ek" class="section level2">
+<h2>Interface-ek</h2>
+<p>Az <code>interface</code> egy objektum struktúráját írja le, de nem
+hoz létre “tervrajzot” objektumokhoz, hanem csak saját típust.
+Megadhatjuk, milyen típusú property-k és metódusok lesznek az
+objektumokon, de nem adhatunk meg értékeket.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode ts"><code class="sourceCode typescript"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="kw">interface</span> Person {</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>  name<span class="op">:</span> <span class="dt">string</span><span class="op">;</span></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  age<span class="op">:</span> <span class="dt">number</span><span class="op">;</span></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>  </span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>  <span class="fu">greet</span>(phrase<span class="op">:</span> <span class="dt">string</span>)<span class="op">:</span> <span class="dt">void</span><span class="op">;</span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>}</span></code></pre></div>
+<p>Az interfészeket type checkinghez használhatjuk. A custom típusoktól
+eltérnek abban, hogy csak objektumokat hozhatunk létre vele, union
+típusokhoz, és egyebekhez nem használható.</p>
+<p>A metódusokat kétféle szintaxissal is megadhatjuk:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode ts"><code class="sourceCode typescript"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="kw">interface</span> Person {</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>  <span class="co">// ...</span></span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>  </span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>  greet<span class="op">:</span> (phrase<span class="op">:</span> <span class="dt">string</span>) <span class="kw">=&gt;</span> <span class="dt">void</span><span class="op">;</span></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>}</span></code></pre></div>
+<p>Az interface-ek abban is különböznek a type alias-októl, hogy
+“újranyithatók”, tehát kiegészíthetők. Ez hasznos lehet pl. másoktól
+származó interface-ek importálása után.</p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="kw">interface</span> Person {</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>  name<span class="op">:</span> <span class="dt">string</span><span class="op">;</span></span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>}</span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a><span class="kw">interface</span> Person {</span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a>  age<span class="op">:</span> <span class="dt">number</span><span class="op">;</span></span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a>}</span></code></pre></div>
+<div id="interface-ek-implementálása" class="section level3">
+<h3>Interface-ek implementálása</h3>
+<p>Az interfészek jól használhatók osztályokhoz: pl. ez alapján
+létrehozhatunk több osztályt is, amelyeknek kell, hogy legyenek a
+megadott property-jei és metódusai.</p>
+<p>Ezt az <code>implements</code> kulcsszóval jelezhetjük a TS-nek.
+Ellentétben az öröklődéssel, egy osztály több interface-et is
+implementálhat (ezeket vesszővel elválasztva sorolhatjuk fel). Az
+osztályban viszont több property-t és metódust is megadhatunk.</p>
+<p>Hasonlítanak az absztrakt osztályokra, és ezekkel is
+kikényszeríthetjük, hogy az ezeket implementáló osztályokban deklarálva
+legyenek bizonyos dolgok, de utóbbiakban lehetnek konkrét implementációk
+is, nem csak abstract metódusok és property-k, amelyeket az örökösökben
+kell deklarálnunk, az interface-ekben viszont csak a szükséges
+property-k és metódusok típusait adjuk meg. Az interface-ben viszont
+megadhatjuk, milyen típusúaknak kell lenniük ezeknek a metódusoknak.</p>
+<p>Az instancia típusa nem csak az osztálynak felel meg, hanem az
+interface-nek is, annak ellenére, hogy a struktúrája lehet bővebb is.
+Ezáltal egy érték több osztály instanciája is lehet, ha azok mind egy
+bizonyos interface-t implementálnak (pl. Greetable interface és Person
+osztály)</p>
+<p>Az interface-ekben az osztályok modifierjei közül a
+<code>readonly</code> használható (custom típusokban is). Ezután ezt már
+nem kell megtenni az osztályban, elég az interface-ben, és a TS
+figyelmeztet, ha nem eszerint járunk el.</p>
+</div>
+<div id="öröklődés" class="section level3">
+<h3>Öröklődés</h3>
+<p>Az interface-ek is tudnak egymásra építeni az <code>extends</code>
+kulcsszóval. Ellentétben az osztályokkal, az interface-ek több
+interface-t is kibővíthetnek.</p>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="kw">interface</span> Named {</span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>  <span class="kw">readonly</span> name<span class="op">:</span> <span class="dt">string</span><span class="op">;</span></span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>}</span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a></span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a><span class="kw">interface</span> Greetable <span class="kw">extends</span> Named {</span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a>  <span class="fu">greet</span>(phrase<span class="op">:</span> <span class="dt">string</span>)<span class="op">:</span> <span class="dt">void</span><span class="op">;</span></span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a>}</span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a></span>
+<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a><span class="kw">interface</span> Engineer <span class="kw">extends</span> Person<span class="op">,</span> Employee {</span>
+<span id="cb11-10"><a href="#cb11-10" tabindex="-1"></a>  <span class="co">// ...</span></span>
+<span id="cb11-11"><a href="#cb11-11" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+<div id="interface-függvénytípusok" class="section level3">
+<h3>Interface függvénytípusok</h3>
+<p>Mivel a függvények is objektumok, interface-et is használhatunk a
+típusuk deklarálására, ami a <code>type</code> deklaráció
+alternatívája.</p>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="kw">interface</span> AddFn {</span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>  (a<span class="op">:</span> <span class="dt">number</span><span class="op">,</span> b<span class="op">:</span> <span class="dt">number</span>)<span class="op">:</span> <span class="dt">number</span><span class="op">;</span></span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+<div id="opcionális-property-k-és-paraméterek" class="section level3">
+<h3>Opcionális property-k és paraméterek</h3>
+<p>Osztályokban és interface-ekben is opcionálissá tehetünk
+property-ket, ha a nevük után, a kettőspont elé kérdőjelet írunk. Ezt
+kezelni kell a constructorban is, ha releváns.</p>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="kw">interface</span> Greetable {</span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>  name<span class="op">?:</span> <span class="dt">string</span><span class="op">,</span></span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>  <span class="fu">greet</span>(phrase<span class="op">:</span> <span class="dt">string</span>)<span class="op">:</span> <span class="dt">void</span><span class="op">;</span></span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a>}</span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a></span>
+<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a><span class="kw">class</span> Person <span class="kw">implements</span> Greetable {</span>
+<span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a>  name<span class="op">?:</span> <span class="dt">string</span><span class="op">,</span></span>
+<span id="cb13-8"><a href="#cb13-8" tabindex="-1"></a>  age <span class="op">=</span> <span class="dv">30</span><span class="op">;</span></span>
+<span id="cb13-9"><a href="#cb13-9" tabindex="-1"></a>  </span>
+<span id="cb13-10"><a href="#cb13-10" tabindex="-1"></a>  <span class="kw">constructor</span>(n<span class="op">?:</span> <span class="dt">string</span>) {</span>
+<span id="cb13-11"><a href="#cb13-11" tabindex="-1"></a>    <span class="cf">if</span> (n) {</span>
+<span id="cb13-12"><a href="#cb13-12" tabindex="-1"></a>      <span class="kw">this</span><span class="op">.</span><span class="at">name</span> <span class="op">=</span> n<span class="op">;</span></span>
+<span id="cb13-13"><a href="#cb13-13" tabindex="-1"></a>    }</span>
+<span id="cb13-14"><a href="#cb13-14" tabindex="-1"></a>  }</span>
+<span id="cb13-15"><a href="#cb13-15" tabindex="-1"></a>  <span class="co">// ...</span></span>
+<span id="cb13-16"><a href="#cb13-16" tabindex="-1"></a>}</span></code></pre></div>
+<p>Ugyanígy megadhatjuk, hogy egy paraméter egy függvényben opcionális
+(ld. a constructor-nál)</p>
+</div>
+</div>
+<div id="haladó-típusok" class="section level2">
+<h2>Haladó típusok</h2>
+<div id="intersection-type" class="section level3">
+<h3>Intersection type</h3>
+<p>Az <code>&amp;</code> segítségével kombinálhatunk két objektum
+típust: az eredmény az összes property-t tartalmazni fogja. Ezt
+elérhetjük interface inheritance segítségével is.</p>
+<p>Union típusok esetén az intersection type csak azokat a típusokat
+fogja tartalmazni, amelyek midkettőben jelen voltak: a megadottak
+metszetét kapjuk.</p>
+</div>
+<div id="type-guard" class="section level3">
+<h3>Type guard</h3>
+<p>Union típusok esetén előfordulhat, hogy egy függvény valamelyik
+típussal jól működik, a másikkal nem. Ilyenkor explicit módon
+ellenőrizni kell a változó típusát a <code>typeof</code> segítségével,
+és bizonyos esetekben kezelni kell a problémát.</p>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="kw">type</span> Combinable <span class="op">=</span> <span class="dt">string</span> <span class="op">|</span> <span class="dt">number</span><span class="op">;</span></span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a><span class="kw">const</span> add <span class="op">=</span> (a<span class="op">:</span> Combinable<span class="op">,</span> b<span class="op">:</span> Combinable) {</span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a>  <span class="cf">if</span> (<span class="kw">typeof</span> a <span class="op">===</span> <span class="st">&quot;string&quot;</span> <span class="op">||</span> <span class="kw">typeof</span> b <span class="op">===</span> <span class="st">&quot;string&quot;</span>) {</span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a>    <span class="cf">return</span> a<span class="op">.</span><span class="fu">toString</span>() <span class="op">+</span> b<span class="op">.</span><span class="fu">toString</span>()<span class="op">;</span></span>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a>  }</span>
+<span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a>  <span class="cf">return</span> a <span class="op">+</span> b<span class="op">;</span></span>
+<span id="cb14-8"><a href="#cb14-8" tabindex="-1"></a>}</span></code></pre></div>
+<p>Custom type-oknál ez nem működik ebben a formában: pl. két
+objektumtípus unionjánál nem tudható, hogy egy bizonyos property
+létezik-e az objektumon, ha az union nem minden elemén létezik.</p>
+<p>Ebben az esetben az <code>if ("privileges" in emp)</code> módon
+ellenőrizhetjük, létezik-e a property az adott objektumon, és bizonyos
+parancsokat csak akkor futtatunk.</p>
+<p>Class-oknál az <code>if (vehicle instanceof Truck)</code> type
+guardot is használhatjuk. Interface-eknél ez nem működik.</p>
+</div>
+<div id="discriminated-union" class="section level3">
+<h3>Discriminated Union</h3>
+<p>Segíti a type guardokat objekt típusok esetén. Tegyük fel, hogy két
+interface hasonló property-ket tartalmaz (pl. flyingSpeed és
+runningSpeed).</p>
+<p>Ehhez az interface-nek adunk egy property-t, amelynek literal type
+értéket adunk: pl. ‘bird’ vagy ‘horse’. Ekkor a függvényben
+használhatunk switch statementet, hogy megvizsgáljuk, milyen típusú az
+objektum.</p>
+<p>Az teszi discriminated unionná a típusok unionját, hogy közös
+property-jük van. Ez objektum típusoknál is működik.</p>
+</div>
+<div id="type-casting" class="section level3">
+<h3>Type casting</h3>
+<p>Ha a TS nem tudja megállapítani, egy bizonyos érték milyen típusú,
+közölhetjük vele. Pl. ha id alapján választunk ki DOM elemeket, a TS nem
+tudhatja, milyen típusú elemről van szó.</p>
+<p>Két szintaxissal tehetjük ezt meg: az objektumot adó kifejezés elé
+közvetlenül beírhatjuk <code>&lt; &gt;</code> közé:
+<code>&lt;HTMLInputElement&gt;document.getElementById('user-input')</code>.
+Ez viszont a Reactban a JSX-ben is használt szintaxis, ezért van más
+megoldás is.</p>
+<p>A másik megoldás, hogy a kifejezés után adjuk meg:
+<code>document.getElementById('user-input') as HTMLInputElement</code>.</p>
+<p>Ha a TS nem tudja, hogy egy kifejezés soha nem lesz
+<code>null</code>, <code>!</code> segítségével tudathatjuk, hogy biztos
+nem lesz null.</p>
+<p>Megtehetjük azt is, hogy a kódban teszteljük, létezik-e az adott
+érték: <code>if (userInputElement)</code>, ebben az esetben viszont a
+type castingot ezután kell megtennünk.</p>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="cf">if</span> (userInputElement) {</span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>  (userInputElement <span class="im">as</span> <span class="bu">HTMLInputElement</span>)<span class="op">.</span><span class="at">value</span> <span class="op">=</span> <span class="st">&quot;Hi there!&quot;</span></span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a>}</span></code></pre></div>
+<p>A zárójellel elérjük, hogy előbb megtörténjen a type casting, majd
+ezután a kapott értéken már elérhető a value property, és a TS nem
+panaszkodik.</p>
+</div>
+<div id="index-property" class="section level3">
+<h3>Index property</h3>
+<p>Vannak esetek, amikor nem tudjuk, milyen nevű property-t akarunk
+létrehozni az objektumon, mégis szeretnénk egy interface-t használni.
+Ekkor megadhatjuk a következő módon:</p>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="kw">interface</span> ErrorContainer {</span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a>  [prop<span class="op">:</span> <span class="dt">string</span>]<span class="op">:</span> <span class="dt">string</span></span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a>}</span></code></pre></div>
+<p>Ezzel jelezzük, hogy a property neve string lehet (pl. email,
+username), és az értéke is string (pl. a hibaüzenet) lesz.</p>
+<p>A megadott index property-ból akárhányat fogadhat az ennek mintájára
+létrejött objektum.</p>
+<p>Ha ezt használjuk viszont, minden property-nek ugyanolyan típusúnak
+kell lennie, mint az index property.</p>
+</div>
+<div id="function-overload" class="section level3">
+<h3>Function overload</h3>
+<p>A függvényekhez, amelyeknél a TS nem tudja jól kitalálni a kapott
+értéket (mert pl. a paraméterektől fügően többféle lehet), megadhatjuk
+az eseteket közvetlenül a függvény deklarálása előtt:</p>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="kw">function</span> <span class="fu">add</span>(a<span class="op">:</span> <span class="dt">number</span><span class="op">,</span> b<span class="op">:</span><span class="dt">number</span>)<span class="op">:</span> <span class="dt">number</span><span class="op">;</span></span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a><span class="kw">function</span> <span class="fu">add</span>(a<span class="op">:</span> <span class="dt">string</span><span class="op">,</span> b<span class="op">:</span> <span class="dt">string</span>)<span class="op">:</span> <span class="dt">string</span><span class="op">;</span></span>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a><span class="co">// ...</span></span>
+<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a><span class="kw">function</span> <span class="fu">add</span>(a<span class="op">:</span> Combinable<span class="op">,</span> b<span class="op">:</span> Combinable) {</span>
+<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a>  <span class="cf">if</span> (<span class="kw">typeof</span> a <span class="op">===</span> <span class="st">&quot;string&quot;</span> <span class="op">||</span> <span class="kw">typeof</span> b <span class="op">===</span> <span class="st">&quot;string&quot;</span>) {</span>
+<span id="cb17-6"><a href="#cb17-6" tabindex="-1"></a>    <span class="cf">return</span> a<span class="op">.</span><span class="fu">toString</span>() <span class="op">+</span> b<span class="op">.</span><span class="fu">toString</span>()<span class="op">;</span></span>
+<span id="cb17-7"><a href="#cb17-7" tabindex="-1"></a>  }</span>
+<span id="cb17-8"><a href="#cb17-8" tabindex="-1"></a>  <span class="cf">return</span> a <span class="op">+</span> b<span class="op">;</span></span>
+<span id="cb17-9"><a href="#cb17-9" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+<div id="optional-chaining" class="section level3">
+<h3>Optional chaining</h3>
+<p>Ha nem lehetünk biztosak benne, hogy pl. egy API-tól kapott
+objektumon léteznek-e bizonyos property-k, használhatjuk:
+<code>console.log(fetchedUser?.job?.title)</code> ha létezik a
+fetchedUser, megnézi, létezik-e job, és ha igen, akkor annak van-e title
+property-je. Nem dob hibát, ha nem létezik.</p>
+</div>
+<div id="nullish-coalescing" class="section level3">
+<h3>Nullish coalescing</h3>
+<p><code>||</code> helyett <code>??</code> csak a null vagy undefined
+értékeket kezeli hamisként, az üres stringet és a nullát nem.</p>
+</div>
+</div>
+<div id="class-ok-a-ts-ben" class="section level2">
+<h2>Class-ok a TS-ben</h2>
+<p>metódusoknak megadhatjuk a <code>this</code>-t argumentumként (ld.
+describe metódus), amelyet nem kell kötelezően paraméterként megadni a
+hívás során, de jelezzük, hogy a metódus olyan objektumon hívható, amely
+adott Class típusú:</p>
+<div class="sourceCode" id="cb18"><pre
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="kw">class</span> Department {</span>
+<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a>  name<span class="op">:</span> <span class="dt">string</span><span class="op">;</span></span>
+<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a>  <span class="kw">private</span> employees<span class="op">:</span> <span class="dt">string</span>[] <span class="op">=</span> []<span class="op">;</span></span>
+<span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a>  </span>
+<span id="cb18-5"><a href="#cb18-5" tabindex="-1"></a>  <span class="kw">constructor</span>(n<span class="op">:</span> <span class="dt">string</span>) {</span>
+<span id="cb18-6"><a href="#cb18-6" tabindex="-1"></a>    <span class="kw">this</span><span class="op">.</span><span class="at">name</span> <span class="op">=</span> n<span class="op">;</span></span>
+<span id="cb18-7"><a href="#cb18-7" tabindex="-1"></a>  }</span>
+<span id="cb18-8"><a href="#cb18-8" tabindex="-1"></a>  </span>
+<span id="cb18-9"><a href="#cb18-9" tabindex="-1"></a>  <span class="fu">describe</span>(<span class="kw">this</span><span class="op">:</span> Department) {</span>
+<span id="cb18-10"><a href="#cb18-10" tabindex="-1"></a>    <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="vs">`Department: </span><span class="sc">${</span><span class="kw">this</span><span class="op">.</span><span class="at">name</span><span class="sc">}</span><span class="vs">`</span>)</span>
+<span id="cb18-11"><a href="#cb18-11" tabindex="-1"></a>  }</span>
+<span id="cb18-12"><a href="#cb18-12" tabindex="-1"></a>  </span>
+<span id="cb18-13"><a href="#cb18-13" tabindex="-1"></a>  <span class="fu">addEmployee</span>(employee<span class="op">:</span> <span class="dt">string</span>) {</span>
+<span id="cb18-14"><a href="#cb18-14" tabindex="-1"></a>    <span class="kw">this</span><span class="op">.</span><span class="at">employees</span><span class="op">.</span><span class="fu">push</span>(employee)</span>
+<span id="cb18-15"><a href="#cb18-15" tabindex="-1"></a>  }</span>
+<span id="cb18-16"><a href="#cb18-16" tabindex="-1"></a>}</span></code></pre></div>
+<p>Ez azért fontos, mert a metódusokat át tudjuk másolni más
+objektumokra, amelyek nem az adott Class instanciái. Ha a fenti lépést
+megtesszük, a TS figyelmeztetni fog rá, hogy ezt tesszük.</p>
+<div id="access-modifierek" class="section level3">
+<h3>Access modifierek</h3>
+<p>Ha nem szeretnénk, hogy egy field vagy method kívülről elérhető
+legyen, a <code>private</code> megjelöléssel csak az osztályon belülről
+elérhetővé tudjuk tenni. Ha mégis kívülről érjük el, a kompilálás során
+hibát jelez, de futtatásnál lefut, mivel a sima JS csak a legfrissebb
+változataiban ismeri a private property-ket és methodokat.</p>
+<p>Ezen kívül property-ket csak olvashatókká tehetünk a
+<code>readonly</code> modifierrel.</p>
+<p>A fieldek deklarálása történhet a constructorban is, de ekkor meg
+kell adni a public modifiert is.</p>
+<div class="sourceCode" id="cb19"><pre
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a><span class="kw">class</span> Department {</span>
+<span id="cb19-2"><a href="#cb19-2" tabindex="-1"></a>  <span class="kw">private</span> employees<span class="op">:</span> <span class="dt">string</span>[] <span class="op">=</span> []<span class="op">;</span></span>
+<span id="cb19-3"><a href="#cb19-3" tabindex="-1"></a>  </span>
+<span id="cb19-4"><a href="#cb19-4" tabindex="-1"></a>  <span class="kw">constructor</span>(<span class="kw">private</span> <span class="kw">readonly</span> id<span class="op">:</span> <span class="dt">string</span><span class="op">,</span> <span class="kw">public</span> name<span class="op">:</span> <span class="dt">string</span>) {}</span>
+<span id="cb19-5"><a href="#cb19-5" tabindex="-1"></a>  </span>
+<span id="cb19-6"><a href="#cb19-6" tabindex="-1"></a>  <span class="fu">describe</span>(<span class="kw">this</span><span class="op">:</span> Department) {</span>
+<span id="cb19-7"><a href="#cb19-7" tabindex="-1"></a>    <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="vs">`Department </span><span class="sc">${</span>id<span class="sc">}</span><span class="vs">: </span><span class="sc">${</span><span class="kw">this</span><span class="op">.</span><span class="at">name</span><span class="sc">}</span><span class="vs">`</span>)</span>
+<span id="cb19-8"><a href="#cb19-8" tabindex="-1"></a>  }</span>
+<span id="cb19-9"><a href="#cb19-9" tabindex="-1"></a>  </span>
+<span id="cb19-10"><a href="#cb19-10" tabindex="-1"></a>  <span class="fu">addEmployee</span>(employee<span class="op">:</span> <span class="dt">string</span>) {</span>
+<span id="cb19-11"><a href="#cb19-11" tabindex="-1"></a>    <span class="kw">this</span><span class="op">.</span><span class="at">employees</span><span class="op">.</span><span class="fu">push</span>(employee)</span>
+<span id="cb19-12"><a href="#cb19-12" tabindex="-1"></a>  }</span>
+<span id="cb19-13"><a href="#cb19-13" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+<div id="öröklődés-1" class="section level3">
+<h3>Öröklődés</h3>
+<p>Osztályok örökölhetnek másik osztálytól: így ki tudjuk bővíteni a
+szülő osztály property-jeit és metódusait. Az öröklő osztály constructor
+függvényébe a super() függvénnyel tudjuk a szülő constructorját hívni,
+és ennek tudjuk továbbadni azokat az argumentumokat, amelyeket az kezel.
+Ezek egy része lehet konkért érték is, ekkor a constructor argumetumai
+között ezt nem kell feltüntetni, hiszen ezeket nem az instanciálás során
+kapjuk kívülről, hanem a deklaráció során adjuk meg.</p>
+<div class="sourceCode" id="cb20"><pre
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a><span class="kw">class</span> ITDepartment <span class="kw">extends</span> Department {</span>
+<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a>  <span class="kw">constructor</span>(id<span class="op">:</span> <span class="dt">string</span><span class="op">,</span> <span class="kw">public</span> admins<span class="op">:</span> <span class="dt">string</span>[]) {</span>
+<span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a>    <span class="kw">super</span>(id<span class="op">,</span> <span class="st">&#39;IT&#39;</span>)<span class="op">;</span></span>
+<span id="cb20-4"><a href="#cb20-4" tabindex="-1"></a>    <span class="kw">this</span><span class="op">.</span><span class="at">admins</span> <span class="op">=</span> admins<span class="op">;</span> <span class="co">// Can be omitted, but if provided, needs to come after super()</span></span>
+<span id="cb20-5"><a href="#cb20-5" tabindex="-1"></a>  }</span>
+<span id="cb20-6"><a href="#cb20-6" tabindex="-1"></a>}</span></code></pre></div>
+<p>Örökölni csak egy Class-tól lehet.</p>
+<p>Az öröklés során felül is írhatunk egyes metódusokat, ha az öröklő
+class-ban újra deklaráljuk őket. Arra azonban figyelni kell, hogy a
+szülő private property-jeihez nem tudunk hozzáférni. Ebben segít, ha
+<code>private</code> helyett <code>protected</code> property-ként hozzuk
+létre, amelyek az öröklő osztályokban is elérhetők, kívülről azonban
+nem.</p>
+</div>
+<div id="abstract-osztályok-és-property-k" class="section level3">
+<h3>Abstract osztályok és property-k</h3>
+<p>Bizonyos esetekben megköveteljük, hogy az öröklő osztályok egy
+bizonyos metódusból sajátot implementáljanak, mert ez a metódus
+szükséges, de nem tudjuk a szülő osztályon létrehozni, mert konkrét
+implementálása az egyes öröklő osztályoktól függ. Ilyenkor az
+<code>abstract</code> kulcsszóval hozzuk létre a metódust, és nem adunk
+meg hozzá implementációt a szülőn, hanem csak azt kell megadnunk, milyen
+típusú return értéket kell adnia (ez lehet void is). Ilyenkor magát az
+osztályt is <code>abstract</code> osztállyá kell tennünk. Ilyenekből
+viszont nem hozhatók létre instanciák, csak örökölni lehet tőlük.</p>
+<p>Ugyanez létezik property-kkel is.</p>
+</div>
+<div id="getter-és-setter-metódusok" class="section level3">
+<h3>Getter és setter metódusok</h3>
+<p>Ha privát property-ket kívülről lekérhetővé és módosíthatóvá akarunk
+tenni, de nem közvetlenül, akkor létrehozhatunk getter és setter
+metódust. Ebben bonyolultabb logikát is használhatunk, mint egyszerűen a
+private field értékének returnölése. Fontos, hogy ezt metódusként hozzuk
+létre, és kell, hogy legyen return értéke. Kívülről viszont úgy férünk
+hozzá, mint property-hez.</p>
+<div class="sourceCode" id="cb21"><pre
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a><span class="kw">const</span> AccountingAppartment <span class="kw">extends</span> Department {</span>
+<span id="cb21-2"><a href="#cb21-2" tabindex="-1"></a>  <span class="kw">private</span> lastReport<span class="op">:</span> <span class="dt">string</span><span class="op">;</span></span>
+<span id="cb21-3"><a href="#cb21-3" tabindex="-1"></a>  </span>
+<span id="cb21-4"><a href="#cb21-4" tabindex="-1"></a>  <span class="kw">get</span> <span class="fu">mostRecentReport</span>() {</span>
+<span id="cb21-5"><a href="#cb21-5" tabindex="-1"></a>    <span class="cf">if</span> (<span class="kw">this</span><span class="op">.</span><span class="at">lastReport</span>) {</span>
+<span id="cb21-6"><a href="#cb21-6" tabindex="-1"></a>      <span class="cf">return</span> <span class="kw">this</span><span class="op">.</span><span class="at">lastReport</span></span>
+<span id="cb21-7"><a href="#cb21-7" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
+<span id="cb21-8"><a href="#cb21-8" tabindex="-1"></a>      <span class="cf">throw</span> <span class="kw">new</span> <span class="bu">Error</span>(<span class="st">&#39;No report found.&#39;</span>)</span>
+<span id="cb21-9"><a href="#cb21-9" tabindex="-1"></a>    }</span>
+<span id="cb21-10"><a href="#cb21-10" tabindex="-1"></a>  </span>
+<span id="cb21-11"><a href="#cb21-11" tabindex="-1"></a>  <span class="kw">set</span> <span class="fu">mostRecentReport</span>(value<span class="op">:</span> <span class="dt">string</span>) {</span>
+<span id="cb21-12"><a href="#cb21-12" tabindex="-1"></a>    <span class="cf">if</span> (<span class="op">!</span>value) {</span>
+<span id="cb21-13"><a href="#cb21-13" tabindex="-1"></a>      <span class="cf">throw</span> <span class="kw">new</span> <span class="bu">Error</span>(<span class="st">&#39;Please provide a valid report!&#39;</span>)</span>
+<span id="cb21-14"><a href="#cb21-14" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
+<span id="cb21-15"><a href="#cb21-15" tabindex="-1"></a>      <span class="kw">this</span><span class="op">.</span><span class="fu">addReport</span>(value)</span>
+<span id="cb21-16"><a href="#cb21-16" tabindex="-1"></a>    }</span>
+<span id="cb21-17"><a href="#cb21-17" tabindex="-1"></a>  }</span>
+<span id="cb21-18"><a href="#cb21-18" tabindex="-1"></a>    </span>
+<span id="cb21-19"><a href="#cb21-19" tabindex="-1"></a>    <span class="co">// ...</span></span>
+<span id="cb21-20"><a href="#cb21-20" tabindex="-1"></a>  }</span>
+<span id="cb21-21"><a href="#cb21-21" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+<div id="statitkus-metódusok-és-property-k" class="section level3">
+<h3>Statitkus metódusok és property-k</h3>
+<p>Ezeket nem az instanciákon, hanem magán az osztályon érhetjük el, az
+osztály deklaráción belül is. Ezeket elsősorban különböző
+segédfüggvényekhez használjuk.</p>
+</div>
+<div id="private-constructor-és-a-singleton-minta"
+class="section level3">
+<h3>Private constructor és a Singleton minta</h3>
+<p>Vannak esetek, amikor azt akarjuk, hogy egy bizonyos class alapján
+éppen egy objektumot hozhassunk létre. Ehhez a class contructorát a
+<code>private</code> kulcsszóval priváttá tehetjük, aminek hatására nem
+tudunk a new-val objektumot létrehozni. Ahhoz, hogy mégis létrehozzunk
+objektumot, egy statikus metódust hozunk rajta létre: pl. getInstance
+néven. Ez ellenőrzi, van-e már ilyen osztályú objektum. Ehhez egy
+<code>private static</code> property-t hozunk létre: pl. instance néven,
+amelynek értéke az adott osztály típusú.</p>
+<p>Statikus metóduson belül a <code>this</code> az osztályra utal és nem
+az instanciára, és mivel az osztály deklarációján belül vagyunk, itt
+használhatjuk a privát constructor metódust és a <code>new</code>
+parancsot az új instancia létrehozására.</p>
+<div class="sourceCode" id="cb22"><pre
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a><span class="kw">class</span> AccountingDepartment <span class="kw">extends</span> Department {</span>
+<span id="cb22-2"><a href="#cb22-2" tabindex="-1"></a>  <span class="kw">private</span> <span class="kw">static</span> instance<span class="op">:</span> AccountingDepartment<span class="op">;</span></span>
+<span id="cb22-3"><a href="#cb22-3" tabindex="-1"></a>  </span>
+<span id="cb22-4"><a href="#cb22-4" tabindex="-1"></a>  <span class="op">...</span></span>
+<span id="cb22-5"><a href="#cb22-5" tabindex="-1"></a>  </span>
+<span id="cb22-6"><a href="#cb22-6" tabindex="-1"></a>  <span class="kw">private</span> <span class="kw">constructor</span>(id<span class="op">:</span> <span class="dt">string</span><span class="op">,</span> <span class="kw">private</span> reports<span class="op">:</span> <span class="dt">string</span>[]) {</span>
+<span id="cb22-7"><a href="#cb22-7" tabindex="-1"></a>    <span class="kw">super</span>(id<span class="op">,</span> <span class="st">&#39;Accounting&#39;</span>)</span>
+<span id="cb22-8"><a href="#cb22-8" tabindex="-1"></a>    <span class="kw">this</span><span class="op">.</span><span class="at">lastReport</span> <span class="op">=</span> reports[<span class="dv">0</span>]<span class="op">;</span></span>
+<span id="cb22-9"><a href="#cb22-9" tabindex="-1"></a>  }</span>
+<span id="cb22-10"><a href="#cb22-10" tabindex="-1"></a>  </span>
+<span id="cb22-11"><a href="#cb22-11" tabindex="-1"></a>  <span class="kw">static</span> <span class="fu">getInstance</span>() {</span>
+<span id="cb22-12"><a href="#cb22-12" tabindex="-1"></a>    <span class="cf">if</span> (<span class="kw">this</span><span class="op">.</span><span class="at">instance</span>) {</span>
+<span id="cb22-13"><a href="#cb22-13" tabindex="-1"></a>    <span class="co">// alternative: if (AccountingDepartment.instance)</span></span>
+<span id="cb22-14"><a href="#cb22-14" tabindex="-1"></a>      <span class="cf">return</span> <span class="kw">this</span><span class="op">.</span><span class="at">instance</span><span class="op">;</span></span>
+<span id="cb22-15"><a href="#cb22-15" tabindex="-1"></a>    }</span>
+<span id="cb22-16"><a href="#cb22-16" tabindex="-1"></a>    <span class="kw">this</span><span class="op">.</span><span class="at">instance</span> <span class="op">=</span> <span class="kw">new</span> <span class="fu">AccountingDepartment</span>(<span class="st">&#39;d2&#39;</span><span class="op">,</span> [])</span>
+<span id="cb22-17"><a href="#cb22-17" tabindex="-1"></a>  }</span>
+<span id="cb22-18"><a href="#cb22-18" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+</div>
+<div id="generic-típusok" class="section level2">
+<h2>Generic típusok</h2>
+<p>A generic-ek olyan általános típusok, amelyek többféle más típussal
+összekapcsolva használhatók: pl. az Array létező általános típus, de meg
+kell adni, milyen típusú adatokat fogadhat. Ez lehet <code>any</code>,
+de valamit meg kell adni: <code>any[]</code> vagy
+<code>Array&lt;string&gt;</code> formában is megadható, és unionok,
+custom típusok, stb. is használhatók mindkét esetben.</p>
+<p>Ilyen generic típus a Promise is: megadható, hogy a Promise végül
+milyen resolve értéket fog adni.</p>
+<p>Sokszor nem akarunk teljesen specifikusan lenni, hanem azt akarjuk,
+hogy pl. egy függvény rugalmasan többféle típusú adatot is elfogadjon,
+mégis típus-biztonságra törekszünk, tehát hogy a TS figyelmeztessen, ha
+rossz típusú adatot adunk meg neki.</p>
+<p>Függvényeknek megadhatunk generikus típusokat is, hogy plusz
+információkat nyújtsunk, de ne kelljen teljesen specifikusnak
+lennünk:</p>
+<div class="sourceCode" id="cb23"><pre
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a><span class="kw">function</span> <span class="fu">merge</span><span class="op">&lt;</span>T<span class="op">,</span> U<span class="op">&gt;</span>(objA<span class="op">:</span> T<span class="op">,</span> objB<span class="op">:</span> U) {</span>
+<span id="cb23-2"><a href="#cb23-2" tabindex="-1"></a>  <span class="cf">return</span> <span class="bu">Object</span><span class="op">.</span><span class="fu">assign</span>(objA<span class="op">,</span> objB)</span>
+<span id="cb23-3"><a href="#cb23-3" tabindex="-1"></a>}</span></code></pre></div>
+<p>A fenti függvényt így megadva, a TS értelmezni tudja, hogy a két
+paraméter várhatóan különböző típusú lesz, és így a függvény a két
+objektum metszet típusát adja majd. A konkrét meghívásnál dinamikusan
+azonosítja a generikus típusokat a megadott paraméterek típusával, és
+így pl. tudja, hogy a kapott értéken elérhetők lesznek-e bizonyos
+property-k.</p>
+<div id="constraint-ek" class="section level3">
+<h3>Constraint-ek</h3>
+<p>Ugyanakkor a fenti módon deklarált függvény bármilyen két különböző
+típusú paramétert elfogad, nem csak objektumokat. Ahhoz, hogy
+objektumokra szűkítsük az elfogadott paraméterek körét, az
+<code>extends</code> parancsszót használjuk:</p>
+<div class="sourceCode" id="cb24"><pre
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a><span class="kw">function</span> <span class="fu">merge</span><span class="op">&lt;</span>T <span class="kw">extends</span> <span class="dt">object</span><span class="op">,</span> U <span class="kw">extends</span> <span class="dt">object</span><span class="op">&gt;</span>(objA<span class="op">:</span> T<span class="op">,</span> objB<span class="op">:</span> U) {</span>
+<span id="cb24-2"><a href="#cb24-2" tabindex="-1"></a>  <span class="cf">return</span> <span class="bu">Object</span><span class="op">.</span><span class="fu">assign</span>(objA<span class="op">,</span> objB)</span>
+<span id="cb24-3"><a href="#cb24-3" tabindex="-1"></a>}</span></code></pre></div>
+<p>A generic típusok saját deklarálású típusokat és interface-eket is
+kiterjeszthetnek.</p>
+<div class="sourceCode" id="cb25"><pre
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a><span class="kw">interface</span> Lengthy {</span>
+<span id="cb25-2"><a href="#cb25-2" tabindex="-1"></a>  length<span class="op">:</span> <span class="dt">number</span><span class="op">;</span></span>
+<span id="cb25-3"><a href="#cb25-3" tabindex="-1"></a>}</span>
+<span id="cb25-4"><a href="#cb25-4" tabindex="-1"></a></span>
+<span id="cb25-5"><a href="#cb25-5" tabindex="-1"></a><span class="kw">function</span> <span class="fu">countAndDescribe</span><span class="op">&lt;</span>T <span class="kw">extends</span> Lengthy<span class="op">&gt;</span>(element<span class="op">:</span> T)<span class="op">:</span> [T<span class="op">,</span> <span class="dt">string</span>] {</span>
+<span id="cb25-6"><a href="#cb25-6" tabindex="-1"></a>  <span class="kw">let</span> descriptionText <span class="op">=</span> <span class="st">&#39;Got no value.&#39;</span><span class="op">;</span></span>
+<span id="cb25-7"><a href="#cb25-7" tabindex="-1"></a>  <span class="cf">if</span> (element<span class="op">.</span><span class="at">length</span> <span class="op">===</span> <span class="dv">1</span>) {</span>
+<span id="cb25-8"><a href="#cb25-8" tabindex="-1"></a>    descriptionText <span class="op">=</span> <span class="st">&#39;Got 1 element.&#39;</span><span class="op">;</span></span>
+<span id="cb25-9"><a href="#cb25-9" tabindex="-1"></a>  } <span class="cf">else</span> <span class="cf">if</span> (element<span class="op">.</span><span class="at">length</span> <span class="op">&gt;</span> <span class="dv">1</span>) {</span>
+<span id="cb25-10"><a href="#cb25-10" tabindex="-1"></a>    descriptionText <span class="op">=</span> <span class="vs">`Got </span><span class="sc">${</span>element<span class="op">.</span><span class="at">length</span><span class="sc">}</span><span class="vs"> elements.`</span><span class="op">;</span></span>
+<span id="cb25-11"><a href="#cb25-11" tabindex="-1"></a>  }</span>
+<span id="cb25-12"><a href="#cb25-12" tabindex="-1"></a>  <span class="cf">return</span> [element<span class="op">,</span> descriptionText]<span class="op">;</span></span>
+<span id="cb25-13"><a href="#cb25-13" tabindex="-1"></a>}</span></code></pre></div>
+<p>Szintén generikus típusokra megadott constraint-tel kényszeríthetjük
+ki, hogy egy függvény stringként csak egy objektum key értékét fogadja
+el: ezt az <code>extends keyof</code> paranccsal tehetjük meg. A TS így
+figyelmeztetni fog, ha olyan stringet adunk meg, amely nem felel meg az
+adott objektum egyik key-jének sem.</p>
+<div class="sourceCode" id="cb26"><pre
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a><span class="kw">function</span> <span class="fu">extractAndConvert</span><span class="op">&lt;</span>T <span class="kw">extends</span> <span class="dt">object</span><span class="op">,</span> U <span class="kw">extends</span> <span class="kw">keyof</span> T<span class="op">&gt;</span>(obj<span class="op">:</span> T<span class="op">,</span> key<span class="op">:</span> U) {</span>
+<span id="cb26-2"><a href="#cb26-2" tabindex="-1"></a>  <span class="cf">return</span> obj[key]<span class="op">;</span></span>
+<span id="cb26-3"><a href="#cb26-3" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+<div id="generic-class" class="section level3">
+<h3>Generic class</h3>
+<p>A TS hajlamos hibát jelezni, ha valaminek implicit módon
+<code>any</code> típusa van. Mi viszont sokszor nem akarjuk pontosan
+megadni, milyen típusokat szeretnénk elfogadni. Pl. létre akarunk hozni
+egy osztályt, amellyel különböző tároló objektumokat tudunk létrehozni,
+metódusokkal a tárolt objektumok array-ének bővítésére és törlésre,
+illetve az elemek kinyerésére. A TS panaszkodni fog, ha nem adjuk meg,
+milyen típusú adatok array-ét akarjuk tárolni benne. A deklarálás során
+ezért megadhatunk neki általános típust (<code>&lt;T&gt;</code>).</p>
+<p>Az instanciálás során pedig megadjuk, hogy milyen típust szeretnénk
+(ld. alább), és ha aztán mégsem ilyen típusú adatot akarnánk hozzáadni,
+a TS tudni fogja, hogy hibára kell figyelmeztetnie.</p>
+<div class="sourceCode" id="cb27"><pre
+class="sourceCode ts"><code class="sourceCode typescript"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a><span class="kw">class</span> DataStorage<span class="op">&lt;</span>T<span class="op">&gt;</span> {</span>
+<span id="cb27-2"><a href="#cb27-2" tabindex="-1"></a>  <span class="kw">private</span> data<span class="op">:</span> T[] <span class="op">=</span> []<span class="op">;</span></span>
+<span id="cb27-3"><a href="#cb27-3" tabindex="-1"></a>  </span>
+<span id="cb27-4"><a href="#cb27-4" tabindex="-1"></a>  <span class="fu">addItem</span>(item) {</span>
+<span id="cb27-5"><a href="#cb27-5" tabindex="-1"></a>    <span class="kw">this</span><span class="op">.</span><span class="at">data</span><span class="op">.</span><span class="fu">push</span>(item)<span class="op">;</span></span>
+<span id="cb27-6"><a href="#cb27-6" tabindex="-1"></a>  }</span>
+<span id="cb27-7"><a href="#cb27-7" tabindex="-1"></a>  </span>
+<span id="cb27-8"><a href="#cb27-8" tabindex="-1"></a>  <span class="fu">removeItem</span>(item) {</span>
+<span id="cb27-9"><a href="#cb27-9" tabindex="-1"></a>    <span class="kw">this</span><span class="op">.</span><span class="at">data</span><span class="op">.</span><span class="fu">splice</span>(<span class="kw">this</span><span class="op">.</span><span class="at">data</span><span class="op">.</span><span class="fu">indexOf</span>(item)<span class="op">,</span> <span class="dv">1</span>)</span>
+<span id="cb27-10"><a href="#cb27-10" tabindex="-1"></a>  }</span>
+<span id="cb27-11"><a href="#cb27-11" tabindex="-1"></a>  </span>
+<span id="cb27-12"><a href="#cb27-12" tabindex="-1"></a>  <span class="fu">getItems</span>() {</span>
+<span id="cb27-13"><a href="#cb27-13" tabindex="-1"></a>    <span class="cf">return</span> [<span class="op">...</span><span class="kw">this</span><span class="op">.</span><span class="at">data</span>]</span>
+<span id="cb27-14"><a href="#cb27-14" tabindex="-1"></a>  }</span>
+<span id="cb27-15"><a href="#cb27-15" tabindex="-1"></a>}</span>
+<span id="cb27-16"><a href="#cb27-16" tabindex="-1"></a></span>
+<span id="cb27-17"><a href="#cb27-17" tabindex="-1"></a><span class="kw">const</span> textStorage <span class="op">=</span> <span class="kw">new</span> <span class="fu">DataStorage</span><span class="op">&lt;</span><span class="dt">string</span><span class="op">&gt;</span>()<span class="op">;</span></span>
+<span id="cb27-18"><a href="#cb27-18" tabindex="-1"></a><span class="kw">const</span> numberStorage <span class="op">=</span> <span class="kw">new</span> <span class="fu">DataStorage</span><span class="op">&lt;</span><span class="dt">number</span><span class="op">&gt;</span>()<span class="op">;</span></span></code></pre></div>
+<p>A fenti példát nem tudnánk union típussal megoldani, mert nem
+tudhatjuk, milyen típusú is lesz végül az array, és így milyen típusú
+elemeket fogadhatunk el. Ha union típust adunk meg, akkor bármelyiket
+elfogadjuk, akkor viszont nem lehet homogenitást követelni az
+array-től.</p>
+<p>Az osztályhoz több általános típust is használhatunk, természetesen,
+és az osztály metódusaiban is használhatunk további általános
+típusokat.</p>
+</div>
+<div id="általános-utility-típusok" class="section level3">
+<h3>Általános “utility” típusok</h3>
+<p>A <code>Partial</code> általános típus egy adott objektum típus
+minden property-jét opcionálissá teszi, ami felhasználható, ha pl. egy
+objektumot lépésenként akarunk feltölteni adatokkal (pl. mert előbb
+validáljuk azokat)</p>
+<p>Ennek fordítottja a <code>Required</code> amely épphogy kötelezővé
+teszi az egyébként opcionális property-ket is.</p>
+<p>A <code>Readonly</code> típus pl. egy array-t vagy objektumot csak
+olvashatóvá tesz, így nem adhatunk hozzá új elemeket/property-ket. (pl.
+<code>Readonly&lt;string[]&gt;</code>)</p>
+<p>Objektum típusokból új objektum típusok létrehozhatók, a property-k
+egy bizonyos megadott részhalmazával a <code>Pick</code> és az
+<code>Omit</code>utility típusokkal, amelyeknek megadható, mely
+property-ket tartalmazza (Pick) vagy ne tartalmazza (Omit) az új
+típus.</p>
+<p>További utility típusok a TS honlapján ismerhetők meg.</p>
+</div>
+</div>
+<div id="dekorátorok" class="section level2">
+<h2>Dekorátorok</h2>
+<p>Ezek használatához a tsconfig-ban a target JS-t ES6-ra kell
+állítanunk, és alul engedélyezni kell a kísérleti dekorátorokat.</p>
+<p>A dekorátorok olyan függvények, amelyeket más objektumokra, pl.
+osztályokra alkalmazunk.</p>
+<p>A dekorátorok neveit szokás nagybetűvel kezdeni. Argumentuma pl. a
+<code>target</code> objektum (nem kell így nevezni), amelyre
+alkalmazzuk.</p>
+<p>A használata úgy történik, hogy az objektum/osztály elé írjuk az
+<code>@DecoratorName</code> sort, amellyel jelezzük, hogy az adott
+dekorátort ezen az osztályon akarjuk alkalmazni. Fontos: ez akkor
+történik, amikor az osztályt deklaráljuk a file-ban, nem pedig az
+instanciáláshoz kapcsolódik.</p>
+<p>Dekorátorokat nemcsak közvetlenül deklarálhatunk mint függvényeket,
+hanem létrehozhatunk olyan függvényként is, amelyek anonim függvényt
+adnak vissza.</p>
+<p>Ebben az esetben az osztály előtti sorban nem csak rámutatni kell,
+hanem meghívni: <code>@DecoratorName()</code>, mert így csatoljuk az
+osztályhoz a return értékként kapott függvényt. Ez arra jó, mert így
+testre is szabhatjuk a dekorátorokat, mert a függvény argumentumokat
+(pl. különböző string értékeket) fogadhat, és ezek alapján alkotja meg a
+dekorátort.</p>
+<p>Ilyen dekorátorokat használ az Angular ahhoz, hogy komponenseket
+hozzon létre osztályokból: a dekorátor függvény kap egy template-et és
+egy hookId-t, ahová rendereli a megfelelő adatokkal feltöltött
+template-et.</p>
+<p>Egy osztályhoz több dekorátort is hozzáadhatunk. A dekorátorokat
+létrehozó factory függvények fentről lefelé futnak, de maguk a
+dekorátorok alulról felfelé.</p>
+<p>A dekorátor amellett, hogy magához az osztályhoz adhatjuk, adható az
+egyes property-khez, metódusokhoz, accessorokhoz (getter/setter) és
+paraméterekhez is. Az első esetben a dekorátor paraméterei a target, ami
+lehet a prototípus vagy a constructor (ha statikus property), illetve a
+propertyName (string | Symbol). Ilyen dekorátorokat használhatunk
+például az egyes property-k validálására instanciálás során (pl. a
+<code>class-validator</code> csomag is így működik) Ha accessorhoz
+adjuk, akkor a target ugyanaz, mint az előbb, a name azt mutatja, hogy
+milyen nevet adtunk a getternek/setternek, nem pedig, hogy melyik
+property-t kezeli belül, végül a descriptor (típusa PropertyDescriptor)
+az accessor leírása. Metódusokhoz adott dekorátorok szintén ugyanúgy
+kapják a targetet, kapják a metódus nevét, és megkapják a descriptort.
+Ilyen metódushoz adott dekorátor használható pl. arra, hogy ha a
+metódust máshol hívjuk (pl. subscriber patternnél), a this akkor is a
+metódus objektumára mutasson, és így hozzáférjen pl. annak
+property-jeihez. Paraméterekhez adott dekorátorok a targetet kapják
+ugyanúgy, a metódus nevét és az argumentum pozícióját.</p>
+<p>A dekorátorok az osztályok deklarálásakor futnak, nem pedig
+instanciáláskor. Ezért arra használhatók, hogy az osztályok
+definiálásánál futtassunk bizonyos parancsokat a háttérben.</p>
+<p>A dekorátoroknak lehet return értéke: pl. osztályhoz adott
+dekorátorok returnölhetnek egy új constructor függvényt vagy egy új
+osztályt, amely kiterjeszti az eredeti constructor-t. Ezzel
+felülírhatjuk, módosíthatjuk vagy kiegészíthetjük a meglévő osztályt.
+Így megadhatunk olyan logikát is, ami nem a deklarációnál, hanem az
+instanciálásnál fut le.</p>
+<p>Return értéke az accessorhoz és metódushoz adott dekorátoroknak is
+lehet. A property-hez vagy paraméterhez adott dekorátorok return
+értékeit a TS ignorálja. Az accessorhoz és metódushoz adott
+dekorátorokkal módosíthatjuk a deskriptorokat.</p>
+</div>
+<div id="a-compiler" class="section level2">
+<h2>A Compiler</h2>
+<p>A compilert a <code>tsc</code> parancssori programmal indíthatjuk,
+amelynek megadhatjuk, melyik file-t szeretnénk kompilálni. A
+<code>--watch</code> vagy <code>-w</code> flaggel elérhetjük, hogy a
+compiler a file módosításai esetén újrainduljon. Ezek ugyanakkor csak
+egy file- kompilálására alkalmasak.</p>
+<p>Ahhoz, hogy több file-t is egyszerre kompilálhassunk, először a
+<code>tsc --init</code> paranccsal inicializálunk egy typescript
+projektet. Ez létrehozza a <code>tsconfig.json</code> file-t. Ezt
+követően, ha a <code>tsc</code> parancsot magában futtatjuk, az összes
+<code>.ts</code> file-t kompilálja a projekten belül. Működik a
+<code>tsc -w</code> parancs is.</p>
+<div id="konfiguráció" class="section level3">
+<h3>Konfiguráció</h3>
+<p>A <code>tsconfig.json</code> file-ban megadhatunk különböző opciókat.
+Pl. az alap opciók után hozzáadhatjuk az <code>"exclude"</code>
+property-t, amely értékeként megadhajuk azoknak a file-oknak az
+array-ét, amelyeket nem szeretnénk kompilálni. A lista megadásában
+haszálhatjuk a wildcard <code>*</code> karaktert: pl.
+<code>*.dev.ts</code> az összes olyan file-t jelenti, amely így
+végződik. Egész mappákat is megadhatunk (pl. node_modules, bár ezt eleve
+kihagyja a kompilátor).</p>
+<p>Az “include” segítségével épp fordítva, megadhatjuk azoknak a
+listáját, amelyeket kompilálni szeretnénk. Amit nem adunk a listához,
+nem lesz kompilálva. Ebben az esetben is megadhatunk egész mappákat
+is.</p>
+<p>A “files” opcióval szintén megadhatunk, de csak file-okat.</p>
+<p>Az alap opciók között hasznosak: A <code>target</code> megadja,
+melyik JS verzióra szeretnénk kompilálni. Ha a <code>lib</code> ki van
+kommentálva, akkor az alapértelmezett könyvtárakat használja (pl.
+document, console, stb.). Ezeket megadhatjuk manuálisan is: pl. “dom”,
+“es6”, “dom.iterable”, “scripthost” a default Az <code>allowJs</code> és
+<code>checkJs</code> lehetővé teszi <code>.js</code> file-ok
+használatát: előbbi ezeket is kompilálja, utóbbi csak ellenőrzi, és így
+ki tudjuk valamennyire használni a TS képességeit. A
+<code>sourceMap</code> lehetőség lehetővé teszi, hogy a böngésző
+DevTools-jának Sources fülén együtt lássuk a <code>.ts</code> és
+<code>.js</code> file-okat és a köztük lévő kapcsolatot kihasználhassuk
+pl. debuggolás közben. Az <code>outDir</code> és <code>rootDir</code>
+azt adja meg, hová menjenek a kompilált JS file-ok és honnan vegyye a TS
+file-okat. Ha megadjuk a rootDirt, csak a megadott (pl. src) mappát
+kompilálja. A kompilálás során másolja a src könyvtár struktúráját. A
+<code>removeComments</code> a kompilálás során kihagyja a kommenteket. A
+<code>noEmit</code> paranccsal csak ellenőrzünk, de nem kompilálunk. Ha
+a kompiláció után a loopok nem a várt módon működnek, a
+<code>downlevelIteration</code> opció bekapcsolása segíthet.</p>
+<p>Az alap opciók között nincs ott, de a <code>noEmitOnError</code>
+opció lehetővé teszi, hogy ha hibát talál, ne hozzon létre kompilált
+file-okat. Ez nem csak azokra vonatkozik, ahol hibát talál, hanem az
+összesre.</p>
+<p>Az opciók következő csoportja a <code>strict</code> kompilálásra
+vonatkozik: a <code>"strict": true</code> beállítás egyenértékű azzal,
+hogy az összes részbeállítás igaz:</p>
+<ul>
+<li>a <code>noImplicitAny</code> opció nem engedi, hogy változók
+implicit módon legyenek <code>any</code> típusúak. Változók lehetnek any
+típusúak, mert azokat a TS követi, és később fel tudja ismerni, egy-egy
+pontot milyen típusú értéket vesznek fel, paramétereknél viszont nem
+engedi.</li>
+<li>a <code>strictNullChecks</code> azokra az esetekre vonatkozik,
+amikor egy változó null értéket vehet fel: ha a TS nem tudja
+megállapítani, biztosan lesz-e értéke egy változónak, figyelmeztet. Erre
+egy megoldás a <code>!</code> használata, amellyel jelezhetjük, hogy egy
+változónak biztos nem null értéke lesz, vagy olyan if-check, amellyel
+garantáljuk, hogy a kérdéses kód csak akkor fut, ha a releváns
+változónak van valós értéke.</li>
+<li>a <code>strictBindCallApply</code>-val, ha bind-dal adunk meg
+argumentumot callback függvénynek, ellenőrizni tudja a megadott érték
+típusát, és figyelmeztetni, ha rossz típust adtunk meg.</li>
+<li>az <code>alwaysStrict</code> hozzáadja a strict módot a JS
+file-okhoz is.</li>
+</ul>
+<p>Kódminőséget érintő opciók:</p>
+<ul>
+<li>a <code>noUnusedLocals</code> és <code>noUnusedParameters</code> a
+deklarált, de nem használt változók és paraméterek esetén eredményez
+hibát. Ezekért egyébként csak figyelmeztetést kapunk a VS Code-tól.</li>
+<li>a <code>noImplicitReturns</code> hibát jelez, ha egy függvénynek
+néha van return értéke, néha pedig nincs. Üres return ilyenkor
+elfogadható.</li>
+</ul>
+</div>
+</div>
+<div id="modulok" class="section level2">
+<h2>Modulok</h2>
+<div id="namespace-modulok" class="section level3">
+<h3>Namespace modulok</h3>
+<p>Ehhez a külön file-ban az exportálandó dolgokat a
+<code>namespace NspaceName {}</code> segítségével becsomagoljuk, és az
+exportálandó objektumok elé írjuk az <code>export</code> kulcsszót.</p>
+<p>Az importáló file-ban a
+<code>/// &lt;reference path="namespace-file.ts" /&gt;</code> speciális
+szintaxissal importáljuk az így létrehozott namespace-t, majd az egész
+kódot, amelynek hozzá kell férnie a külön file-ban deklarált
+objektumokhoz, szintén egy azonos nevű namespace-be csomagolunk.</p>
+<p>Ezen túl, hogy a kompilált file-ok működjenek, a tsconfig file-ban az
+<code>"outFile": "./"</code> sort élesíteni kell, hogy a namespace-eket
+konkatenálja. Itt megadhatjuk a file-nevet is pl.
+<code>bundle.js</code>, viszont egyúttal a “module” opciót is módosítani
+kell, pl. <code>amd</code>-re.</p>
+<p>A namespace-eknél ugyanakkor probléma, hogy bár hiányoznak importok,
+attól még lehet, hogy a kompiláció hiba nélkül lefut. A végeredmény
+attól még működhet, ha egy másik file importálja a szükséges dolgokat,
+és így bekerülnek a bundle-be, de könnyű hibát véteni a fejlesztés
+során.</p>
+</div>
+<div id="es6-modulok" class="section level3">
+<h3>ES6 modulok</h3>
+<p>Az ES6 modulok sokkal egyértelműbben működnek. Ehhez a szükséges
+szintaxis az <code>export</code> vagy <code>export default</code> az
+exportálandó dolgok előtt (ld. JS jegyzetek), az importáló file-ban
+pedig az <code>import ... from ...</code> vagy
+<code>import * as ...</code> szintaxis, akár nevesített, akár default
+exportokkal. A nevesített importokat átnevezhetjük:
+<code>import { something as Something } from ...</code></p>
+<p>Fontos viszont, hogy alapesetben a <code>.js</code> file-okat
+importáljuk, tehát a már kompilált file-okra mutassanak az importok.</p>
+<p>Ebben az esetben, ha valamit nem importálunk explicit módon abba a
+file-ba, ahol használjuk, hibát jelez a kompiláció során és az IDE
+is.</p>
+<p>Ezt a funkciót a modern böngészők támogatják. Ahhoz, hogy régebbi
+böngészőkön is működjön, module bundlereket használhatunk. További
+előnye a bundlernek, hogy csökkenti az Http requestek számát, ezzel
+gyorsítva az alkalmazás betöltését.</p>
+</div>
+<div id="webpack" class="section level3">
+<h3>Webpack</h3>
+<p>A webpack egy bundler, amely lehetővé teszi a modulárisan felépített
+kód egybecsomagolását (TypeScriptnél kompilációt is tud) és
+optimalizálását (rövidítés, stb.). Emellett a webpack egy development
+servert is futtat (a <code>webpack-dev-server</code> csomaggal).</p>
+<p>A következő csomagokat telepítjük dev dependency-ként:
+<code>webpack</code>, <code>webpack-cli</code>,
+<code>webpack-dev-server</code>, <code>typescript</code> és
+<code>ts-loader</code>. A TypeScript hozzáadása azért szükséges, hogy
+együttműködjön a projekt ts verziója a webpack-kel, és ez akkor is így
+maradjon, ha a globálisan telepített TypeScriptet másik verzióra
+frissítjük.</p>
+<p>A webpack konfigurációjához a tsconfig-ban a target js verziót
+<code>es5</code>-re vagy <code>es6</code>-ra kell állítani, attól
+függően, milyen böngészőkre fejlesztünk. A module-nak is
+<code>es2015</code>-nek kell lennie. Szintén fontos, hogy az
+<code>outDir</code> jól be legyen állítva (pl. <code>./dist</code>).
+Szintén fontos, hogy a <code>sourceMap</code> opció éles legyen, ez
+lehetővé teszi a csomagolt kód debuggolását a böngészőben. Nincs viszont
+szükség a <code>rootDir</code> opcióra, mert ezt a webpack fogja
+kezelni.</p>
+<p>A webpack konfigurációja a <code>webpack.config.js</code> file-ban
+történik.</p>
+<div class="sourceCode" id="cb28"><pre
+class="sourceCode js"><code class="sourceCode javascript"><span id="cb28-1"><a href="#cb28-1" tabindex="-1"></a><span class="kw">const</span> path <span class="op">=</span> <span class="pp">require</span>(<span class="st">&#39;path&#39;</span>)<span class="op">;</span></span>
+<span id="cb28-2"><a href="#cb28-2" tabindex="-1"></a></span>
+<span id="cb28-3"><a href="#cb28-3" tabindex="-1"></a>module<span class="op">.</span><span class="at">exports</span> <span class="op">=</span> {</span>
+<span id="cb28-4"><a href="#cb28-4" tabindex="-1"></a>  <span class="dt">mode</span><span class="op">:</span> <span class="st">&#39;development&#39;</span><span class="op">,</span></span>
+<span id="cb28-5"><a href="#cb28-5" tabindex="-1"></a>  <span class="dt">entry</span><span class="op">:</span> <span class="st">&#39;./src/app.ts&#39;</span><span class="op">,</span></span>
+<span id="cb28-6"><a href="#cb28-6" tabindex="-1"></a>  <span class="dt">output</span><span class="op">:</span> {</span>
+<span id="cb28-7"><a href="#cb28-7" tabindex="-1"></a>    <span class="dt">filename</span><span class="op">:</span> <span class="st">&#39;bundle.[contenthash].js&#39;</span><span class="op">,</span></span>
+<span id="cb28-8"><a href="#cb28-8" tabindex="-1"></a>    <span class="dt">path</span><span class="op">:</span> path<span class="op">.</span><span class="fu">resolve</span>(<span class="bu">__dirname</span><span class="op">,</span> <span class="st">&#39;dist&#39;</span>)<span class="op">,</span></span>
+<span id="cb28-9"><a href="#cb28-9" tabindex="-1"></a>    <span class="dt">publicPath</span><span class="op">:</span> <span class="st">&#39;/dist/&#39;</span><span class="op">,</span></span>
+<span id="cb28-10"><a href="#cb28-10" tabindex="-1"></a>  }<span class="op">,</span></span>
+<span id="cb28-11"><a href="#cb28-11" tabindex="-1"></a>  <span class="dt">devServer</span><span class="op">:</span> {</span>
+<span id="cb28-12"><a href="#cb28-12" tabindex="-1"></a>    <span class="dt">static</span><span class="op">:</span> {</span>
+<span id="cb28-13"><a href="#cb28-13" tabindex="-1"></a>      <span class="dt">directory</span><span class="op">:</span> path<span class="op">.</span><span class="fu">join</span>(<span class="bu">__dirname</span><span class="op">,</span> <span class="st">&#39;/&#39;</span>)<span class="op">,</span></span>
+<span id="cb28-14"><a href="#cb28-14" tabindex="-1"></a>    }<span class="op">,</span></span>
+<span id="cb28-15"><a href="#cb28-15" tabindex="-1"></a>  }<span class="op">,</span></span>
+<span id="cb28-16"><a href="#cb28-16" tabindex="-1"></a>  <span class="dt">devtool</span><span class="op">:</span> <span class="st">&#39;inline-source-map&#39;</span><span class="op">,</span></span>
+<span id="cb28-17"><a href="#cb28-17" tabindex="-1"></a>  <span class="dt">module</span><span class="op">:</span> {</span>
+<span id="cb28-18"><a href="#cb28-18" tabindex="-1"></a>    <span class="dt">rules</span><span class="op">:</span> [</span>
+<span id="cb28-19"><a href="#cb28-19" tabindex="-1"></a>      {</span>
+<span id="cb28-20"><a href="#cb28-20" tabindex="-1"></a>        <span class="dt">test</span><span class="op">:</span> <span class="ss">/</span><span class="sc">\.</span><span class="ss">ts</span><span class="sc">$</span><span class="ss">/</span><span class="op">,</span></span>
+<span id="cb28-21"><a href="#cb28-21" tabindex="-1"></a>        <span class="dt">use</span><span class="op">:</span> <span class="st">&#39;ts-loader&#39;</span><span class="op">,</span></span>
+<span id="cb28-22"><a href="#cb28-22" tabindex="-1"></a>        <span class="dt">exclude</span><span class="op">:</span> <span class="ss">/node_modules/</span><span class="op">,</span></span>
+<span id="cb28-23"><a href="#cb28-23" tabindex="-1"></a>      }<span class="op">,</span></span>
+<span id="cb28-24"><a href="#cb28-24" tabindex="-1"></a>    ]<span class="op">,</span></span>
+<span id="cb28-25"><a href="#cb28-25" tabindex="-1"></a>  }<span class="op">,</span></span>
+<span id="cb28-26"><a href="#cb28-26" tabindex="-1"></a>  <span class="dt">resolve</span><span class="op">:</span> {</span>
+<span id="cb28-27"><a href="#cb28-27" tabindex="-1"></a>    <span class="dt">extensions</span><span class="op">:</span> [<span class="st">&#39;.ts&#39;</span><span class="op">,</span> <span class="st">&#39;.js&#39;</span>]<span class="op">,</span></span>
+<span id="cb28-28"><a href="#cb28-28" tabindex="-1"></a>  }<span class="op">,</span></span>
+<span id="cb28-29"><a href="#cb28-29" tabindex="-1"></a>}<span class="op">;</span></span></code></pre></div>
+<p>A webpack működéséhez viszont el kell távolítani a <code>.js</code>
+kiterjesztéseket az importok végéről. Ezt a fenti konfigurációs file-ban
+megadott <code>resolve</code> property váltja ki.</p>
+<p>A használat bevett módja egy új script a package.json file-ban. Pl.:
+<code>"build": "webpack"</code>. Ugyanígy használható a webpack dev
+server is: pl. <code>"start": "webpack serve"</code> (korábbi verzióknál
+még <code>webpack-dev-server</code> volt a parancs. Ez automatikusan
+újrakompilálja a kódot minden mentett módosításnál, de csak a memóriában
+hoz létre file-t. Ahhoz, hogy ez jól működjön, a konfigurációs file-ban
+megadjuk a <code>publicPath</code> property-t, amely pl. a
+<code>dist</code> mappára mutat.</p>
+<p>A production módhoz külön konfigurációs file-t hozunk létre: pl.
+<code>webpack.config.prod.js</code>, amelyben a módot
+<code>production</code>-re állítjuk, nincs szükségünk a publicPath-ra és
+a devServer specifikációra, hiszen nem development serverrel dolgozunk,
+sem pedig a source mapra (webpack 5 óta ilyenkor a devtool property-t
+elhagyjuk, korábban a <code>none</code> string értéket adták neki).
+Érdemes viszont a <code>clean-webpack-plugin</code>-t használni,
+amellyel minden új build előtt törölhetjük a dist mappát, hogy csak a
+friss file-ok legyenek ott. Ezt a config file-ban a plugin property
+alatt használhatjuk:</p>
+<div class="sourceCode" id="cb29"><pre
+class="sourceCode js"><code class="sourceCode javascript"><span id="cb29-1"><a href="#cb29-1" tabindex="-1"></a><span class="kw">const</span> path <span class="op">=</span> <span class="pp">require</span>(<span class="st">&#39;path&#39;</span>)<span class="op">;</span></span>
+<span id="cb29-2"><a href="#cb29-2" tabindex="-1"></a><span class="kw">const</span> CleanPlugin <span class="op">=</span> <span class="pp">require</span>(<span class="st">&#39;clean-webpack-plugin&#39;</span>)<span class="op">;</span></span>
+<span id="cb29-3"><a href="#cb29-3" tabindex="-1"></a></span>
+<span id="cb29-4"><a href="#cb29-4" tabindex="-1"></a>module<span class="op">.</span><span class="at">exports</span> <span class="op">=</span> {</span>
+<span id="cb29-5"><a href="#cb29-5" tabindex="-1"></a>  <span class="dt">mode</span><span class="op">:</span> <span class="st">&#39;production&#39;</span><span class="op">,</span></span>
+<span id="cb29-6"><a href="#cb29-6" tabindex="-1"></a>  <span class="dt">entry</span><span class="op">:</span> <span class="st">&#39;./src/app.ts&#39;</span><span class="op">,</span></span>
+<span id="cb29-7"><a href="#cb29-7" tabindex="-1"></a>  <span class="dt">output</span><span class="op">:</span> {</span>
+<span id="cb29-8"><a href="#cb29-8" tabindex="-1"></a>    <span class="dt">filename</span><span class="op">:</span> <span class="st">&#39;bundle.js&#39;</span><span class="op">,</span></span>
+<span id="cb29-9"><a href="#cb29-9" tabindex="-1"></a>    <span class="dt">path</span><span class="op">:</span> path<span class="op">.</span><span class="fu">resolve</span>(<span class="bu">__dirname</span><span class="op">,</span> <span class="st">&#39;dist&#39;</span>)<span class="op">,</span></span>
+<span id="cb29-10"><a href="#cb29-10" tabindex="-1"></a>  }<span class="op">,</span></span>
+<span id="cb29-11"><a href="#cb29-11" tabindex="-1"></a>  <span class="dt">module</span><span class="op">:</span> {</span>
+<span id="cb29-12"><a href="#cb29-12" tabindex="-1"></a>    <span class="dt">rules</span><span class="op">:</span> [</span>
+<span id="cb29-13"><a href="#cb29-13" tabindex="-1"></a>      {</span>
+<span id="cb29-14"><a href="#cb29-14" tabindex="-1"></a>        <span class="dt">test</span><span class="op">:</span> <span class="ss">/</span><span class="sc">\.</span><span class="ss">ts</span><span class="sc">$</span><span class="ss">/</span><span class="op">,</span></span>
+<span id="cb29-15"><a href="#cb29-15" tabindex="-1"></a>        <span class="dt">use</span><span class="op">:</span> <span class="st">&#39;ts-loader&#39;</span><span class="op">,</span></span>
+<span id="cb29-16"><a href="#cb29-16" tabindex="-1"></a>        <span class="dt">exclude</span><span class="op">:</span> <span class="ss">/node_modules/</span><span class="op">,</span></span>
+<span id="cb29-17"><a href="#cb29-17" tabindex="-1"></a>      }<span class="op">,</span></span>
+<span id="cb29-18"><a href="#cb29-18" tabindex="-1"></a>    ]<span class="op">,</span></span>
+<span id="cb29-19"><a href="#cb29-19" tabindex="-1"></a>  }<span class="op">,</span></span>
+<span id="cb29-20"><a href="#cb29-20" tabindex="-1"></a>  <span class="dt">resolve</span><span class="op">:</span> {</span>
+<span id="cb29-21"><a href="#cb29-21" tabindex="-1"></a>    <span class="dt">extensions</span><span class="op">:</span> [<span class="st">&#39;.ts&#39;</span><span class="op">,</span> <span class="st">&#39;.js&#39;</span>]<span class="op">,</span></span>
+<span id="cb29-22"><a href="#cb29-22" tabindex="-1"></a>  }<span class="op">,</span></span>
+<span id="cb29-23"><a href="#cb29-23" tabindex="-1"></a>  <span class="dt">plugins</span><span class="op">:</span> [<span class="kw">new</span> CleanPlugin<span class="op">.</span><span class="fu">CleanWebpackPlugin</span>()]<span class="op">,</span></span>
+<span id="cb29-24"><a href="#cb29-24" tabindex="-1"></a>}<span class="op">;</span></span></code></pre></div>
+<p>Ezen kívül az npm scriptben is jelezzük, hogy ezt a file-t szeretnénk
+használni a build során:
+<code>"build": "webpack --config webpack.config.prod.js"</code></p>
+<p>A létrejött file-t együtt az index.html és a megfelelő css file-okkal
+tesszük fel a szerverre.</p>
+<p>A webpackről több információt a <a
+href="https://webpack.js.org/">hivatalos weboldalán</a> lehet
+találni.</p>
+</div>
+</div>
+<div id="rd-party-library-k-használata" class="section level2">
+<h2>3rd party library-k használata</h2>
+<p>Sima JavaScript library-ket is telepíthetünk az npm-mel, és
+importálhatjuk a file-jainkban, de a TypeScript hibát fog jelezni, mert
+nem találja a deklarációkat. Ettől még a csomag működhet, és ha a
+tsconfig-ban lehetővé tesszük az emitet hibák esetén is, a kapott
+file-ok működni fognak.</p>
+<p>Ha nincs TypeScript változat egy csomaghoz, elképzelhető, hogy
+léteznek hozzá TS fordítások, amelyeket definiálják a használt
+típusokat. Ezeket magunk is megírhatjuk, ha nem léteznek, de a népszerű
+könyvtárakhoz léteznek ilyenek. Ezeknek a file-oknak <code>.d.ts</code>
+a kiterjesztésük.</p>
+<p>Mivel ezek a fordítások csak a development során szükségesek, dev
+dependency-ként is telepíthetjük: pl. a <code>lodash</code> mellett
+(sima dependency) a <code>@types/lodash</code> csomagot (ezt
+devDependency-ként)</p>
+<p>Ha ilyenek nem érhetők el, vagy saját js scriptet is akarunk
+használni, végső megoldásként használhatjuk a <code>declare</code>
+kulcsszót, és bizonyos változókat, objektumokat deklarálhatunk, hogy
+bizonyos típusúak. Ezzel tudathatjuk, hogy ezek léteznek és/vagy
+bizonyos típusúak.</p>
+<p>Vannak viszont olyan csomagok, amelyek eleve TypeScript támogatással
+készültek (pl. <code>class-transformer</code>), de sima JavaScripttel is
+működnek, vagy amelyek kifejezetten TypeScriptet használnak (pl.
+<code>class-validator</code>).</p>
+</div>
+<div id="ts-és-react" class="section level2">
+<h2>TS és React</h2>
+<p>A <code>create-react-app</code> alkalmas TS projekt inicializálására
+is a <code>--template typescript</code> opcióval.</p>
+<p>A file-ok <code>.tsx</code> kiterjesztést kapjanak, ha JSX szintaxist
+is tartalmaznak.</p>
+<p>A komponensekhez típus rendelhetünk: pl. React.FC a függvény
+komponensek esetében, amelyek generikus típusok, és megadhatjuk
+hozzájuk, milyen struktúrájó prop objektumot fogadhatnak el, amiért
+cserébe pl. autocompletiont kapunk az IDE-től. Ez azonban többé nem
+ajánlott, és ehelyett inkább a függvények paramétereinek típusozásának
+megfelelően javasolt megadni a propok típusait. Opcionális propoknál
+használhatjuk a <code>?:</code> jelölést. Destrukturálásnál megadhatjuk
+a default értékeket az adott propoknak.</p>
+<p>Ha wrapper komponenst hozunk létre, a children prop
+<code>React.ReactNode</code> típust kaphat. Ha kicsit szigorúbbak
+akarunk lenni azzal, mit fogadjon el, megadhatunk
+<code>React.ReactElement</code>-et vagy <code>JSX.Element</code>-et is,
+és így csak valid React komponenseket fogad el gyermeknek, sima
+szöveget, booleant, számot, stb. nem.</p>
+<p>A refeket léterhozó useRef ugyancsak generikus, és megadhatjuk,
+milyen objektumot kapunk segítségével (pl. tipikusan
+HTMLInputElement-et). A Form submit eventnek is típust adunk:
+React.FormEvent-et.</p>
+<p>A useState is generikus függvény, és megadjuk neki, milyen típusú
+lesz a kezelt state, hiszen az indító értékből nem mindig tudja jól
+kikövetkeztetni.</p>
+<p>A további funkciók TS-esítéséhez a dokumentációkhoz, illetve a
+függvények leírásához érdemes fordulni az IDE-ben. Ha egy csomaghoz
+nincsenek eleve típusok (pl. react-router) létezhet külön csomag az
+<span class="citation">@types-on</span> belül.</p>
+</div>
+<div id="ts-és-node.js" class="section level2">
+<h2>TS és Node.js</h2>
+<p>A Node önmagában nem képes TS programkódot kompilálni és futtatni, de
+a kompilált js file-okat természetesen igen. A <code>ts-node</code>
+csomag lehetővé teszi a TS file-ok futtatását, amely egy lépésben
+egyesíti a kompilálást (a háttérben) és a futtatást. Ez production
+környezetben nem optimális.</p>
+<p>TS-ben a szokásos require típusú importok helyett a szokásos ES6
+import/export-ot használjuk, amely azonban a kompiláció során át lesz
+alakítva. Ennek köszönhetően pl. destrukturálva is importálhatjuk a
+Routert.</p>
+<p>A Node és Express típusokat külön telepíteni kell (lehet
+devDependency-ként).</p>
+<p>A munka során a handler függvények paramétereinek típusait
+megadhatjuk: léteznek erre szolgáló Error, Request, Response,
+NextFunction típusok. Megtehetjük viszont, hogy nem az egyes paraméterek
+típusait adjuk meg, hanem a handler függvény típusát: RequestHandler
+vagy ErrorRequestHandler.</p>
+<p>Úgyszintén megadhatjuk a req.body típusát, pl. egy objektum
+típusként, amely tartalmaz bizonyos típusú property-ket:
+<code>const text = (req.body as {text: string}).text</code></p>
+<p>A RequestHandler is generikus függvénytípus, amelyhez megadhatjuk a
+request paramétereinek típusait.</p>
+<p>Míg az Express és a Fastify is használható TypeScripttel, a Nest.js
+egy olyan framework, amely kifejezetten épít a TS funkcióira.</p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

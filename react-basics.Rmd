@@ -1,0 +1,1921 @@
+---
+title: "React"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    toc_depth: 2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
+```
+
+A React ötvözi a HTML és a JavaScript előnyeit: HTML-t írhatunk kiegészítve JS programkódokkal.
+A Reactot a Facebook hozta létre és tette nyilvánosan elérhetővé, és ők is tartják karban és fejlesztik.
+Különösen hasznos nagy front-end applikációk esetében, ahol sok komponensből álló alkalmazásokat kezelünk. A React egyszerűsíti a komplex kód kezelését, hiszen támogatja a moduláris felépítést, és gyorsabb is, mivel Virtuális DOM-ot használ, és így a honlapnak csak azokat a részeit frissíti (előbb a virtuális DOM reprezentációban), amelyek ténylegesen változtak. Ezután a VDOM-ot összeveti az előző állapottal, és csak azokat a DOM frissítéseket hajtja végre, amelyek ahhoz szükségesek, hogy a kívánt állapotba hozza a DOM-ot.
+
+A React az ún. JavaScript eXtended Syntax-t használja (JSX), amely lehetővé teszi, hogy html elemeket hozzunk létre közvetlenül a JS kód részeként, nem pedig stringként (vs. hagyományos DOM manipuláció).
+
+A React nagy újdonságai:  
+
+- **Deklaratív megközelítés**: a `state` segítségével nem közvetlenül módosítjuk az oldal részeit a felhasználó különböző tevékenységei hatására, hanem az állapot függvényében adjuk meg, egy-egy komponens hogyan viselkedjen.
+- **Komponensalapú felépítés**: a React alkalmazások potenciálisan újrafelhasználható komponensekből épülnek fel, amelyek külön fejleszthetők, egymásba ágyazódhatnak, kommunikálhatnak egymással. Erre egész komponens-könyvtárak épültek fel (mui, react-bootstrap, stb.)
+- **Egyirányú adatfolyam**: ha változást szeretnénk az alkalmazásban, akkor az alkalmazás állapotát (state) kell változtatnunk. A React erre reagálva újraalkotja a szükséges komponenseket. Az adatok mindig csak lefelé tudnak vándorolni a virtuális DOM-on.
+- **UI könyvtár**: ellentétben pl. az Angular-ral, a React.js csak a komponensekkel, virtuális DOM-mal foglalkozik, csak a `view` részt kezeli, a továbbiakra külön könyvtárakat használhatunk, amelyeket viszonylag szabadon választhatunk meg. Így jöhetett létre a React Native, amely mobil-alkalmazásokat kezel, a React 360, amely VR alkalmazásokat tud kezelni, Electron és React Desktop számítógépes alkalmazásokat tud kezelni, stb.
+
+## React hozzáadása
+
+### Egyszerű projekt
+
+A React használatához az alábbi script tageket kell a honlapunk html-jébe illeszteni: 
+
+```{html}
+<script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script> 
+
+<script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script> 
+```
+
+Ez a fajta hozzáadás kis demok létrehozásához megfelelő.
+
+A React scriptet ezután például egy script tagbe írhatjuk:
+```{html}
+<script type="text/babel">
+
+</script>
+```
+
+### Komplex projektek 
+
+Komolyabb projektekhez Node.js szükséges. A Facebook létrehozta a `Create React App` eszközt.
+Az alábbi terminál script létrehozza a "my-app" nevű React alkalmazást és telepíti az összes szükséges könyvtárat, majd elindítja a projektet a localhost 3000-es portján.
+
+```{bash}
+npx create-react-app my-app
+cd my-app
+npm start
+```
+
+**Projekt struktúra:**
+
+A fenti parancs egy projektstruktúrát hoz létre. A public mappában a projekt megjelenéséhez kapcsolódó file-ok kapnak helyet (pl. index.html), az src mappa tartalmazza az összes JS, CSS kódot, képeket. Mindezeket egy *file loader* csomagolja egybe egyetlen html file-be: a React a Webpack-ot használja. 
+
+A legfontosabb file-ok:
+A fő html file az public/index.html.
+A React kódot a src könyvtár src/index.js file-jába írhatjuk (ez az `entry point`).
+A fő CSS file a src/style.css
+A projekt metaadatait (pl. szükséges kiegészítő csomagokat) a src/package.json tartalmazza. Ha másik gépen szeretnénk dolgozni a projekten, ez a file lehetővé teszi a szükséges csomagok telepítését (`npm install`)
+
+## HTML elemek létrehozása és renderelése: JSX
+
+Lehetőség van JS változóként elmenteni HTML elementeket. A lényeg, hogy csak egy elemet menthetünk, ezért a komplexebb, többelemű HTML-t egy <div>-be, vagy másba kell "csomagolni". Ez lehet egy ún. `fragment` is: `<>` és `</>`, vagy ha ez nem működik (project setuptól függ, de create-react-app-nál működik) `<React.Fragment>` és `</React.Fragment>` közé (nevesített importnál simán `<Fragment>` is használható).
+
+```{jsx}
+const JSX = <div></div>;
+const complexJSX = <div>
+    <h1>Heading</h1>
+    <p>Lorem ipsum dolor sit amet</p>
+  </div>;
+```
+
+Ha JavaScript kódot akarunk hozzáadni a JSX-hez, akkor azt {} közé kell írni. Pl. kommentet a következőképpen tudunk írni:
+```{jsx}
+{/* Comment */}
+```
+
+Változókat is használhatunk a html elemek létrehozásában.
+
+```{jsx}
+const name = "David";
+const el = <p>Hello, {name}</p>;
+```
+
+Az elemekhez adhatunk `id`-t és `class`-t is. Ehhez is használhatunk változókat. Ha az elemnek `class`-t is akarunk adni, akkor viszont a szokásos `class` helyett (JS-ben foglalt) a `className`-et kell használni. Ehhez hasonlóan Reactban több HTML attribútum camelCase formájú.
+
+```{jsx}
+const JSX = <div id="my-id"></div>
+const JSX = <div id={userId}></div>
+const JSX = <div className="my-div"></div>
+```
+
+A React tag-ek lehetnek önmagukat zárók, ha üresek. Viszont az üres tag-eket is le kell zárni kötelezően.
+```{jsx}
+const JSX = <div>
+    <p>Lorem ipsum</p>
+    <br />
+    <hr />
+    <div />
+  </div>
+```
+
+### JS kód és JSX
+
+A JSX mellett hagyományos JS kódot is használhatunk. Utóbbit csak akkor kell `{}` közé tenni, ha a JSX részben használjuk (pl. a return érték részeként), egyébként nem. A class komponensek render metódusában például anélkül használhatunk JS kódot. A return részben viszont már JSX-ról van szó, ezért használni kell a kapcsos záróljeleket!
+
+A JS kód gyakori alkalmazása például, hogy valamilyen feltétel alapján rendereljük bizonyos módokon a komponenseket. A feltétel függvényében változhat, hogy melyik komponenst rendereljük, annak részei megjelennek-e, illetve a css formázás is. Ez történhet if/else-zel, ternary operatorral vagy rövidre zárással is. A zárójelezésre a fenti szabályok vonatkoznak.
+
+### React Portal
+
+A tiszta html struktúrához néha az kell, hogy az együtt, pl. egy fragmentumban renderelt elemek ne egymás mellé kerüljenek, hanem az egyik elem a DOM tetejére (pl. modális ablak ne az oldal közepén legyen). Működőképes lehet az alkalmazás máshogy is, de szemantikai szempontból nem optimális megoldás. 
+
+Alapesetben a komponensek és elemek oda renderelődnek, ahol a JSX-ben szerepelnek. Tisztább és jobb megoldás a portál.
+
+A html-ben létrehozhatunk olyan diveket, amelyekbe az új elemek kerülnek: a `root` mellett lesz pl. egy `modal-root`.
+Ezek után a renderelés a ReactDOM `.createPortal` metódusával történik, a returnben a renderelendő JSX kódot a `.createPortal` metódusba csomagoljuk. A metódus első paramétere a komponens, amelyet renderelni akarunk (beleértve az összes szükséges props-ot), a második paraméter pedig a DOM-nak az az eleme, amelyhez adni szeretnénk.
+
+```{}
+ReactDOM.createPortal(<ErrorModal title={props.title} message={props.message} onConfirm={props.onConfirm} />, document.getElementById("modal-root"));
+```
+
+A portállal áthelyezett elemeknek a DOM-beli helye változik, ugyanakkor ugyanúgy működnek, mint a sima React elemek, vagyis ugyanúgy hozzáférnek a megfelelő változókhoz, mintha a JSX-ben megadott helyen renderelnénk őket.  
+
+## Komponensek
+
+A React magját a komponensek adják, amelyek az oldalt független és újra felhasználható elemekre bontják. Ez lehet egy fejléc, cím, input mező, lista és annak elemei, gombok, stb. 
+Kétféleképpen hozhatók létre: függvénnyel vagy class-ként.
+
+### Létrehozás
+
+**Függvény komponensek:**  
+
+Ebben az esetben `stateless functional component`-ről beszélünk. Ehhez egy olyan JS függvényt kell írni, amely return értéke egy JSX vagy `null`. A függvény nevének **nagybetűvel** kell kezdődnie!
+
+*Megjegyzés: Arrow függvény is használható.*
+
+```{jsx}
+const MyComponent = function() {
+  return (
+    <div>
+      <p>Lorem ipsum</p>
+    </div>
+  )
+}
+```
+
+Mostanában, mióta a hookok révén lehetővé vált a state kezelése, ezek népszerűbbek.
+
+**ES6 Class-ként:**  
+
+Ha class-ként hozzuk létre, akkor a React.Component class-t kell kiterjeszteni, hogy hozzáférést kapjon annak metódusaihoz. Az új komponensnek tartalmaznia kell a render metódust.
+A constructor függvény használata javasolt (FCC), de ha jól értem, nem kötelező (sololearn). Ha azt szeretnénk, hogy a komponensünknek legyen state-je, ezt a constructorban tudjuk létrehozni az instanciálás során.
+
+```{jsx}
+class MyComponent extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+  render() {
+    return (
+      <div>
+        <h1>Hello React!</h1>
+      </div>
+    )
+  }
+};
+```
+
+### Használat
+
+Ezt követően a komponenseket beilleszthetjük, változóba menthetjük, stb. Ennek módja, hogy mintha üres html tag-eket adnánk hozzá (/>-vel lezárjuk), de ezek neve a komponensnév. Lehetőség van konténer komponenseket is létrehozni, amelyek nyitó és záró-tagje közé tartalmat illeszthetünk. Ezt az adott komponens `props`-ként megkapja.
+
+```{jsx}
+const el = <MyComponent />
+```
+
+Jó gyakorlat külön .js file-okat létrehozni az egyes komponenseknek, és ezeket a modulokat importálni azokba a komponens-file-okba, amelyek használják ezeket:
+
+```{js}
+import Button from './UI/Button';
+```
+
+Minden file-ban exportáljuk a létrehozott komponenst, default exportként. Ezt érdemes a file végén megtenni, mert így használhatjuk a typeChecking és defaultProps funkciókat. A más file-ban definiált, de az adott komponens által felhasznált alkomponenseket a file elején importáljuk. 
+
+```{js}
+export default ComponentName;
+```
+
+**Egymásba ágyazódó komponensek**  
+
+Az új komponensek használhatnak korábban létrehozott komponenseket. Jó gyakorlat a komplex komponenseket elemi komponensekre bontani, amelyek újrahasznosíthatók.
+
+```{jsx}
+function App() {
+  return <div>
+    <NewUser />
+    <UsersList />
+    <Footer />
+  </div>;
+}
+```
+
+### Elemek programatikus renderelése
+
+Kihasználva a JS képességeit, lehetőség van array-ből listaelemeket, divek sorozatát, stb. renderelni (pl. map függvény, ahol a return érték egy-egy <li> elem lesz), amelyeket <ul>{listItems}</ul> formában renderelünk, ahol listItems az <li> elemek array-e. 
+
+Az array elemeit propsként adhatjuk meg <ListName data={array} /> formában.
+
+Ez a lehetőség különösen hasznos, ha nem tudjuk előre, hány elemet kell renderelni, mert az a felhasználó inputjától függ.
+
+Arra kell viszont figyelni, hogy Reactban (és Vue-ban is) minden listaelemnek egyedi azonosítóval (`key`) kell rendelkeznie. Ez jöhet úgy, hogy az eredeti array elemei objektumok (id - név párok), vagy úgy, hogy az indexet vagy egy random számot használunk egyedi kulcsként.
+
+Ez a kulcs ahhoz kell, hogy a React azonosítani tudja az adott elemet, például, ha törölni akarjuk, ez alapján tudja, mely elemet törölje. Az azonosítható elemek esetében kevesebb az újrarenderelés is, mert csak a ténylegesen változó elemeket kell újrarenderelni.
+
+## DOM-hoz adás
+
+A DOM-hoz adás a `ReactDom.render()` függvénnyel történik. A `targetNode` megadható a `document.getElementById()` vagy `document.querySelector()` révén is, közvetlenül a `render()`-ben.
+A render felülírja a tartalmat, ezért a konténerek jellemzően üresek a html-ben.
+Egy React program jellemzően egyszer használja a render parancsot.
+
+```{jsx}
+ReactDOM.render(component, targetNode)
+```
+
+A későbbiekben viszont már nem újrarenderelésről, nem is közvetlen DOM manipulációról van szó, hanem az alkalmazás állapotának változtatásával tudjuk elérni, hogy a megjelenített komponensek változzanak.
+
+
+## Komponens kommunikáció: Props
+
+A komponensek létrehozásában használhatunk `props`-okat (argumentumokat), amelyeket ezek megkapnak a renderelés során. Ezek egy objektumban találhatók. Propból több is lehet a `props` objektum részeként.
+
+*Mint minden objektum, a props is destrukturálható, és ebben az esetben nem kell a props.propertyName a hozzáféréshez.*
+
+```{jsx}
+const MyComponent = function(props) {
+  return <p>Hello, {props.name}!</p>;
+}
+
+const el = <MyComponent name="John" />
+
+class Hello extends React.Component {
+  render() {
+    return <p>Hello, {this.props.name}!</p>;
+  }
+} 
+
+function Item(props) {
+  return <div className="item">
+  <b>Name:</b> {props.name} <br />
+  <b>Price:</b> {props.price}
+  </div>;
+}
+
+<Item name="Cheese" price="4.99" /> 
+<Item name="Bread" price="1.5" />
+<Item name="Ice cream" price="24" />
+```
+
+Ha a megadott prop érték nem string, hanem szám, array vagy változónév `{}` közé kell tenni, hogy JS kódként kezelje:
+
+```{jsx}
+<ParentComponent>
+  <ChildComponent colors={["green", "blue", "red"]} />
+  <ChildComponent2 quantity={3} />
+</ParentComponent>
+```
+
+Több propsot egyszerre megadhatunk úgy is, hogy egy objektumban helyezzük el ezeket, és a spread operátorral adjuk a komponenshez.
+
+```{jsx}
+const Input = (props) => {
+  return (
+    <div className={classes.input}>
+      <label htmlFor={props.input.id}>{props.label}</label>
+      
+      // Itt a spread operátorral adjuk meg a tulajdonságokat
+      <input {...props.input} />
+    </div>
+  );
+};
+
+// Ezek után a renderelésnél
+<Input
+        label="Amount"
+        input={{
+          id: 'amount_' + props.id,
+          type: 'number',
+          min: '1',
+          max: '5',
+          step: '1',
+          defaultValue: '1',
+        }}
+      />
+```
+
+A fenti példában az input elem kap egy id, típus, minimum, maximum, lépés és alapértelmezett érték tulajdonságot is.
+
+### default props és type checking
+
+Lehetőség van default értékeket is megadni a komponenshez tartozó `defaultProps` property-vel, amelyhez egy objektumot rendelhetünk. A default értékek felülírása úgy történik, hogy megadjuk az adott prop értékét a beillesztésnél.
+
+```{jsx}
+MyComponent.defaultProps = { location: 'San Francisco' }
+```
+
+A React type checkinget is lehetővé tesz a propokra, hasonló módon, mint a default értékek megadását. Az isRequired részt azt jelzi, hogy az adott propot kötelező megadni.
+A propTypes-t külön kell importálni.
+
+Bővebb információ [itt](https://reactjs.org/docs/typechecking-with-proptypes.html)
+
+```{jsx}
+import PropTypes from 'prop-types';
+
+MyComponent.propTypes = { 
+  handleClick: PropTypes.func.isRequired,
+  quantity: PropTypes.number,
+  switch: PropTypes.string}
+```
+
+### Adat- és függvénytovábbítás
+
+A szülő komponensek adatokat és függvényhivatkozásokat adhatnak át a gyermekeknek, de fordítva nem működik. Azokat az adatokat, amelyeket több gyermeknek is kezelnie kell, a szülő komponensnek kell adnunk, majd props révén továbbítani a gyermek komponenseknek. Ugyanígy, a gyermek komponensek propként megkaphatják a szülőn definiált függvényeket, amelyek felhasználhatók arra, hogy adatokat továbbítsunk "felfelé". Ezáltal pl. egy gyermek komponens is változtatni tudja a szülő state-jét, ha a továbbított függvényben a state-et felülíró függvényt használunk.
+
+```{jsx}
+function ContactManager(props) {
+  const [contacts, setContacts] = useState(props.data);
+
+  function addPerson(name) {
+    setContacts([...contacts, name]);
+  }
+
+  return (
+    <div>
+      <AddPersonForm handleSubmit={addPerson} />
+      <PeopleList data={contacts} />
+    </div>
+  );
+} 
+```
+
+A gyermek komponensen definiálni kell egy függvényt, amely a props.handleSubmit révén hívni tudja az addPerson függvényt.
+
+```{jsx}
+function AddPersonForm(props) {
+  const [ person, setPerson ] = useState('');
+    
+  function handleChange(e) {
+    setPerson(e.target.value);
+  }
+    
+  function handleSubmit(e) {
+    props.handleSubmit(person);
+    setPerson('');
+    e.preventDefault();
+  }
+  return (
+    <form onSubmit={handleSubmit}>
+      <input type="text" 
+        placeholder="Add new contact" 
+        onChange={handleChange} 
+        value={person} />
+      <button type="submit">Add</button>
+    </form>
+  );
+} 
+```
+
+A state tehát a szülő komponensben van eltárolva, de a gyermek komponensek hozzáférhetnek ehhez és módosítani is tudják a prop formában megkapott adatok és függvényreferenciák révén.
+
+Ez a folyamat komplex alkalmazások esetében rendkívül bonyolulttá tud válni. Ennek kezelésére született a Redux, amelyet a front-end könyvtárak (React mellett jQuery, Angular) használhatnak.
+
+## State
+
+Míg a props változtathatatlan, a komponensek rendelkezhetnek state-tel, amely a felhasználói interakció következtében változhat, és a React ennek függvényében egyes komponenseket újrarenderelhet. 
+
+### Class komponensek state-je
+
+A state a class komponensek esetében ugyancsak egy objektum, és ez módosítható, leggyakrabban event handlerekben. A state-hez a this.state révén lehet hozzáférni, módosítani pedig a this.setState() metódussal. Ha ez utóbbi történik, a React automatikusan újrarendereli a komponenst. Ezáltal elkerülhető, hogy többször kelljen a ReactDOM.render metódust használni.
+
+```{jsx}
+class Hello extends React.Component {
+  state = {
+    name: "James"
+  }
+
+  render() {
+    return <h1>Hello {this.state.name}.</h1>;
+  }
+}
+
+this.setState({ 
+  name: "James",
+  age: 25
+}); 
+```
+
+A state-et a constructor függvényben is létrehozhatjuk, ebben az esetben this.state-ként kell rá hivatkozni:
+
+```{jsx}
+class Hello extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      name: "James"
+    }
+  }
+  render() {
+    return (
+      <div>
+        <h1>Hello {this.state.name}</h1>
+      </div>
+    );
+  }
+};
+```
+
+Azokat a komponenseket, amelyek rendelkeznek state-tel `stateful`-nak, a többit `stateless`-nek nevezzük.
+
+Az eredeti state értékeket a komponens kaphatja a props-ból is.
+
+```{jsx}
+class Hello extends React.Component {
+  state = {
+    name: this.props.name
+  }
+
+  render() {
+    return <h1>Hello {this.state.name}.</h1>;
+  }
+}
+```
+
+A setState metódus argumentuma lehet egy objektum azokkal a state értékekkel, amelyeket módosítani szeretnénk, de másik megoldás, hogy függvényt kap argumentumként, amely hozzáfér az aktuális state állapothoz és a propokhoz, ami akkor lehet hasznos, ha a korábbi értékek alapján akarunk új értéket adni. Ennek az első függvénynek a return értéke legyen az új state objektum. 
+
+A második argumentum lehet egy callback függvény, amely akkor fut le, ha a state frissült. Ez azért lehet fontos, mert a state update-et a React optimalizálja, és nem szinkron módon hajtja végre, ezért ha a state update után szeretnénk valami műveletet elvégezni, azt ebben a függvényben tudjuk megtenni, mert egyébként elképzelhető, hogy a parancs még az előző állapottal fut le. Ez a második argumentum opcionális.
+
+A state értékeihez a `this.state` objektum révén férünk hozzá, de ez destrukturálható is, akárcsak az instancia egésze is, amelyre a `this` mutat.
+
+### A függvény komponensek state-je: useState hook
+
+Korábban csak a class komponensek rendelkezhettek state-tel, de újonnan már a függvény komponensek is, a `useState` hook révén. Ehhez importálni kell (nevesített importtal):
+
+```{js}
+import React, { useState } from 'react'; 
+```
+
+A `useState()` egy argumentumot kap (a state kezdőértékét), return értéke pedig egy array: ennek két eleme a jelenlegi state és egy függvény, amely a state módosítását teszi lehetővé. Ezeket array destrukturálással szokás változókba menteni. Több state változó is létrehozható a useState ismételt hívásával. 
+
+```{jsx}
+function Hello() {
+  const [name, setName] = useState("David");
+
+  return <h1>Hello {name}.</h1>;
+}
+```
+
+*A kapott párt általában az [x, setX] formában destrukturáljuk. Előbbi az eredeti állapot, utóbbi a függvény neve.*
+
+Ezután a setX(val) függvényhívás x állapotértékét val-ra változtatja.
+
+Ha a state változtatása a korábbi state értékén alapul, függvényként kell megadni:
+
+```{jsx}
+setCounter(prevState => prevState + 1)
+```
+
+### Komplex state-ek: useReducer hook
+
+A `useReducer` hookkal lehetőség van összevontani kezelni state-eket. Ez különösen hasznos, ha egy state érték egy vagy töb másik state értéktől függ. Ilyen esetekben felmerülhet problémaként, hogy a React a state-ek frissítését ütemezi, és előfordulhat, hogy egy korábbi state értéket továbbít, mert az még nem frissült. Ennek elkerülésére szolgált, hogy ha a korábbi state-en alapuló módosítást hajtunk végre (pl. elemet adunk hozzá array-hez), akkor függvényként adjuk meg az új state-et, amely paraméterként garantáltan a legfrissebb állapotot kapja meg. Ez azonban nem működik, ha más state-ek alapján dolgozunk.  
+
+Kerülő megoldás lehet a useEffect hook használata és élesítése, ha a másik state értéke változik, és így ennek legfrissebb értéke alapján tudjuk megadni az ettől függő állapotértéket. Egy másik megoldás a reducerek használata.  
+
+Ehhez a komponensen kívül létrehozunk egy reducer függvényt, amely a kapott akciók alapján módosítja az aktuális state-et (valójában új state objektumot hoz létre, hiszen a React csak így tudja felismerni az állapotváltozást és hogy újra kell renderlni komponenseket).  
+
+Ennek első argumentuma a korábbi state állapot (a React garantálja, hogy a legfrissebbet kapja), amelyet felhasználhatunk, ha például ezen alapul az új state (pl. számláló), vagy ha az adott akció csak az állapot egy részét módosítja, a többit pedig másolni szeretnénk. 
+Másik argumentuma az akció, amely jellemzően egy objektum, és rendelkezik `type` tulajdonsággal, emellett pedig opcionálisan további adatokat (`payload`) is tartalmazhat (pl. az alábbi példában a val property-t):  
+
+```{jsx}
+const emailReducer = (state, action) => {
+  if (action.type === 'USER_INPUT') {
+    return { value: action.val, isValid: action.val.includes('@') };
+  }
+  if (action.type === 'INPUT_BLUR') {
+    return { value: state.value, isValid: state.value.includes('@') };
+  }
+  return { value: '', isValid: false };
+};
+```
+
+Ahhoz, hogy elkerüljük az elgépelésből adódó hibákat az akciók típusainak megadása során, a lehetséges akciókat egy külön objektum key-value párjaiként is megadhatjuk, és az akciók élesítésekor, illetve a reducer függvényben ennek az objektumnak a property-jeit használhatjuk.
+
+A komponensben magában a `useState`-hez hasonlóan használjuk a `useReducer`-t. Ennek első paramétere a fent definiált reducer függvény, a második paramétere pedig egy kiinduló state. Return értéke egy array, amelyet destrukturálunk: egy állapot változót és egy dispatch függvényt kapunk.  
+
+```{jsx}
+const [emailState, dispatchEmail] = useReducer(emailReducer, {
+    value: '',
+    isValid: null,
+  });
+```
+
+Ezután a handler függvényekben, amelyekben egyébként a state-et változtatnánk, egy akciót (egy objektumot) küldünk el a dispatch függvény paramétereként, amellyel módosítjuk a state-et. A state-et ugyanúgy használhatjuk, mint korábban, de mivel sokszor objektum formájú, ezért az adott property-re kell hivatkozni vagy destrukturálni.    
+
+```{}
+const emailChangeHandler = (event) => {
+    dispatchEmail({ type: 'USER_INPUT', val: event.target.value });
+
+    setFormIsValid(event.target.value.includes('@') && passWordState.isValid);
+  };
+  
+const validateEmailHandler = () => {
+    dispatchEmail({ type: 'INPUT_BLUR' });
+  };
+```
+
+A reducereket használhatjuk a Contextben is: ebben az esetben a setter függvény(eke)t, amelye(ke)t egyébként a useState hívásával kapnánk, külön hozzuk létre, és ebben a `dispatch()` függvényt használjuk.
+
+Jó gyakorlat, hogy maga a logika ezekben a külön függvényekben (`action creator`) van megírva, és a `dispatch()`-nek payloadként a kész értékeket adjuk, és így a reducer függvénynek csak létre kell ebből hoznia az új objektumot:
+
+```{js}
+const cartReducer = (state, action) => {
+  const { type, payload } = action;
+
+  switch (type) {
+    case CART_ACTION_TYPES.SET_CART_ITEMS:
+      return {
+        ...state,
+        ...payload,
+      };
+    case CART_ACTION_TYPES.SET_IS_CART_OPEN:
+      return {
+        ...state,
+        isCartOpen: payload,
+      };
+    default:
+      throw new Error(`Unhandled type of ${type} in cartReducer`);
+  }
+}
+```
+
+Util függvényként létrehozhatunk egy `createAction()` függvényt, amely egyszerűsíti a dispatch-ek írását:
+
+```{js}
+// reducer.utils.js
+export const createAction = (type, payload) => ({ type, payload })
+
+// usage
+dispatch(createAction('INCREMENT', newCount));
+
+```
+
+### React Context API
+
+Sokszintű alkalmazásoknál a hagyományosan kezelt state-et sok szinten kell átküldeni anélkül, hogy azt az adott szinten használnánk. Ennek egy jó alternatívája lehet a Context API.  
+
+**LÉTREHOZÁS:** Külön mappában (pl. context, store, state) létrehozott .js file-okban is kezelhetjük a komplexebb globális state-eket. Ebben importálni kell a Reactot, majd a `React.createContext()` metódussal hozható létre a kontextus, amelynek jellemző paramétere egy objektum a state változókkal. Ezt egy változóba mentjük, és exportáljuk.
+
+```{js}
+import React from 'react';
+
+const AuthContext = React.createContext({
+  isLoggedIn: false,
+  onLogout: () => {},
+});
+
+export default AuthContext;
+```
+
+Ez azért jó, mert így az IDE hozzáfér ezekhez, és a programkód írása során javasolja ezeket a property neveket.
+
+**RENDELKEZÉSRE BOCSÁTÁS (PROVIDE):** Ezután a létrehozott kontextus objektum importálható a megfelelő file-okba, ahol azokat a komponenseket, amelyeknek hozzáférést akarunk adni az ebben tárolt változókhoz, be kell csomagolnunk.
+
+```{jsx}
+// ...
+return (
+    <AuthContext.Provider 
+      value={{
+        isLoggedIn: isLoggedIn, // state variable from useState or useReducer
+        onLogout: logoutHandler,
+      }}
+    >
+      <MainHeader isAuthenticated={isLoggedIn} onLogout={logoutHandler} />
+      <main>
+        {!isLoggedIn && <Login onLogin={loginHandler} />}
+        {isLoggedIn && <Home onLogout={logoutHandler} />}
+      </main>
+    </AuthContext.Provider>
+  );
+```
+
+**HASZNÁLAT (LISTENING):** Ezek után a használó komponenseket hozzá kell kötni a kontextushoz. Erre két mód van:
+
+**Context Consumer wrapper**:  
+A megfelelő komponenseket a Consumer wrapperbe csomagoljuk, és ezen belül egy függvényben return-öljük a JSX kódot. Ehhez viszont a Provider-ben meg kell adni a value értékeként ugyanezt az objektumot. Ebben viszont a konkrét érték helyett hivatkozhatunk az egyébként használt state változóra. Ugyancsak ebben függvényeket is hozzáadhatunk, amelyhez szintén hozzáférnek majd a child komponensek. 
+Ha ez megtörtént, már nem kell a props-szal továbbítani ezeket az információkat, mert a kontextus objektum részeként hozzáférnek a komponensek.
+
+```{jsx}
+// App.js-ben
+return (
+    <AuthContext.Provider
+      value={{
+        isLoggedIn: isLoggedIn, // Ez a fent létrehozott state változó
+        onLogout: logoutHandler,
+      }}
+    >
+      <MainHeader />  // Itt már nincs a props-szal továbbítva
+      <main>
+        {!isLoggedIn && <Login onLogin={loginHandler} />}
+        {isLoggedIn && <Home onLogout={logoutHandler} />}
+      </main>
+    </AuthContext.Provider>
+  );
+/*
+MainHeader.js-ben már nem kell props-szal továbbítani a state változót és a logoutHandlert
+Navigation.js-ben importálás után hozzáférünk a kontextushoz, amelyre tetszőleges 
+névvel hivatkozhatunk
+*/
+const Navigation = () => {
+  return (
+    <AuthContext.Consumer>
+      {(ctx) => {
+        return (
+          <nav className={classes.nav}>
+            <ul>
+              {ctx.isLoggedIn && (
+                <li>
+                  <a href="/">Users</a>
+                </li>
+              )}
+              {ctx.isLoggedIn && (
+                <li>
+                  <a href="/">Admin</a>
+                </li>
+              )}
+              {ctx.isLoggedIn && (
+                <li>
+                  <button onClick={ctx.onLogout}>Logout</button>
+                </li>
+              )}
+            </ul>
+          </nav>
+        );
+      }}
+    </AuthContext.Consumer>
+  );
+};
+```
+
+**useContext hook**:  
+Ennél egyszerűbb és jobban olvasható a `useContext` hook használata. Importálás után egyszerűen egy változóba mentjük a létrehozott kontextust, és ezután hozzáférünk ennek property-jeihez. A ctx objektumot destrukturálhatjuk is külön változókba.
+
+```{jsx}
+const Navigation = () => {
+  const ctx = useContext(AuthContext);
+  
+  return (
+    <nav className={classes.nav}>
+      <ul>
+        {ctx.isLoggedIn && (
+          <li>
+            <a href="/">Users</a>
+          </li>
+        )}
+        {ctx.isLoggedIn && (
+          <li>
+            <a href="/">Admin</a>
+          </li>
+        )}
+        {ctx.isLoggedIn && (
+          <li>
+            <button onClick={ctx.onLogout}>Logout</button>
+          </li>
+        )}
+      </ul>
+    </nav>
+  );
+};
+```
+
+Ezzel párhuzamosan, ahol közvetlenül használjuk is, illetve, ahol fontos, hogy más függvények is továbbíthatók legyenek (pl. Button komponens), továbbra is a props révén továbbítjuk a szükséges értékeket és függvényeket.
+
+Lehetséges a Context Providert a context js file-jában komponensként létrehozni, amelybe áttehetünk minden state-változót, függvényt, amit kezelnie kell, és ezt a komponenst is exportálhatjuk. Ezek után nevesített importtal betehetjük akár az index.js file-ba is, ezáltal az egész applikáció számára rendelkezésre bocsátva ezt a kontextust. Ezek után minden komponens file-ban a kontextus importálása után a useContext hookkal hozzáférhetünk ezekhez a változókhoz és függvényekhez.
+Szintén az értékeket is megadhatjuk külön változóban és itt már csak a változót adjuk a value propnak.
+
+
+A kibővített context file:
+
+```{jsx}
+import React, { useState, useEffect } from 'react';
+
+const AuthContext = React.createContext({
+  isLoggedIn: false,
+  onLogout: () => {},
+  onLogin: (email, password) => {},
+});
+
+export const AuthContextProvider = (props) => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const storedLoginInfo = localStorage.getItem('isLoggedIn');
+
+    if (storedLoginInfo === '1') {
+      setIsLoggedIn(true);
+    }
+  }, []);
+
+  const logoutHandler = () => {
+    localStorage.removeItem('isLoggedIn');
+    setIsLoggedIn(false);
+  };
+
+  const loginHandler = () => {
+    localStorage.setItem('isLoggedIn', '1');
+    setIsLoggedIn(true);
+  };
+
+  return (
+    <AuthContext.Provider
+      value={{
+        isLoggedIn: isLoggedIn,
+        onLogout: logoutHandler,
+        onLogin: loginHandler,
+      }}
+    >
+      {props.children}
+    </AuthContext.Provider>
+  );
+};
+
+export default AuthContext;
+
+```
+
+Korlátai: a context nehezen kezeli a gyakori state-változásokat. Erre a Redux jobb megoldás. A rövid prop-láncokat nem szükséges lecserélni, de ha hosszú props-láncaink vannak, érdemes lehet a Context API-t használni.
+
+### React-Redux
+
+A React appok state-jét, különösen nagy appok esetében célszerű lehet a Redux-szal kezelni. A React.Context-hez képest a Redux jobban képest komplex, és gyakran frissülő state-et kezelni.
+
+A `Context`-tel ellentétben, amelyből több is lehet, és ezekhez vagy az egész alkalmazás, vagy annak egy kisebb része férhet hozzá, amelyet az adott kontextus `Provider` komponensébe csomagoltunk, a `Redux` esetében egyetlen `store` van, amelyhez a teljes alkalmazás hozzáfér.
+
+Másik különbség, hogy a `Context` esetében, ha `reducer` függvényeket használunk a komplex állapot kezelésére, minden `reducer` külön `dispatch()` függvényt kap, amelyet magát vagy egy ezt hívó `action creator`-t adunk át a komponenseknek, hogy módosítani tudják a state-et. A `Redux` esetében a komponensek az egész állapothoz hozzáférnek, és ugyanazt a `dispatch()` függvényt használják, amelyet egy vagy akár több külön `reducer` dolgoz fel. Ezeket pedig egy `root reducer`-ben egységesítünk.
+
+*Természetesen a Redux kombinálható a hagyományos state-kezeléssel, ha pl. lokálisan használat state-et is akarunk: pl. komponens elrejtése. Nem ajánlatos viszont a Redux és a Context API együttes használata.*
+
+A Redux használatához a `redux` mellett a `react-redux` package-et használjuk. Ennek része a `Provider` komponens, illetve a `connect` függvény. Függvény komponensekhez pedig a `useSelector` és `useDispatch` hookok.
+
+A Redux használatát a [redux-basics]('/redux-basics.html') oldalon foglaltam össze.
+
+Az egész alkalmazásunkat a `<Provider>` komponensbe ágyazzuk, ezért ezt ott importáljuk (akár az index.js file-ban). Ez a komponens két propot kap: a `store`-t és a child komponenseket. Ehhez a `ReactRedux.Provider` hivatkozással férhetünk hozzá, és az egyszerűség kedvéért új változóba menthetjük, vagy nevesített import után a `Provider` komponens formájában.
+
+```{}
+const Provider = ReactRedux.Provider;
+```
+
+Ezután a renderelés során a `<Provider></Provider>` formában használhatjuk, amely közé beágyazhatjuk az App komponenst, vagy annak részeit.
+
+
+## Event handling
+
+Reactban az event handlereket `inline` formában a html tagbe írva adhatjuk meg. Ellentétben a html-lel, az event handlerek neve camelCase-ben van (pl. onClick), az event handler függvényt pedig `{}` közé írhatjuk.
+
+```{}
+<button onClick={handleClick}>
+  My Button
+</button> 
+
+// vagy class komponensnél
+
+<button onClick={this.handleClick}>
+  My Button
+</button> 
+```
+
+Event nevek: onClick, onChange (input mezőknél), onSubmit (a form tag-ben)
+
+A függvényeket korábban létrehozzuk a class/függvény komponens részeként, és ezek hozzáférhetnek az event objektumhoz.
+
+Ha class komponenseket használunk, akkor a függvények esetében egyértelműen meg kell adni, **mire mutasson a this** a bind metódussal, mert csak így fognak tudni a this révén hozzáférni a komponenshez. Ez a JS általános működéséből ered: class-on belül közvetve hívott függvényeknél a `this` nem meghatározott. 
+Ennek egyik megoldása a `bind` használata. Ha van constructor, akkor ezt azon belül tudjuk megtenni, míg magát a függvényt (metódust) ezen kívül, magában a komponensben hozzuk létre. Ezekre a metódusokra aztán a `this.methodName` módon tudunk hivatkozni és hívni azokat.
+
+Ez a constructorba jön:
+
+```{}
+this.funName = this.funName.bind(this)
+```
+
+Másik lehetőség, hogy a callback függvény maga anonim arrow függvény. Ebben az esetben nincs szükség a hívott függvényt a class-hoz kötni.
+
+```{}
+<button onClick={() => this.addItem()}>Add</button>
+```
+
+Vannak olyan események, amelyeket viszont csak közvetlenül (az `addEventListener`-rel) tudunk hozzáadni a window-hoz, illetve documenthez. Erre a legjobb hely a `componentDidMount()` életciklus metódus, illetve függvény komponenseknél a useEffect() hook.  
+
+## Életciklusokhoz kapcsolódó műveletek
+
+Az életciklus műveletek lehetővé teszik, hogy bizonyos műveleteket a React komponensek életciklusának meghatározott eseményeinél hajtsunk végre. Class komponensek esetében több metódus közül választhatunk, a függvény komponensek esetében pedig a useEffect hook használható.
+
+### Class komponensek
+
+Class komponensek esetében az életciklus műveletek a class fő részébe, a constructor után, de a render előtt helyezhetők el. 
+A `componentWillMount()` azelőtt fut, mielőtt a komponens először renderelődne.
+A `componentDidMount()` hozzáadható, hogy például a komponens induló state-jét megadjuk: akkor fut, amikor a komponenst az oldalra rendereljük. Ez hasznos lehet akkor is, ha event handlert akarunk hozzáadni valamilyen DOM elemhez, illetve az API hívások is ebbe a metódusba adhatók hozzá. Ha az adatok beérkezése után a setState-et hívjuk, az a komponens újrarenderelését eredményezi a megadott adatokkal. 
+Hasonlóan a `componentWillUnmount()` életciklus metódus közvetlenül a komponens eltávolítása előtt fut, a `componentDidUpdate()` pedig akkor, ha az adott komponenst frissítjük.
+A `shouldComponentUpdate()` metódus két argumentumot fogad el (nextProps és nextState), amelyekben a props és a state következő értékei találhatók objektumokként. Ez felhasználható arra, hogy a komponensek csak bizonyos feltételek esetén (pl. az új props különbözik az előzőtől) frissüljenek. A metódusnak booleant kell visszaadnia, amely ha true, akkor frissül, ha false, akkor nem frissül a komponens.
+
+```{}
+class OnlyEvens extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+  shouldComponentUpdate(nextProps, nextState) {
+    return nextProps.value % 2 == 0;
+  }
+  render() {
+    return <h1>{this.props.value}</h1>;
+  }
+}
+```
+
+### useEffect
+
+Függvény komponensek esetében a React újabban a `useEffect()` hookot teszi elérhetővé, amely kombinálja a fenti három életciklus metódust, amely egy callback függvény argumentumot fogad el. Használathoz importálni kell:
+
+```{}
+import React, { useState, useEffect } from 'react';
+```
+
+Ha a useEffect() függvényt beillesztjük a komponenst létrehozó függvényünkben az a renderelést követően, és/vagy minden frissítéskor lefut, attól függően, hogyan adjuk meg. Ha csak bizonyos állapotok frissítését szeretnénk kezelni, egy második paraméterrel tehetjük, amelyben megadjuk, hogy csak akkor akarjuk futtatni, ha az adott változó értéke megváltozik. Végül az unmountot úgy tudjuk kezelni, ha a függvény return értékeként adunk meg egy olyan függvényt, amely a "takarítást" végzi (`cleanup function`). 
+
+*Egy komponensben többször is használhatjuk a useEffect() függvényt.*
+
+Az alábbi useEffect az összes lehetséges paramétert tartalmazza:  
+
+1. Élső paramétere a callback függvény, amelyben egy időzítéssel (ezt mentjük identifier néven, hogy törölni tudjuk) oldjuk meg, hogy a state módosítás csak bizonyos idő után élesedjen (0.5s). 
+2. A függvénynek return értéke is van, ami egy cleanup függvényt eredményez, amely a függvény újbóli lefutásai előtt fut le közvetlenül. Ez azt eredményezi, hogy mikor a dependencies részben feltüntetett változók értéke megváltozik, akkor mielőtt új időzítést indítanánk, a korábban indítottat leállítjuk. Ezzel ebben az esetben azt oldjuk meg, hogy ne fusson le a form validálás minden billentyűleütés után, csak ha a felhasználó hosszabb szünetet tart. 
+3. A dependency résszel kapcsolatban az a fontos, hogy azokat tüntessük itt fel, amelyeket a függvény eleve használ, és változni tudnak. Nem szükséges itt feltüntetni a state update-elő függvényt, hiszen az nem változhat. Fontos, hogy a változók, amelyek fel vannak tüntetve a state-ek property-jei. Hivatkozhatnánk rájuk úgy is, ahogy a kommentben látszik, de nem jó a teljes state-re hivatkozás, mivel ez akkor is élesítené a függvényt, ha a state olyan részei változnak, amelyeket a függvény nem használ.  
+
+```{js}
+const { isValid: emailIsValid } = emailState;
+const { isValid: passwordIsValid } = passwordState;
+
+useEffect(() => {
+  const identifier = setTimeout(() => {
+    setFormIsValid(emailIsValid && passwordIsValid);
+  }, 500);
+
+  return () => {
+    clearTimeout(identifier);
+  };
+}, [emailIsValid, passwordIsValid]);
+// also correct [emailState.isValid, passwordState.isValid]
+// not correct [emailState, passwordState]
+```
+
+A useEffect-et egyszerűbb formában is használhatjuk: elhagyható a dependency, ebben az esetben minden újrarenderelésnél újrafut a függvény (figyelni kell, hogy ne hozzunk létre végtelen ciklust). De megadhatunk üres array-t is, ebben az esetben a függvény csak az első renderelés után fut le egyszer. 
+
+A useEffect-nek adott függvény viszont nem lehet aszinkron, ezért, ha mégis aszinkron műveletet akarunk végrehajtani (pl. adatok betöltése adatbázisból), azt úgy tudjuk megtenni, hogy a useEffect függvényének testében definiálunk egy aszinkron függvényt, és ezt ugyanott rögtön meg is hívjuk.
+
+```{js}
+useEffect(() => {
+  const asyncFun = async () => {
+    // ...
+    // e.g. await fetch('...')
+  };
+  
+  asyncFun();
+}, [])
+```
+
+A React hookok használatának két fő (és egy mellék-) szabálya van:  
+
+1. React hookot csak React függvényeken belül használhatunk: komponens függvények, custom hookok
+2. Csak a react függvények legfelső szintjén használhatjuk: nem használhatjuk beágyazott függvényekben vagy blokkokban (pl. if/else)
+3. A useEffect-ben mindent, amit használunk, tüntessünk fel a dependency részben (kivéve kivételek)
+
+## Inputok és formok kezelése
+
+### onChange és debouncing
+
+
+*****************************
+TODO!!
+*****************************
+
+### useRef
+
+A useRef hooknak többféle felhasználási módja van. Az egyik az inputoknál az onChange kiváltása, amivel nem kell minden billentyűleütés után a state-et frissíteni.
+
+Ehhez importáljuk a `useRef`-et a `react` modulból, majd annyiszor futtatjuk, ahány inputot figyelni akarunk vele:
+
+```{js}
+const nameInputRef = useRef();
+const ageInputRef = useRef();
+```
+
+Ezután a létrehozott refeket a komponensekhez társítjuk a `ref` prop segítségével:
+
+```{jsx}
+return (
+  <form onSubmit={addUserHandler}>
+    <label htmlFor="username">Username</label>
+    <input id="username" type="text" ref={nameInputRef} />
+    <label htmlFor="age">Age</label>
+    <input id="age" type="number" ref={ageInputRef} />
+    <Button type="submit">Add User</Button>
+  </form>
+)
+```
+
+Végül ezek után a megfelelő handler függvényben hozzá tudunk férni a ref-ek értékeihez. A ref return értéke mindig a DOM objektum, amelyhez társítottuk, de ennek tulajdonságai hozzáférhetők (így pl. értéke) a `refName.current.value` révén.
+
+```{js}
+const addUserHandler = event => {
+    event.preventDefault();
+    const enteredName = nameInputRef.current.value;
+    const enteredAge = ageInputRef.current.value;
+    ...
+  }
+```
+
+Ennek a megoldásnak ugyanakkor hátránya, hogy nem tudjuk a React-tal visszaállítani az input mezők értékét. A ref-fel figyelt komponensek kontrollálatlan komponensek. A state-tel ez lehetséges volt, ha hozzáadtuk az input value propjához a state-et (contolled component). Ezt nevezik two-way bindingnak.
+Lehetséges megoldás (általában kerülendő, de itt kivételt tehetünk), hogy az adatok továbbítását követően közvetlenül átírjuk a ref-ek értékét:
+
+```{js}
+nameInputRef.current.value = '';
+ageInputRef.current.value = '';
+```
+
+Ha csak olvasni akarunk egy értéket, a ref jó alternatíva. Általában kevesebb kóddal jár, mint a state.
+
+A ref simán működik a beépített komponenseknél, de saját custom komponenseknél nem, így ott az egész komponenst, amelyen használni akarjuk a `React.forwardRef()` függvény argumentumaként kell megadni. Ebben az esetben a props mellett második argumentumként átadhatjuk neki a kapott ref-et.
+
+```{jsx}
+// Ahol a custom Input komponenst használjuk
+return (
+    <form className={classes.form} onSubmit={submitHandler}>
+      <Input
+      
+        // Korábban a useRef-fel létrehoztunk egy ref-et erre a célra
+        ref={amountInputRef}
+        label="Amount"
+        input={{
+          id: 'amount_' + props.id,
+          type: 'number',
+          min: '1',
+          max: '5',
+          step: '1',
+          defaultValue: '1',
+        }}
+      />
+      <button>+ Add</button>
+    </form>
+  );
+
+// Input.js-ben
+const Input = React.forwardRef((props, ref) => {
+  return (
+    <div className={classes.input}>
+      <label htmlFor={props.input.id}>{props.label}</label>
+      
+      // A kapott refet továbbadhatjuk a beépített komponensnek
+      <input ref={ref} {...props.input} />
+    </div>
+  );
+});
+```
+
+Ezek után a parent komponensben is hozzáférhetünk a ref tulajdonságaihoz: `amountInputRef.current.value`.
+
+### useImperativeHandle
+
+A `useRef` arra is használható, hogy a komponens bizonyos összetevőihez a parent komponensnek is hozzáférést biztosítsunk. Így például egy input komponensnél a komponensre való fókuszálást lehetővé tegyük az inputot renderelő komponensben (pl. form validationnél a hibás mezőbe lépjen automatikusan). Ehhez az Input komponenst elláttuk egy ref prop-pal, amelyhez létrehoztunk egy refet a useRef segítségével: 
+
+```{jsx}
+
+// In Login.js
+<Input
+  ref={emailInputRef}
+  type="email"
+  id="email"
+  label="E-Mail"
+  isValid={emailIsValid}
+  value={emailState.value}
+  onChange={emailChangeHandler}
+  onBlur={validateEmailHandler}
+/>
+
+```
+  
+Az Inputot definiáló file-ban importáljuk a `useImperativeHandle` hookot, és használjuk, illetve a teljes komponenst a `React.forwardRef` függvényben hozzuk létre:
+
+```{jsx}
+import React, { useRef, useImperativeHandle } from 'react';
+
+// forwardRef függvény
+// props mellett a ref paraméter teszi lehetővé, hogy a parent komponensben ref propot adjunk a komponensnek
+const Input = React.forwardRef((props, ref) => {
+  const inputRef = useRef();
+
+  // Ez a függvény, amelyet kívülről hívhatóvá akarunk tenni
+  const activate = () => {
+    inputRef.current.focus();
+  };
+
+  // Ez teszi kívülről hívhatóvá a megadott névvel (expose)
+  useImperativeHandle(ref, () => {
+    return {
+      focus: activate,
+    };
+  });
+
+  // Innen a sima JSX kód a reffel kiegészítve, hogy a függvény tudja, mire hivatkozik
+  return (
+    <div
+      className={`${classes.control} ${
+        props.isValid === false ? classes.invalid : ''
+      }`}
+    >
+      <label htmlFor="email">{props.label}</label>
+      <input
+        ref={inputRef}
+        type={props.type}
+        id={props.id}
+        value={props.value}
+        onChange={props.onChange}
+        onBlur={props.onBlur}
+      />
+    </div>
+  );
+});
+
+export default Input;
+
+```
+
+Ez a hook ritkán használatos, de néha jól jöhet.
+
+## React Router
+
+### App számára elérhetővé tétel
+
+A `react-router-dom` csomagot használjuk, amelynek jelenleg a 6-os a friss verziója.
+
+### Útvonalak definiálása
+
+Az alapelgondolás, hogy különböző url-ekhez különböző "oldalakat" nyitunk meg, amelyek alapvetően sima React komponensek, de szokás a különböző útvonalakhoz kapcsolódó komponenseket külön mappában (pl. `pages`, `routes` vagy `screens`) tárolni, és a `components` mappát a kisebb alkotóelemeknek meghagyni.
+
+Ezeket az útvonalakat többféleképpen definiálhatjuk.
+
+#### createBrowserRouter függvénnyel  
+
+A tutorial alapján ez most az útvonalak létrehozásának preferált módja. Ez azért is fontos, mert sok új funkció csak ennek (vagy hasonló módoknak) a használatával érhető el.  
+
+A `createBrowserRouter` paramétereiként megadhatjuk a különböző útvonalakat, és az ezekhez renderelendő komponenseket, és ennek return értéke egy router objektum lesz. Az alkalmazást magát a `<RouterProvider />` komponenssel rendereljük, amelynek a `router` propja az előbb létrehozott router objektumot kapja. Ez lesz az egész App komponens.
+
+```{jsx}
+// App.js
+
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+
+import HomePage from './pages/Home';
+import ProductsPage from './pages/Products';
+
+const router = createBrowserRouter([
+  { path: '/', element: <HomePage /> },
+  { path: '/products', element: <ProductsPage /> },
+]);
+
+function App() {
+  return <RouterProvider router={router} />;
+}
+
+export default App;
+```
+
+#### createRoutesFromElements függvénnyel  
+
+Az útvonalakat a `createRoutesFromElements` függvénnyel is definiálhatjuk. Ez arra is hasznos lehet, ha a korábbi módnak megfelelően a `Route` komponensekkel adtuk meg az útvonalakat, ezekből könnyen BrowserRouter-t készíthetünk a `createBrowserRouter`-rel, és kihasználhatjuk az új data API-k funkcióit.
+
+```{jsx}
+// App.js
+
+import {
+  createBrowserRouter,
+  createRoutesFromElements,
+  RouterProvider,
+  Route
+} from 'react-router-dom';
+
+import HomePage from './pages/Home';
+import ProductsPage from './pages/Products';
+
+const routeDefinitions = createRoutesFromElements(
+  <Route>
+    <Route path="/" element={<HomePage />} />
+    <Route path="/products" element={<ProductsPage />} />
+  </Route>
+);
+
+const router = createBrowserRouter(routeDefinitions);
+
+function App() {
+  return <RouterProvider router={router} />;
+}
+
+export default App;
+```
+
+#### BrowserRouter komponenssel  
+
+A ReactRouter 6.4-es verziójáig ez volt az útvonalak definiálásának egyedüli módja.
+
+Ahhoz, hogy a router működjön, a fő file-ban (index.js) importálni kell a `BrowserRouter` komponenst (nevesített importtal), és a renderelés során a render metódusban az App-ot ebbe kell csomagolni, mert ezen belül fognak működni a router csomag funkciói.
+
+Az útvonalak definiálásához a `Routes` és `Route` komponenseket importáljuk, és ezeket használjuk az egyes oldalak rendereléséhez. Ez történhet az `App.js` file-ban, de használhatjuk valamelyik komponensben is. 
+
+Az alkalmazás router által kezelt részét a `Routes` komponensbe csomagoljuk.
+
+Ebben a `Route` komponenst használjuk mindegyik útvonalhoz. Az 5-ös verzióban ebbe csomagoltuk a komponenst, a 6-os verzióban viszont az `element` prop-nak adjuk az adott oldal komponenst. A Route komponens `path` propjával adhatjuk meg, mely útvonal esetén szeretnénk ezt a komponenst renderelni.  
+
+```{jsx}
+// index.js
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
+
+import App from './App';
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <React.StrictMode>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </React.StrictMode>
+);
+
+// App.js
+import { Routes, Route } from 'react-router-dom';
+
+import Home from './routes/home/home.component';
+import Shop from './routes/shop/shop.component';
+
+const App = () => {
+  return (
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/shop" element={<Shop />} />
+    </Routes>
+  );
+};
+
+export default App;
+```
+
+
+#### Egymásba ágyazódó útvonalak
+
+A React Router lehetővé teszi az egymásba ágyazódó útvonalakat.
+
+A `createBrowserRouter` függvény használatánál a `children` property-t használhatjuk, és ennek értékei a beágyazódó route-ok.
+
+```{jsx}
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <RootLayout />,
+    children: [
+      { path: '/', element: <HomePage /> },
+      { path: '/products', element: <ProductsPage /> },
+    ],
+  },
+]);
+```
+
+A `Route` komponensnél, ha begágyazódó útvonalat szeretnénk, a komponenst rendes nyitó és zárótaggel hozzuk létre, és ezen belül is használhatjuk a Route komponenst. Az útvonalat érdemes relatívan megadni a komponens útvonalához képest, tehát nem `/sub-route` hanem `sub-route` formában, mert így, ha változik a szülő elérési útvonala, a relatív útvonalakon nem kell változtatni.
+
+```{jsx}
+const App = () => {
+  return (
+    <Routes>
+      <Route path="/" element={<Navigation />}>
+        <Route index element={<Home />} />
+        <Route path="shop/*" element={<Shop />} />
+        <Route path="auth" element={<Authentication />} />
+        <Route path="checkout" element={<Checkout />} />
+      </Route>
+    </Routes>
+  );
+};
+```
+
+Ilyenkor azonban alapértelemezett esetben a szülő komponens is renderelődik. A gyermek komponenst pedig meg kell adni, hová szeretnénk renderelni a szülőn belül. Ehhez az `Outlet` komponenst kell használni a szülő JSX kódjában. Ezt felhasználva lehetséges, hogy csak az oldal bizonyos részeit módosítsuk a route függvényében.
+
+```{jsx}
+const Navigation = () => {
+  // ...
+
+  return (
+    <Fragment>
+      <NavigationContainer>
+        {// ...}
+      </NavigationContainer>
+      <Outlet />
+    </Fragment>
+  );
+};
+```
+
+Például ezzel is elérhető, hogy a navigáció több oldalon is elérhető legyen. Ha a szülőként megadott útvonalon valamelyik gyermeket is renderelni szeretnénk, akkor ennek path helyett az index property-t is megadhatjuk simán `index` formában, vagy `index: true` formában, ha a createBrowserRouter-t használjuk. Ha útvonalat akarunk megadni, megadhatjuk a `path=''` vagy `path: ''` relatív útvonalat is.
+
+Ha attól függően, hogy csak a fő útvonalra (pl. `/shop`) vagy azon belül valamelyik alútvonalra megyünk (`/shop/shoes`), az útvonalakat az adott route-on is megadhatjuk. Pl. az `App.js` file-ban létrehozzuk a `shop/*` útvonalhoz tartozó `Route` komponenst, és ezen a `Shop` route komponenst rendereljük. Ennek tartalma pedit egy újabb `Routes` komponensbe ágyazott `Route`-ok: külön az `index` útvonalra, és külön az egyes alútvonalakra, akár dinamikusan: pl. `:category`. Itt a `path` propot az adott oldal url-jéhez képest kell csak megadni, tehát pl. ebben a példában a `/shop` részt elhagyjuk.
+
+```{jsx}
+import { Routes, Route } from 'react-router-dom';
+
+import CategoriesPreview from '../categories-preview/categories-preview.component';
+import Category from '../category/category.component';
+
+const Shop = () => {
+  return (
+    <Routes>
+      <Route index element={<CategoriesPreview />} />
+      <Route path=":category" element={<Category />} />
+    </Routes>
+  );
+};
+
+export default Shop;
+
+```
+
+Ez azért kell, mert a Route-hoz meg kell adni az `element` proppal, mit rendereljen. Ha azt szeretnénk, hogy a fő route komponensét ne renderelje az alútvonalakon, azt így tudjuk megoldani. 
+
+Példaként ld. a crwn-clothin projektben a shop route-ot.
+
+#### Error Element
+
+A React Routerrel kezelhetjük a nem definiált útvonalakat is: létrehozhatunk egy olyan oldalt, amelyet akkor nyit meg, ha a megadott url-hez nincs Route definiálva. Ilyenkor a program automatikusan 404-es hibát dob, és ezt a komponenst rendereli.
+Ezt az útvonalak definiálása során az `errorElement` property-vel tudjuk megadni azokhoz a szülő route-okhoz, amelyekhez ezt szeretnénk renderelni:
+
+```{jsx}
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <RootLayout />,
+    errorElement: <ErrorPage />;
+    children: [
+      { path: '/', element: <HomePage /> },
+      { path: '/products', element: <ProductsPage /> },
+    ],
+  },
+]);
+```
+
+ErrorElementet a beágyazódó útvonalakhoz is megadhatunk. 
+
+### Navigálás
+
+#### Navigálás Link komponensekkel 
+
+Az oldalon belüli navigációhoz importáljuk a `Link` vagy `NavLink` komponenst, amellyel kiválthatjuk a hagyományos a elemeket (ezek új http requestet küldenének, és elveszítenénk a state-et). Ezek `href` helyett `to` proport kapnak. A `NavLink` előnye, hogy ezzel létrehozhatunk egy aktív osztálynevet az éppen aktív elemnek (pl. megfelelő menuelem).  Ehhez a `className` propnak egy függvényt adunk értékül, amely hozzáfér egy objektumhoz az `isActive` property-vel, amely alapján hozzárendelhetünk CSS osztályokat. Ezeket a szokásos módon tudjuk kezelni a css-ben.
+
+Arra viszont figyelni kell, hogy akkor is aktívnak gondolhat egy linket, ha az adott útvonal alá tartozó url-en vagyunk: pl. a `/` útvonal mindig aktív lenne. Ilyenkor hozzáadhatjuk az `end` propot, és így csak a pontos egyezéseket nézi.
+
+```{jsx}
+<NavLink 
+  to="/" 
+  className={({ isActive }) => 
+      isActive ? classes.active : undefined 
+    }
+    end
+  >
+    Home
+  </NavLink>
+<NavLink 
+  to="/products" 
+  className={({ isActive }) => 
+      isActive ? classes.active : undefined 
+    }
+  >
+    Products
+  </NavLink>
+```
+
+#### Programmatikus navigálás
+
+Programmatikus navigálás: React Routerben ehhez is van egy hook: `useNavigate`, amelyet ha hívunk, egy `navigate` függvényt kapunk, amelyet használhatunk pl. a handler függvényeinkben. Ennek megadhatjuk azt az útvonalat, ahová navigálni szeretnénk pl. egy időzítő lejártakor vagy egy form adatainak elküldése után.
+
+Szintén hasznos a `redirect` függvény, amely lehetővé teszi, hogy pl. valamilyen tevékenység végeztével (pl. form elküldése) átirányítsunk egy másik url-re. Ezt használhatjuk olyan esetekben is, amikor a `useNavigate` hookok nem: pl. action függvényekben, amelyek nem komponensek.
+
+### Dinamikus url-ek
+
+A route-oknak dinamikus részei is lehetnek, amelyeket a szokásos (ld. Node.js, Vue.js) módon adhatunk meg (akár egymás után többet is):
+`/products/:productId` vagy `/products/:category/:subcat/:prodId`
+
+A dinamikus stringeket (pl. Linkek `to` propjához) legegyszerűbben template literallal vagy relatív útvonal esetén egyszerűen a dinamikus részt értékként megadva tudjuk létrehozni.
+
+Ahhoz, hogy a dinamikus részekhez hozzáférjünk, a feltételesen renderelt komponensben (pl. ProductDetail.js) a `useParams` hookot használjuk a `react-router-dom` csomagból. Ezt a komponens felső szintjén hívhatjuk, és a return értéke egy objektum, amelyben az egyes paraméterek találhatók key-value párokban.
+
+### Abszolút és relatív útvonalak
+
+A route definíciókban és a linkek to propjain abszolút és relatív útvonalakat is megadhatunk. Az abszolút útvonalak `/`-rel kezdődnek: pl. `/products/:productId` és ezek rögtön a domain után kerülnek, és így épül fel az url.
+
+A relatív útvonalaknál elhagyjuk a `/` jelet az elejéről, és ilyenkor a megadott útvonal az aktuális útvonal végére kerül. Használhatjuk a `..` útvonalat is, hogy egy szinten felfelé lépjünk (pl. Vissza gomb), de ebben az esetben arra figyelni kell, hogy ez alapértelmezett esetben nem az útvonalhoz képest értelmezendő, hanem a route definíciókhoz képest: ezekben lét felfelé.
+
+Pl. ha a `products` és a `products/:productId` route-ok egymás testvérei, nem pedig az utóbbi az előbbi gyermeke, akkor mindkettőről a szülő route-ra lép vissza.
+
+Ha ezt meg szeretnénk változtatni, és a path-ban szeretnénk egy szinten feljebb lépni, azt a Link-hez adott `relative="path"` proppal tudjuk megtenni. Az alapértelmezett `relative="route"`.
+
+### Loaderek
+
+A loaderek lehetővé teszik, hogy az oldal megnyitása előtt futtassunk olyan függvényt, amely return értékéhez az oldal hozzáfér. Ez használható pl. az oldalhoz szükséges adatoknak adatbázisból való betöltésére. Ehhez az adott route definíciójához hozzáadjuk a loader property-t, amelynek értéke az adott függvény, ami lehet aszinkron is. Ezt jó gyakorlat az adott route-hoz tartozó oldal komponens file-jában létrehozni és exportálni, így a route-okat deklaráló file is áttekinthető marad. Ebben csak a függvény referenciáját adjuk a loader property-nek.
+
+A loader függvény az oldalra való navigálás megkezdése után fut le, és return értéke hozzáférhető az adott oldal komponensben és az összes gyermekében: oldal komponensekben és sima komponensekben egyaránt, a `useLoaderData` hook segítségével, amelynek a return értéke a loader függvény return értéke.
+
+```{jsx}
+// App.js
+// import ...
+
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <RootLayout />,
+    children: [
+      { index: true, element: <HomePage /> },
+      {
+        path: 'events',
+        element: <EventsLayout />,
+        children: [
+          {
+            index: true,
+            element: <EventsPage />,
+            loader: eventsLoader,
+          },
+          // other routes
+        ],
+      },
+    ],
+  },
+]);
+
+function App() {
+  return <RouterProvider router={router} />;
+}
+
+export default App;
+```
+
+```{jsx}
+// Events.js
+import { useLoaderData } from 'react-router-dom';
+
+import EventsList from '../components/EventsList';
+
+function EventsPage() {
+  const events = useLoaderData();
+
+  return <EventsList events={events} />;
+}
+
+export default EventsPage;
+
+export async function loader() {
+  const response = await fetch('http://localhost:8080/events');
+
+  if (!response.ok) {
+    // ...
+  } else {
+    const resData = await response.json();
+    return resData.events;
+  }
+}
+```
+
+A loader függvényben magát a `Response` objektumot is adhatjuk, amelyből a `useLoaderData` hook kinyeri az adatokat. A `fetch` eredményeként kapott Promise végül automatikusan ilyen Response objektumot eredményez, de manuálisan is létrehozható a `new Response(data, configObj)` konstruktorral. 
+
+```{jsx}
+function EventsPage() {
+  // Changed here
+  const data = useLoaderData();
+  const events = data.events;
+
+  return <EventsList events={events} />;
+}
+
+export async function loader() {
+  const response = await fetch('http://localhost:8080/events');
+
+  if (!response.ok) {
+    // ...
+  } else {
+    
+    // Changed here
+    return response;
+  }
+}
+
+```
+
+#### Dinamikus oldalak
+
+A loader függvény a böngészőben fut, ezért használható benne minden funkció, amire a JS a böngészőben képes, viszont mivel nem komponensről van szó, ezért pl. React hookokat nem használhatunk benne, így például a useParams hookot sem. A függvény viszont automatikusan kap egy objektumot paraméterként, amelyen elérhetők a `request` és `params` property-k. A `params` property-n pedig, ahogy a useParams által adott objektumon is, a megfelelő nevekkel elérhetők az url dinamikus szegmensei.
+
+### Akciók
+
+Az oldalainkhoz akció függvényeket is hozzáadhatunk. Ilyet használhatunk például az űrlapok elküldéséhez a backendnek. Ezek a függvények is megkapják a `request` és `params` property-vel rendelkező objektumot paraméterként. Ezekben is minden olyan kódot használhatunk, amit a böngésző kezelni tud. Hookokat viszont itt sem használhatunk, hiszen nem komponensekről van szó: így például a programatikus navigáláshoz a redirect függvényt használjuk a useNavigate hook helyett.
+
+Az akciót elindítja egy form elküldése az adott útvonalon, vagy programatikusan is aktiválhatjuk az `onSubmit` hook révén kapott `submit` függvénnyel, amelynek paraméterként egy objektumot adunk, amelyen beállíthatjuk a `method` (pl. `post`, `delete`, stb.) és szükség esetén az `action` property-ket (ha nem az adott route akcióját akarjuk élesíteni).
+
+Akárcsak a loaderekek, az actionöknek is lehet return értéke, amelyet felhasználhatunk a komponensben és ennek megfelelően renderelhetünk különböző üzeneteket, komponenseket (pl. hibaüzeneteket). Ezekhez a `useActionData` hookkal férünk hozzá.
+
+#### Form-ok kezelése
+
+A React Router Dom a formok kezelését is megkönnyíti: a Form komponens segítségével. Ez automatikusan leállítja a böngésző alapértelmezett működését submit esetén: az új http request küldését, viszont a requestet átadja az akciónak, amelyet alapértelmezett esetben azon a route komponensen írunk meg, amelyen a formot rendereljük. A Form komponensen megadjuk a `method` property-t, amit például `post`-ra állíthatunk. Ha egy másik route komponens akcióját szeretnénk futtatni, a Form komponensnek megadhatjuk az `action` property-t, amelynek értéke ez a route lesz.
+
+Az elküldendő adatokat az akció függvénye a `request` property-n kapja meg automatikusan, amelyen a `.formData()` aszinkron metódust használva tudjuk kinyerni az adatokat.
+Az adatokon belül az egyes inputok értékeit a `.get()` metódussal érhetjük el.
+
+```{jsx}
+import { json, redirect } from 'react-router-dom';
+
+import EventForm from '../components/EventForm';
+
+const NewEventPage = () => {
+  return <EventForm />;
+};
+
+export default NewEventPage;
+
+export async function action({ request }) {
+  const data = await request.formData();
+
+  const eventData = {
+    title: data.get('title'),
+    image: data.get('image'),
+    date: data.get('date'),
+    description: data.get('description'),
+  };
+
+  const response = await fetch('http://localhost:8080/events', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(eventData),
+  });
+
+  if (!response.ok) {
+    throw json({ message: 'Could not save event' }, { status: 500 });
+  }
+
+  return redirect('/events');
+}
+```
+
+### Navigációtól függő renderelés
+
+Amíg nem futott le a loader vagy action függvény, és nem állnak rendelkezésre a lekért adatok, az új "oldal" vagy az az oldal, ahová átirányítottunk, nem nyílik meg. A React Router a `useNavigation` hookot kínálja, amellyel felhasználhatjuk azt az információt, hogy éppen folyamatban van-e a navigáció. Ennek return értéke egy navigáció objektum, amelynek `state` property-je három string értéket vehet fel: `idle`, `loading` és `submitting`. Ennek függvényében renderelhetők különböző UI komponensek, pl. egy loading spinner vagy valamilyen üzenet.
+
+Így például, amíg a form adatait elküldi a backendnek (POST, PUT, PATCH vagy DELETE requestek esetén), és megkapja a választ, a `state` értéke `submitting` lesz. Az oldal, amíg nem kapja meg a loader adatait `loading` state-et kap. Ha ezek lefutottak, és nincs aktív navigációs esemény, az `idle` értéket veszi fel.
+
+Emellett ezen az objektumon is hozzáférünk a küldött `formData`-hoz, illetve a `location`-höz, amely a következő helyet adja meg, ahová navigálunk.
+
+### Részek késleltetett renderelése
+
+Néha az oldalak bizonyos részeit késleltetve szeretnénk megjeleníteni, miközben az oldal többi része már renderelődik. Pl. időigényesebb fetch művelet befejezése előtt szeretnénk már renderelni a menüt, illetve azokat a részeket, amelyek nem függnek a fetch-től. Ehhez a loader függvényben a `defer` függvényt használhatjuk, a komponensben pedig a `Suspense` és `Await` komponenseket.
+
+A `defer`-ben több folyamat eredményére is várhatunk. A kulcsokat mi adjuk meg tetszés szerint, értékük Promise lehet. Ezért itt pl. az adatokat betöltő függvényt hívjuk, és ezt adjuk az `events` kulcsnak. Mindegyik renderelést külön Suspense és Await komponenseken belül végezzük.
+
+Ha viszont nem mindegyik betöltést szeretnénk késleltetni, és egyeseket szeretnénk megvárni az oldal renderelése előtt, megtehetjük, hogy a defer egyes kulcsainak értéke nem Promise lesz, hanem bevárjuk az eredményt. Ehhez az `await`-et használjuk, és ilyenkor a loader függvénynek `async`-nek kell lennie. (ld. EventDetails.js a Router leckénél)
+
+A `Suspense` az alap React csomag része, és lehetővé teszi, hogy amíg a benne renderelt komponensek elkészülnek, egy fallback komponenst rendereljünk.
+
+Az `Await` komponensnek megadjuk, hogy milyen néven mentse a sikeres Promise értékét, majd ebbe csomagolunk egy függvényt, amely megkapja a defer objektumnak azt a kulcsát, amelyre ennek várakoznia kell, és ezzel renderelhetjük a megfelelő komponenst, a becsomagolt függvény automatikusan megkapja az eredményt. A függvény argumentumának neve nem kell, hogy egyezzen a defer objektum megfelelő kulcsával.
+
+Fontos, hogy ebben az esetben a loader defer-jében hívott függvény nem adhatja a response egészét, hanem a függvényben meg kell várni és kiszedni belőle a megfelelő adatokat.
+
+```{jsx}
+import { Suspense } from 'react';
+import { useLoaderData, json, defer, Await } from 'react-router-dom';
+
+import EventsList from '../components/EventsList';
+
+function EventsPage() {
+  const { events } = useLoaderData();
+
+  return (
+    <Suspense fallback={<p style={{ textAlign: 'center' }}>Loading...</p>}>
+      <Await resolve={events}>
+        {(events) => <EventsList events={events} />}
+      </Await>
+    </Suspense>
+  );
+}
+
+export default EventsPage;
+
+async function loadEvents() {
+  const response = await fetch('http://localhost:8080/events');
+
+  if (!response.ok) {
+    throw json(
+      { message: 'Could not fetch events.' },
+      {
+        status: 500,
+      }
+    );
+  } else {
+    const resData = await response.json();
+    return resData.events;
+  }
+}
+
+export function loader() {
+  return defer({
+    events: loadEvents(),
+  });
+}
+
+```
+
+### useFetcher: loader vagy action élesítése navigálás nélkül
+
+Ha egy oldal action vagy loader függvényét az oda való navigálás nélkül szeretnénk használni (pl. hírlevél feliratkozás más oldalakon is, vagy a navigációban), ezt a `useFetcher` hookkal tudjuk megtenni, amely egy olyan fetcher objektumot ad, amelyen számos hasznos metódus és property érhető el.
+
+Ilyen a `fetcher.Form`, amely ellentétben a React Router `Form` komponensével nem navigál az action oldalra submit esetén. Az `action` proppal megadjuk neki, melyik útvonal actionjét szeretnénk élesíteni, de a navigáció nem történik meg, maradunk az eredeti oldalon.
+
+A fetcheren is hozzáférünk a folyamat státuszához (`state`), a küldött vagy fogadott adatokhoz (`data`), a Formmal küldött adatokhoz (`formData`)
+
+
+### Error handling
+
+A loaderekben és akticókban belefuthatunk hibákba, pl. ha a fetch sikertelen vagy ha az elküldött adatok nem mentek át a validáción. Ilyen esetekben megtehetjük, hogy más objektumot ad a függvény, amelyet felhasználunk feltételes rendereléshez, hogy valamilyen hibaüzenetet jelenítsünk meg. Ahogy fentebb írtam, magát a `response`-t is visszaadhatjuk.
+
+```{jsx}
+function EventsPage() {
+  const data = useLoaderData();
+
+  if (data.isError) {
+    return <p>{data.message}</p>;
+  }
+
+  // ...
+}
+
+export async function loader() {
+  const response = await fetch('http://localhost:8080/events');
+
+  if (!response.ok) {
+    return { isError: true, message: 'Could not fetch data' };
+  } else {
+    // ...
+  }
+}
+```
+
+Másik lehetőség, hogy egy Errort dobunk, aminek hatására a React Router a legközelebbi `errorElement`-et használja. Ez lehet az adott route vagy valamelyik szülő route errorElementje is, ha az a legközelebbi. De létrehozhatunk új Response objektumot is, és ezt is dobhatjuk hibaként. Az errorElementként renderelt oldalon is hozzáférhetünk a Response objektum adataihoz. Ehhez a `useRouteError` hookot kínálja a React Router csomag. Ha a dobott errort a Response konstruktorral hoztuk létre, akkor a kapott error objektumon lesz egy status property. Ha sima JavaScript objektumként hoztuk létre a hibát, akkor a hook ezt az objektumot adja vissza.
+
+
+```{jsx}
+export async function loader() {
+  const response = await fetch('http://localhost:8080/events');
+
+  if (!response.ok) {
+    throw new Response(JSON.stringify({ message: 'Could not fetch events!' }), { status: 500 })
+  } else {
+    return response;
+  }
+}
+```
+
+Így létrehozhatunk egy általános hibaoldal komponenst, amelyet a root szinten rendelünk hozzá, és a tényleges hibától függően más-más tartalommal töltjük fel.
+
+```{jsx}
+import { useRouteError } from 'react-router-dom';
+// import ...
+
+const ErrorPage = () => {
+  const error = useRouteError();
+
+  let title = 'An error occurred!';
+  let message = 'Something went wrong!';
+
+  if (error.status === 500) {
+    message = JSON.parse(error.data).message;
+  }
+
+  if (error.status === 404) {
+    title = 'Not found!';
+    message = 'Could not find resource or page.';
+  }
+
+  return (
+    <>
+      <MainNavigation />
+      <PageContent title={title}>
+        <p>{message}</p>
+      </PageContent>
+    </>
+  );
+};
+```
+
+A Response objektum létrehozásához a React Router csomag a `json` utility függvényt is rendelkezésre bocsátja. Ebben az esetben nincs szükség a JSON.stringify és JSON.parse átalakítások használatára.
+
+```{jsx}
+import { json } from 'react-router-dom';
+
+export async function loader() {
+  const response = await fetch('http://localhost:8080/events');
+
+  if (!response.ok) {
+    throw json(
+      { message: 'Could not fetch events.' },
+      {
+        status: 500,
+      }
+    );
+  } else {
+    return response;
+  }
+}
+```
+
+### Query paraméterek
+
+Az útvonalakhoz a dinamikus részeken kívül query paramétereket is adhatunk, amelyek abban különböznek, hogy ezek nem kötelezőek, és nincsenek hatással az útvonalak illesztésére. Ezekkel viszont módosíthatjuk azt, mi jelenik meg: pl. növekvő sorrendbe állíthatjuk a listázást, vagy a loginnál válthatunk a regisztráció és a bejelentkezés között.
+
+A query paraméterek kinyeréséhez a `useSearchParams` hookot használjuk, amely return értéke egy Array: első értéke a kereső paraméterek, második értéke egy függvény ezek változtatására.
+
+```{js}
+import { useSearchParams } from 'react-router-dom';
+
+function AuthForm() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  
+  const mode = searchParams.get('mode')  // e.g.: www.domain.com/auth?mode=login
+   // ...
+}
+
+//...
+
+```
+
+Az egyes query paramétereket a `.get()` metódussal tudjuk kinyerni.
+
+Az action-ökben és loaderekben a query paraméterekhez úgy férhetünk hozzá, hogy a `request` objektumon lévő `url` property-t odaadjuk a JavaScript beépített `URL` construkctorának, és ezen elérhető lesz a `searchParams` property. Ebből szintén a `get` metódussal nyerhetjük ki a megfelelő értékeket.
+
+```{js}
+// ...
+
+export async function action({ request }) {
+  const searchParams = new URL(request.url).searchParams;
+  
+  const mode = searchParams.get('mode') || 'login';
+  
+  // ...
+}
+```
+
+<!-- Az url módosításához ezúttal is a useHistory hookot használhatjuk. A megadott url-be beírjuk a query paramétereket: pl. `/quotes?sort=asc`. Ezekhez egy másik hook segítségével férünk hozzá: a `useLocation` hook return értéke egy location objektum, amelyen elérhető a `search` property, amely tartalmazza a query-t. Ezt a JS beépített URLSearchParams constructor függvényével átalakíthatjuk egy objektummá (pl. queryParams), amelyek key-value párokként fognak szerepelni a query paraméterek: `const queryParams = new URLSearchParams(location.search)` -->
+
+<!-- Az eddigiek egyik hátulütője, hogy ha később módosítani szeretnénk a használt url-eket, sok helyen kell változtatnunk. -->
+
+<!-- A nested route-oknál: -->
+<!-- useRouteMatch hook több információt tartalmaz, mint a useLocation: például nem csak a tényleges url-t, hanem az általunk megadott path-t is (pl. `/quotes/:quoteId` és nem csak `/quotes/q2`). Return értéke match objektum. A nested route-oknál használhatjuk a match.path property-t, a nested route-okra mutató linkeknél pedig a match.url property-t, hogy ennek segítségével építsük fel az útvonalakat. -->
+
+<!-- Másik probléma lehet, hogy túl hosszú stringeket kell létrehoznunk. Az útvonalakat objektumokként is megadhatjuk: a pathname értékeként megadhatjuk magát az útvonalat, a search értékeként pedig a query részt stringként. -->
+
+<!-- ### React Router v5 vs. v6: -->
+
+<!-- A `Switch` helyett `Routes` komponenst használhatunk. -->
+<!-- A `Route`-okhoz tartozó komponenseket immár nem child komponensként, hanem az `element` proppal adhatjuk meg. Az értéke JSX legyen. Elhagyható az `exact` prop. Ha nem pontos találatokat szeretnénk, az útvonal végére `/*`-ot írhatunk (pl. `/products/*`) -->
+
+<!-- Megváltozott az útvonalak választásának logikája is: Immár nem a megadott sorrendben keres, hanem a lehető legpontosabb találatot keresi. Emiatt nem kell a dinamikus szegmenssel rendelkező route-okat a végére hagyni. -->
+
+<!-- A NavLink-eknél kikerült az activeClassName prop, viszont a className prop speciálisan működik: függvényt is megadhatunk, amely automatikusan megkapja a navData argumentumot, amelyen van egy `.isActive` property boolean, amelyet felhasználhatunk az aktív class hozzáadására: -->
+
+<!-- `<NavLink className={(navData) => navData.isActive ? classes.active : ''}` -->
+
+<!-- Redirect helyett Navigate komponens replace proppal. A replace nélkül is odanavigál, de akkor .push módon, nem pedig .replace módon (vissza lehet lépni). -->
+
+<!-- Beágyazódó útvonalak esetén a Route-okat Routes komponensbe kell ágyazni, akkor is, ha csak egy Route van. Ezen kívül az útvonalak relatívvá váltak, míg korábban abszolút útvonalakat kellett használni. Arra is figyelni kell, hogy a felsőbb szintnél hozzá kell adni a `/*` végződést, hogy ez is élesedjen. -->
+
+<!-- Ugyanígy a Link to propjának megadott útvonalak is relatívvá válnak, ha beágyazódóan vannak megadva, egy másik route-on belül. -->
+
+<!-- A beágyazódó útvonalakat máshogy is megadhatjuk: a fő route definíciós file-ban, ugyanott, ahol megadjuk a fő útvonalat adjuk meg: a megfelelő Route komponens gyermekeként is megadhatjuk a Route komponenst, amely be kell, hogy ágyazódjon. Ezáltal minden útvonal definíció egy helyre kerülhet. Ebben az esetben viszont meg kell adni, hogy a beágyazódó komponenst hol renderelje. Ehhez az Outlet komponenst használjuk. -->
+
+
+<!-- Arra viszont figyelni kell, hogy minden olyan route élesedik, amely illeszkedik az url-hez, ez pedig azt jelenti, hogy úgy kezdődik, mint a megadott route: tehát pl. `domain.com/products/p1` esetén a `/products/:id` mellett a sima `/products` is. -->
+
+<!-- Ha nem ezt szeretnénk, használhatjuk a Switch komponenst. Ha a Route komponenseket (az összeset egyszerre) ebbe csomagoljuk, csak az a Route fog élesedni, amely az első illeszkedő - fentről lefelé haladva. Ebben az esetben a specifikusabb (pl. id-vel kiegészített) útvonalakat deklaráljuk előbb. Másik megoldás, hogy az exact propot hozzáadjuk a Route komponenshez `<Route path='/products' exact />` -->
+
+<!-- Átirányítás: például, ha a főoldalról át akarunk irányítani: `<Route path="/" exact></Route>` Ezen belül a Redirect komponens használatával átirányíthatunk másik oldalra: `<Redirect to="/welcome" />`. Az exact fontos, hogy ne csináljunk végtelen hurkot. -->
+
+<!-- 404-es hiba oldal: Végül, a switch komponensben, a végén megadhatunk egy útvonalat, amely minden olyan url-re élesedik, amelyet korábban nem kezeltünk: `path="*"`.  -->
+
+
+<!-- *A korábbi verziókban a `useHistory` hookot lehetett használni, amely egy history objektumot adatt, amelyen a `.push` vagy `.replace` metódussal átirányíthattunk másik oldalra. A különbség, hogy a `.push` után vissza tudunk lépni a böngészőben, a `.replace` után nem.* -->
+
+<!-- Szintén megszűnt a useHistory hook, amely helyett a useNavigate hook használható, amely egy navigate objektumot ad, amely egy függvény, amely paramétere az útvonal. Második paraméterként megadhatunk egy objektomot pl. `replace: true` key-value párral. A navigate függvény számokat is fogadhat: pl. -1 visszalép az előző oldalra, -2 azelé, 1 előre lép. -->
+
+
+<!-- *Szintén hasznos funkció a Prompt komponens, amely bizonyos feltételek esetén (amelyeket a `when` proppal adhatunk meg) bizonyos üzenetet jelenít meg. Így például, megkérdezhetjük, valóban el akarja-e a felhasználó hagyni az oldalt. A `message` prop értéke egy függvény, amely hozzáférést kap a `location` objektumhoz, amelyből megtudhatjuk például, hogy melyik oldalra navigál a felhasználó. A return érték pedig egy üzenet kell, hogy legyen.* -->
+
+<!-- A Prompt komponens szintén megszűnt, és nem is lett helyettesítve. Ha szükség van rá, hogy megakadályozzuk a navigálást, saját megoldást kell rá találnunk. -->
+
+## Autentikáció kezelése
+
+
+
+## React alkalmazások optimalizálása
+
+**********************************
+TODO
+**********************************
+
+### useCallback
+
+### useMemo
+
+## Saját hookok létrehozása
+
+**********************************
+
+## Stílusok hozzáadása
+
+### Inline stílusok
+
+Reactban is van lehetőség külső css file-t használni, de gyakori az inline stílusok hozzáadása. A különbség, hogy ez nem simán stringként történik, hanem JS objektumot kell megadni, amelyben ráadásul a kebab-case helyett camelCase-t használunk.
+Mivel JS kód, ezért `{}` közé kell tenni, és mivel objektum, ezért még egy pár `{}` nyílik rögtön. Az egységek alapértelmezettként px-ben értendők. Ha nem ezt szeretnénk, akkor stringként kell megadni (pl. "2rem", "100%"). Az objektum jöhet egy külön mentett változóból is.
+
+Reactban ez az utóbbi mód a preferált, és így a stílust a state/props függvényében is meg tudjuk adni: feltételektől függően módosíthatjuk az objektumot.
+
+```{jsx}
+<div style={{color: "yellow", fontSize: 16}}>Mellow Yellow</div>
+```
+
+Az inline stílusok használata ugyanakkor nem optimális, mert kódduplikációhoz vezet: ugyanaz a tulajdonság a CSS file-ban és a js file-ban is meg van határozva. 
+
+### Osztályok dinamikus hozzárendelése
+
+Ennél egy fokkal jobb, ha a CsS file-ban megadott osztályokat dinamikusan rendeljük hozzá, pl. egy template literal segítségével, amelyben ternary operátorral tesztelhetjük bizonyos feltételek meglétét vagy rövidre zárást is használhatunk. 
+
+```{jsx}
+<div classname={`form-control ${!isValid && 'invalid'}`}
+```
+
+A sima CSS szabályok ugyanakkor globálisak, nem pedig egy-egy komponenshez kapcsolódók. Ezt a problémát tudjuk kiküszöbölni a `styled components` és a `CSS modulok` segítségével.
+
+### styled components
+
+Telepítése: `npm i --save styled-components`
+
+Használata: A komponenst `tagged template literal` segítségével hozzuk létre, amelyben minden deklaráció megadható. A kompiláció során egyedi osztályneveket hoz létre az egyes komponenseknek, és így a stílusok már ezekhez fognak csak kapcsolódni.
+
+```{js}
+import styled from 'styled-components';
+
+const Button = styled.button`
+  background: transparent;
+  border-radius: 3px;
+  border: 2px solid palevioletred;
+  color: palevioletred;
+  margin: 0 1em;
+  padding: 0.25em 1em;
+`
+```
+
+A template literalon belül minden css selector használható, beleértve a pseudo-selectorokat és media query-ket. Mivel nem használunk szelektort, ezért a pseudo-selectorok `&:hover` és hasonló formákban adhatók meg, ahol a `&` jelzi a selector helyét.
+
+Ezen kívül használhatunk más styled componenteket is selectorként az alábbi módon:
+
+```{js}
+const Container = styled.div`
+ // styles declarations
+ 
+ ${Button} {
+  // Button styles declarations
+}
+`
+```
+
+Saját, illetve beépített komponenseknek is megadhatunk stílust, ha argumentumként adjuk ezeket a `styled()` függvénynek:
+
+```{js}
+import { Link } from 'react-router-dom';
+
+const NavLink = styled(Link)`
+  // styles
+`;
+```
+
+Ezt felhasználhatjuk arra is, hogy alstílusokat hozzunk létre:
+
+```{js}
+const BaseButton = styled.button`
+  // common styling
+`
+
+const InvertedButton = styled(BaseButton)`
+  // specific styles
+`
+
+const TransparentButton = styled(BaseButton)`
+  // specific styles
+`
+```
+
+Az így létrehozott styled komponenseket egy külön file-ban is létrehozhatjuk, és exportálhatjuk, és ezek után az importált komponenseket használhatjuk az alap html tag-ek helyett.
+
+A styled components-ben props-okat is használhatunk: anonim függvényeket illeszthetünk be JavaScript kifejezésként, amelyek hozzáférnek a props-hoz (dekonstruálható) és a return értékük lesz beillesztve a megfelelő helyre:
+
+```{js}
+const BackgroundImage = styled.div`
+  // styles
+  background-image: ${(props) => `url(${props.imageUrl})`};
+`
+```
+
+Ezeket aztán ahol használjuk a komponenst, megadhatjuk, ahogy a props-okat amúgy is szoktuk. A speciális osztályokat is így adjuk meg, ha styled komponenseket használunk: ebben az esetben boolean értékként, és a stílusok deklarációjánál ezeket felhasználhatjuk pl. egy ternary operátorban vagy rövidre zárásban.
+
+A styled componentekhez `css` blokkokat is használhatunk, például a Sass `mixin`-jeinek kiváltására. A css változókat sima JS változókkal helyettesíthetjük, amelyek string értéket kapnak.
+
+```{js}
+import styled, { css } from 'styled-components';
+
+const subColor = 'grey';
+const mainColor = 'black';
+
+const shrinkLabelStyles = css`
+  top: -14px;
+  font-size: 12px;
+  color: ${mainColor};
+`;
+
+export const FormInputLabel = styled.label`
+  color: ${subColor};
+  // more style declarations
+
+  // apply css based on prop truthyness
+  ${({ shrink }) => shrink && shrinkLabelStyles}
+`;
+
+export const Input = styled.input`
+  // style declarations
+
+  // if input focused target sibling FormInputLabel and apply css block
+  &:focus ~ ${FormInputLabel} {
+    ${shrinkLabelStyles}
+  }
+`;
+```
+
+```{jsx}
+import { FormInputLabel, Input, Group } from './form-input.styles';
+
+const FormInput = ({ label, ...otherProps }) => {
+  return (
+    <Group>
+      <Input {...otherProps} />
+      {label && (
+        <FormInputLabel shrink={otherProps.value.length}>
+          {label}
+        </FormInputLabel>
+      )}
+    </Group>
+  );
+};
+
+export default FormInput;
+```
+
+### CSS modulok
+
+Jól használható mód a css modul megközelítés. A css stílusokat importáljuk a `.module.css` kiterjesztésű file-okból, ami eredményeképpen egy objektumot kapunk, amelyen a különböző osztályok property-ként jönnek létre. Ezeket aztán hozzáadhatjuk a JSX-ben a `className` attribútum segítségével az alábbi formában.
+
+```{jsx}
+import classes from './Item.module.css';
+
+const Item = () => {
+  return (
+    <div className={classes.container}>
+      <div className={classes['content-long']}>
+        {/* Ide jön a tartalom */}
+      </div>
+    </div>
+  )
+}
+```
+
+Minden komponenshez külön css module file-t hozunk létre, és importáljuk a komponens file-jában. Nem jelent problémát, ha ismétlődnek a class nevek, mivel a háttérben egyedi class-nevek jönnek létre a megadottakból.
+
+Ez a megoldás ötvözi az önálló css file-ok előnyét a stílusoknak a komponensekhez való kötésével, amit a styled components is hoz. Akárcsak a sima class-nevek, feltételesen is hozzáadhatók (ld. fent).
+
+A media query-k egyszerűen létrehozhatók a szokásos módon a css file-okban.
+
+### Icons, images & svg
+
+```{js}
+import { ReactComponent as ShoppingSvg } from '../../assets/shopping-bag.svg';
+
+// After: npm i react-icons
+import ... from 'react-icons/fa'  
+```
+
+
+

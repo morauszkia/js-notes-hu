@@ -1,0 +1,1393 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Express.js</title>
+
+<script src="site_libs/header-attrs-2.24/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/readable.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    background-color: #ffffff;
+    color: #a0a0a0;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #a0a0a0;  padding-left: 4px; }
+div.sourceCode
+  { color: #1f1c1b; background-color: #ffffff; }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span { color: #1f1c1b; } /* Normal */
+code span.al { color: #bf0303; background-color: #f7e6e6; font-weight: bold; } /* Alert */
+code span.an { color: #ca60ca; } /* Annotation */
+code span.at { color: #0057ae; } /* Attribute */
+code span.bn { color: #b08000; } /* BaseN */
+code span.bu { color: #644a9b; font-weight: bold; } /* BuiltIn */
+code span.cf { color: #1f1c1b; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #924c9d; } /* Char */
+code span.cn { color: #aa5500; } /* Constant */
+code span.co { color: #898887; } /* Comment */
+code span.cv { color: #0095ff; } /* CommentVar */
+code span.do { color: #607880; } /* Documentation */
+code span.dt { color: #0057ae; } /* DataType */
+code span.dv { color: #b08000; } /* DecVal */
+code span.er { color: #bf0303; text-decoration: underline; } /* Error */
+code span.ex { color: #0095ff; font-weight: bold; } /* Extension */
+code span.fl { color: #b08000; } /* Float */
+code span.fu { color: #644a9b; } /* Function */
+code span.im { color: #ff5500; } /* Import */
+code span.in { color: #b08000; } /* Information */
+code span.kw { color: #1f1c1b; font-weight: bold; } /* Keyword */
+code span.op { color: #1f1c1b; } /* Operator */
+code span.ot { color: #006e28; } /* Other */
+code span.pp { color: #006e28; } /* Preprocessor */
+code span.re { color: #0057ae; background-color: #e0e9f8; } /* RegionMarker */
+code span.sc { color: #3daee9; } /* SpecialChar */
+code span.ss { color: #ff5500; } /* SpecialString */
+code span.st { color: #bf0303; } /* String */
+code span.va { color: #0057ae; } /* Variable */
+code span.vs { color: #bf0303; } /* VerbatimString */
+code span.wa { color: #bf0303; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Programozás jegyzeteim</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Vanilla JS
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="vanilla/js-variables.html">JavaScript alapok</a>
+    </li>
+    <li>
+      <a href="vanilla/js-program-flow.html">Program Flow Control</a>
+    </li>
+    <li>
+      <a href="vanilla/js-functions.html">Függvények</a>
+    </li>
+    <li>
+      <a href="vanilla/js-data-structures.html">Adatstruktúrák</a>
+    </li>
+    <li>
+      <a href="vanilla/js-array-methods.html">Haladó Array műveletek</a>
+    </li>
+    <li>
+      <a href="vanilla/js-dom-manipulation.html">DOM manipuláció</a>
+    </li>
+    <li>
+      <a href="vanilla/js-strings.html">Stringek</a>
+    </li>
+    <li>
+      <a href="vanilla/js-numbers-dates.html">Számok és dátumok</a>
+    </li>
+    <li>
+      <a href="vanilla/js-regex.html">Reguláris kifejezések</a>
+    </li>
+    <li>
+      <a href="vanilla/js-async.html">Asynchronous JavaScript</a>
+    </li>
+    <li>
+      <a href="vanilla/js-oop.html">OOP</a>
+    </li>
+    <li>
+      <a href="vanilla/js-dev-practice.html">JavaScript Development a gyakorlatban</a>
+    </li>
+    <li>
+      <a href="vanilla/js-api.html">Hasznos API-k</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Typescript
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="ts-basics.html">TypeScript basics</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Front-End JS Libraries&amp;Frameworks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="front-end/jquery-basics.html">jQuery</a>
+    </li>
+    <li>
+      <a href="front-end/react-basics.html">React</a>
+    </li>
+    <li>
+      <a href="front-end/redux-basics.html">Redux</a>
+    </li>
+    <li>
+      <a href="front-end/next.html">Next</a>
+    </li>
+    <li>
+      <a href="front-end/vue-basics.html">Vue.js</a>
+    </li>
+    <li>
+      <a href="front-end/angular.html">Angular</a>
+    </li>
+    <li>
+      <a href="front-end/svelte.html">Svelte</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Back-End JS
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="back-end/node-js.html">Node.js</a>
+    </li>
+    <li>
+      <a href="back-end/express-js.html">Express.js</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Miscellaneous
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="misc/js-libraries.html">JS libraries</a>
+    </li>
+    <li>
+      <a href="misc/js-testing.html">JS Testing</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Express.js</h1>
+
+</div>
+
+
+<p>Az Express.js egy Node.js alapú back-end JavaScript framework, amely
+megkönnyíti webalkalmazások és API-k létrehozását. A MERN és MEAN stack
+része, az egyik legnépszerűbb JS framework. Jelentősen megkönnyíti a
+Node.js-ben végezhető műveletek (pl. routing, templating)
+programozását.</p>
+<div id="telepítés-és-használat" class="section level2">
+<h2>Telepítés és használat</h2>
+<p>Az express.js-t node projektekhez telepíthetjük az
+<code>npm install express</code> paranccsal. Ezután a szokásos módon, a
+<code>require('express')</code> paranccsal importálhatjuk. A return
+érték egy függvény, amellyel létrehozható az alkalmazás, amely számos
+hasznos property-vel és metódussal rendelkezik. Ezek között van például
+a <code>.listen</code>, amivel egyszerűen elindíthatjuk a web
+szervert.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="kw">const</span> express <span class="op">=</span> <span class="pp">require</span>(<span class="st">&#39;express&#39;</span>)<span class="op">;</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="kw">const</span> app <span class="op">=</span> <span class="fu">express</span>()<span class="op">;</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>app<span class="op">.</span><span class="fu">listen</span>(<span class="dv">3000</span>)<span class="op">;</span></span></code></pre></div>
+<p>Jó gyakorlat a szervert külön file-ban kezelni, és így lesz egy app
+file, amelyben létrehozzuk az applikációt az összes middleware-rel (ld,
+később), amelyből exportáljuk az applikációt, és egy server file,
+amelybe importáljuk az applikációt, és itt indítjuk el a szervert a
+<code>.listen</code> metódussal.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="kw">const</span> app <span class="op">=</span> <span class="pp">require</span>(<span class="st">&#39;./app&#39;</span>)<span class="op">;</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="kw">const</span> port <span class="op">=</span> <span class="dv">3000</span><span class="op">;</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>app<span class="op">.</span><span class="fu">listen</span>(port<span class="op">,</span> () <span class="kw">=&gt;</span> {</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>  <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(<span class="vs">`App running on port </span><span class="sc">${</span>port<span class="sc">}</span><span class="vs">...`</span>)<span class="op">;</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+</div>
+<div id="middleware-ek-használata" class="section level2">
+<h2>Middleware-ek használata</h2>
+<p>Általánosan middleware függvényeknek nevezzük azokat a függvényeket,
+amelyeknek hozzáférésük van a request és response objektumokhoz és a
+next middleware függvényhez. Az Express alkalmazás sokszor ilyenekből
+épül fel, amelyek a különböző requestek esetében futnak, és módosítják a
+request és response objektumokat. A request több ilyen middleware-en
+megy keresztül, amíg megszületik a response.</p>
+<p>Az ezek által végzett tevékenységek lehetnek:</p>
+<ol style="list-style-type: decimal">
+<li>Valamilyen kód futtatása.</li>
+<li>A request és response objektumok módosítása: adatok kiolvasása,
+küldése, státusz módosítása, stb.</li>
+<li>A request-response ciklus lezárása.</li>
+<li>A következő middleware függvény hívása.</li>
+</ol>
+<p>A middleware-ek összességét nevezzük Middleware Stack-nek, és ezek
+olyan sorrendben lépnek működésbe, ahogy a programfile-ban megadtuk
+ezeket.</p>
+<p>Middleware-eket az app <code>.use()</code> vagy valamelyik
+<code>.METHOD</code> metódussal (get, post, put, stb.) is
+létrehozhatunk. Előbbi minden típusú requestet kezel, míg utóbbiak csak
+a megfelelő metódusúakat. A <code>.use()</code> kaphat útvonal
+argumentumot is, de nem szükséges. Ha nem kap, akkor minden requestre
+lefut, amely eléri (Ha korábbi middleware lezárta a request-response
+ciklust, akkor nem éri el).</p>
+<p>Fontos különbség a <code>.use()</code> és a többi metódus között,
+hogy a megadott útvonal a <code>.use()</code> esetében nem csak pontos
+egyezést jelenthet, hanem bármit, ami így kezdődik.</p>
+<p>Ha egy middleware-ben nem zárjuk le a request-response ciklust (pl.
+<code>.send()</code>-del), akkor a <code>next()</code> függvénnyel át
+kell adnunk a kezelést a következő middleware-nek. A request-response
+ciklust le kell zárni az utolsó middleware-ben, amelyen egy adott
+request keresztülmegy.</p>
+<div id="request-és-response-objektum" class="section level3">
+<h3>Request és response objektum</h3>
+<p>A middleware függvény hozzáférést kap a request és response
+objektumokhoz, amelyek kicsit különböznek a Node.js alap objektumaitól.
+A res objektum <code>.send()</code> metódusával küldhetünk html-ben írt
+választ, a <code>.json()</code> metódus pedig JSON formátumúra kódolja a
+JS objektumokat, és mindkettő egyúttal beállítja a megfelelő
+content-type-ot is. A státuszt a <code>.status()</code> metódussal
+adhatjuk meg, és a metódusok láncba fűzhetők. A <code>.redirect()</code>
+metódussal átirányíthatjuk a requestet egy másik URL-re.</p>
+<p>Egyszerre több callback függvény is megadható, de ebben az esetben a
+next() függvénnyel lehetővé kell tenni, hogy a következő függvény
+átvegye a route kezelését.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>app<span class="op">.</span><span class="fu">get</span>(<span class="st">&#39;/&#39;</span><span class="op">,</span> (req<span class="op">,</span> res) <span class="kw">=&gt;</span> {</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  res</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>    <span class="op">.</span><span class="fu">status</span>(<span class="dv">200</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>    <span class="op">.</span><span class="fu">json</span>({ <span class="dt">message</span><span class="op">:</span> <span class="st">&#39;Hello from the server side!&#39;</span><span class="op">,</span> <span class="dt">app</span><span class="op">:</span> <span class="st">&#39;Natours&#39;</span> })<span class="op">;</span> <span class="co">// auto set content-type</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>})<span class="op">;</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>app<span class="op">.</span><span class="fu">post</span>(<span class="st">&#39;/&#39;</span><span class="op">,</span> (req<span class="op">,</span> res) <span class="kw">=&gt;</span> {</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>  res<span class="op">.</span><span class="fu">send</span>(<span class="st">&#39;Data sent.&#39;</span>)<span class="op">;</span></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>})<span class="op">;</span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>app<span class="op">.</span><span class="fu">get</span>(<span class="st">&#39;/abc&#39;</span><span class="op">,</span> (req<span class="op">,</span> res<span class="op">,</span> next) <span class="kw">=&gt;</span> {</span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>  <span class="op">...</span></span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>  <span class="fu">next</span>()</span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a>}<span class="op">,</span> (req<span class="op">,</span> res) <span class="kw">=&gt;</span> {</span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a>  <span class="op">...</span></span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a>})</span></code></pre></div>
+</div>
+<div id="mások-által-írt-middleware-függvények" class="section level3">
+<h3>Mások által írt middleware függvények</h3>
+<p>Ilyen például a body-parser <code>.urlencoded()</code>, illetve
+<code>.json()</code> metódusa. Előbbi az elküldött form adatokat tudja
+kiolvasni a <code>request.body</code>-ból, utóbbi pedig a JSON
+formátumban küldött adatokat teszi elérhetővé.</p>
+<p>Ezek jelenleg az Express (v14) részei is, így az express objektumon
+is megtalálható metódusok.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>app<span class="op">.</span><span class="fu">use</span>(bodyParser<span class="op">.</span><span class="fu">urlencoded</span>({ <span class="dt">extended</span><span class="op">:</span> <span class="kw">false</span> }))<span class="op">;</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="co">// app.use(express.urlencoded({ extended: false }));</span></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>app<span class="op">.</span><span class="fu">use</span>(express<span class="op">.</span><span class="fu">json</span>())<span class="op">;</span></span></code></pre></div>
+<p>Ilyen middleware a morgan csomag is, amely egy függvényt tesz
+elérhetővé fő exportként, amely arra szolgál, hogy a requesteket
+logoljuk.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="kw">const</span> morgan <span class="op">=</span> <span class="pp">require</span>(<span class="st">&#39;morgan&#39;</span>)<span class="op">;</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>app<span class="op">.</span><span class="fu">use</span>(<span class="fu">morgan</span>(<span class="st">&#39;dev&#39;</span>))<span class="op">;</span></span></code></pre></div>
+<p>Ezeknek a függvényeknek return értékei szokásos felépítésű middleware
+függvények: argumentumai a request és response objektum, illetve a next
+függvény, amelyet a végén hívnak, hogy a request kezelését a következő
+middleware-nek adják át.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="kw">function</span> <span class="fu">middlewareName</span> (req<span class="op">,</span> res<span class="op">,</span> next) {</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="co">// ...</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>  </span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>  <span class="fu">next</span>()</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>}</span></code></pre></div>
+<p>Az elérhető Express middleware-ek listája megtalálható az Express.js
+<a href="https://expressjs.com/en/resources/middleware.html">honlapján
+is</a>.</p>
+</div>
+<div id="middleware-chaining" class="section level3">
+<h3>Middleware chaining</h3>
+<p>Egy route-hoz több middleware függvény is megadható. A megadott
+middleware-eket vesszővel elválasztva adhatjuk meg. Ezzel például
+ellenőrizhetjük, hogy a felhasználó rendelkezik a szükséges jogokkal, az
+elküldött adatok tartalmazzák a szükséges információkat, és csak ezután
+kezeljük a kapott adatokat.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>router<span class="op">.</span><span class="fu">post</span>(tourController<span class="op">.</span><span class="at">checkBody</span><span class="op">,</span> tourController<span class="op">.</span><span class="at">createTour</span>)<span class="op">;</span></span></code></pre></div>
+</div>
+</div>
+<div id="routing" class="section level2">
+<h2>Routing</h2>
+<p>A routing egyrészt egyszerűsödik azáltal, hogy az app objektumnak
+minden http metódushoz kapcsolódóan van megfelelő metódusa, illetve a
+use metódus minden http requestet kezelni tud. Másrészt, az Express
+Router lehetővé teszi a routing logika külön file-okban való tárolását,
+és importálását a fő file-ba.</p>
+<p>Ehhez az app file-ben vagy külön file-okban router objektumokat
+hozunk létre, amelyeken regisztráljuk a megfelelő middleware
+függvényeket a megfelelő metódusokhoz és útvonalakhoz. A router
+objektumon létrehozhatók ugyanúgy a use, get, post, stb. metódusok,
+ugyanolyan szintaxissal.</p>
+<p>A különbség, hogy ez importálható lesz, és így nem kell egy file-ban
+létrehozni ezeket. Arra viszont figyelni kell, hogy minden ugyanúgy
+működik majd, mintha a fő file-ban lennének, tehát pl. figyelni kell a
+megfelelő sorrendre, hogy jól kezeljük a különböző útvonalakat.</p>
+<p>Az importálás után az <code>app.use()</code> metódussal
+regisztrálhatjuk a router middleware-eket.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co">// admin.js</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="kw">const</span> express <span class="op">=</span> <span class="pp">require</span>(<span class="st">&#39;express&#39;</span>)<span class="op">;</span></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="kw">const</span> router <span class="op">=</span> express<span class="op">.</span><span class="fu">Router</span>()<span class="op">;</span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>router<span class="op">.</span><span class="fu">get</span>(<span class="st">&#39;/add-product&#39;</span><span class="op">,</span> (req<span class="op">,</span> res<span class="op">,</span> next) <span class="kw">=&gt;</span> {</span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>  res<span class="op">.</span><span class="fu">send</span>(</span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>    <span class="st">&#39;&lt;form action=&quot;/product&quot; method=&quot;POST&quot;&gt;&lt;input type=&quot;text&quot; name=&quot;title&quot;&gt;&lt;button type=&quot;submit&quot;&gt;Add product&lt;/button&gt;&lt;/form&gt;&#39;</span></span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>  )<span class="op">;</span></span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a>})<span class="op">;</span></span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a></span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a>router<span class="op">.</span><span class="fu">post</span>(<span class="st">&#39;/product&#39;</span><span class="op">,</span> (req<span class="op">,</span> res<span class="op">,</span> next) <span class="kw">=&gt;</span> {</span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a>  <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(req<span class="op">.</span><span class="at">body</span>)<span class="op">;</span></span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a>  res<span class="op">.</span><span class="fu">redirect</span>(<span class="st">&#39;/&#39;</span>)<span class="op">;</span></span>
+<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a>})<span class="op">;</span></span>
+<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a></span>
+<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a>module<span class="op">.</span><span class="at">exports</span> <span class="op">=</span> router<span class="op">;</span></span>
+<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a></span>
+<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a><span class="co">// app.js</span></span>
+<span id="cb8-20"><a href="#cb8-20" tabindex="-1"></a><span class="kw">const</span> adminRoutes <span class="op">=</span> <span class="pp">require</span>(<span class="st">&#39;./routes/admin&#39;</span>)<span class="op">;</span></span>
+<span id="cb8-21"><a href="#cb8-21" tabindex="-1"></a><span class="kw">const</span> shopRoutes <span class="op">=</span> <span class="pp">require</span>(<span class="st">&#39;./routes/shop&#39;</span>)<span class="op">;</span></span>
+<span id="cb8-22"><a href="#cb8-22" tabindex="-1"></a></span>
+<span id="cb8-23"><a href="#cb8-23" tabindex="-1"></a><span class="co">// ...</span></span>
+<span id="cb8-24"><a href="#cb8-24" tabindex="-1"></a></span>
+<span id="cb8-25"><a href="#cb8-25" tabindex="-1"></a>app<span class="op">.</span><span class="fu">use</span>(adminRoutes)</span>
+<span id="cb8-26"><a href="#cb8-26" tabindex="-1"></a>app<span class="op">.</span><span class="fu">use</span>(shopRoutes)<span class="op">;</span></span>
+<span id="cb8-27"><a href="#cb8-27" tabindex="-1"></a></span>
+<span id="cb8-28"><a href="#cb8-28" tabindex="-1"></a><span class="co">// ...</span></span></code></pre></div>
+<p>Az <code>app.use()</code>-ban megadhatunk route-ot, amelyek esetén
+használni szeretnénk, vagy ezt ki is hagyhatjuk (ld. fent), és akkor
+minden requestre vonatkozhatnak. Ha viszont megadunk valamilyen
+route-ot, akkor a router route-jait már csak ehhez képest kell
+megadni.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>app<span class="op">.</span><span class="fu">use</span>(<span class="st">&#39;/api/v1/tours&#39;</span><span class="op">,</span> tourRouter)<span class="op">;</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="kw">const</span> tourRouter <span class="op">=</span> express<span class="op">.</span><span class="fu">Router</span>()<span class="op">;</span></span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>tourRouter<span class="op">.</span><span class="fu">route</span>(<span class="st">&#39;/&#39;</span>)<span class="op">.</span><span class="fu">get</span>(getAllTours)<span class="op">.</span><span class="fu">post</span>(createTour)<span class="op">;</span></span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>tourRouter<span class="op">.</span><span class="fu">route</span>(<span class="st">&#39;/:id&#39;</span>)<span class="op">.</span><span class="fu">get</span>(getTour)<span class="op">.</span><span class="fu">patch</span>(updateTour)<span class="op">.</span><span class="fu">delete</span>(deleteTour)<span class="op">;</span></span></code></pre></div>
+<p>Nagyobb projektek esetében a jó gyakorlat, hogy a fő .js file-ban
+csak a különböző middleware-eket regisztráljuk, tehát, hogy milyen
+requestek esetében milyen routereket használunk. A routerekben
+definiáljuk a konkrét útvonalakat, külön controller file-okban pedig az
+ezekhez tartozó handler függvényeket.</p>
+<div id="method-chaining" class="section level3">
+<h3>Method chaining</h3>
+<p>Ha ugyanazon az útvonalon akarunk többféle metódust kezelni, akkor
+ezeket össze is fűzhetjük. Ugyanez működik a routerrel is.</p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode js"><code class="sourceCode javascript"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>app<span class="op">.</span><span class="fu">route</span>(<span class="st">&#39;/api/v1/tours&#39;</span>)<span class="op">.</span><span class="fu">get</span>(getAllTours)<span class="op">.</span><span class="fu">post</span>(createTour)<span class="op">;</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>app</span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>  <span class="op">.</span><span class="fu">route</span>(<span class="st">&#39;/api/v1/tours/:id&#39;</span>)</span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>  <span class="op">.</span><span class="fu">get</span>(getTour)</span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a>  <span class="op">.</span><span class="fu">patch</span>(updateTour)</span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a>  <span class="op">.</span><span class="fu">delete</span>(deleteTour)<span class="op">;</span></span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a>  </span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a>router<span class="op">.</span><span class="fu">route</span>(<span class="st">&#39;/products&#39;</span>)<span class="op">.</span><span class="fu">get</span>(getAllProducts)<span class="op">.</span><span class="fu">post</span>(postNewProduct)</span></code></pre></div>
+</div>
+<div id="filter" class="section level3">
+<h3>Filter</h3>
+<p>Az Express lehetővé teszi, hogy könnyen kezeljük az összetettebb,
+ugyanúgy kezdődő route-okat:</p>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode js"><code class="sourceCode javascript"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>app<span class="op">.</span><span class="fu">use</span>(<span class="st">&#39;/admin&#39;</span><span class="op">,</span> adminRoutes)</span></code></pre></div>
+<p>A fenti middleware akkor fogja kezelni a route-ot, ha az
+<code>/admin/valami</code> formájú. Ezek után az adminRoutes-ban már az
+<code>/admin</code> rész nélkül adjuk meg a route-okat.</p>
+<p>A Param middleware-rel megtehetjük, hogy egy middleware-t csak akkor
+futtatunk, ha a request url egy bizonyos paramétert tartalmaz. Ebben az
+esetben a handler függvény hozzáfér a szokásosakon kívül a paraméter
+értékéhez is.</p>
+<div class="sourceCode" id="cb12"><pre
+class="sourceCode js"><code class="sourceCode javascript"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a>router<span class="op">.</span><span class="fu">param</span>(<span class="st">&#39;id&#39;</span><span class="op">,</span> (req<span class="op">,</span> res<span class="op">,</span> next<span class="op">,</span> val) <span class="kw">=&gt;</span> {<span class="op">...</span>})</span></code></pre></div>
+<p>Például használható arra, hogy validáljuk a megadott paramétert egy
+handler függvényben.</p>
+<div id="dynamic-routes" class="section level4">
+<h4>Dynamic Routes</h4>
+<p>Sokszor arra is szükségünk van, hogy a route-ot dinamikusan építsük
+fel. Ezt használjuk, amikor pl. egy-egy termékről, felhasználóról, stb.
+akarunk részletes adatokat bemutatni. Ilyenkor az url-be beépítjük a
+dinamikusan változó részt, amit a programmal ki kell olvasnunk.</p>
+<p>Az Express ezt is megkönnyíti a route-ok megadásánál. A dinamikus
+részt <code>GET</code> request esetén egy <code>:</code> után adhatjuk
+meg, és bárhogy elnevezhetjük. Csak arra kell figyelni, hogy a
+template-ekben is a megfelelő útvonalat adjuk meg a linknek.</p>
+<p>Figyelni kell arra, hogy ha vannak olyan route-jaink, amelyek
+ugyanolyan felépítésűek, de nem dinamikus elemet tartalmaznak, ezek
+megelőzzék, mert különben ezek soksem élesednének.</p>
+<p>Több paraméter is megadható egymás után, és opcionális paraméterek is
+lehetségesek (<code>?</code>-et írunk mögéjük)</p>
+<div class="sourceCode" id="cb13"><pre
+class="sourceCode js"><code class="sourceCode javascript"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a>app<span class="op">.</span><span class="fu">get</span>(<span class="st">&#39;/products/delete&#39;</span><span class="op">,</span> deleteProduct)<span class="op">;</span></span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>app<span class="op">.</span><span class="fu">get</span>(<span class="st">&#39;/products/:productId&#39;</span><span class="op">,</span> getProduct)<span class="op">;</span></span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>app<span class="op">.</span><span class="fu">get</span>(<span class="st">&#39;/products/:category/:subcat/:id&#39;</span><span class="op">,</span> getProduct)<span class="op">;</span></span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a>app<span class="op">.</span><span class="fu">get</span>(<span class="st">&#39;/products/:category/:type/:color?&#39;</span><span class="op">,</span> getProduct)<span class="op">;</span></span></code></pre></div>
+<p>A megadott paraméterek az url-ből a <code>request.params</code>
+attribútumon érhetők el, a megadott névvel: pl.
+<code>req.params.productId</code>.</p>
+<p><code>POST</code> requestek esetén ezen túl, a request body-ba
+írhatunk adatokat. Ez történik akkor is, ha egy html form adatait
+küldjük post requesttel. Ha nem új formról, hanem pl. a kosárhoz adásról
+van szó, ehhez pl. <code>type="hidden"</code> input elemeket
+használhatunk, amelyekkel az adott termék id-ját továbbítjuk. Az adatot
+a <code>req.body.name</code> property-n érhetjük el, ahol
+<code>name</code> az a név, amit az inputnak adtunk, értéke pedig az
+lesz, ami az input <code>value</code> értéke volt.</p>
+</div>
+<div id="query-paraméterek" class="section level4">
+<h4>Query paraméterek</h4>
+<p>A route-ok dinamikus részein túl query paramétereket is megadhatunk,
+amelyekkel további adatokat továbbíthatunk. Ezek már nem tartoznak a
+route-hoz, ezért pl. a routerben nem kell ezekkel foglalkozni, de a
+controllerekben vagy a route-ok callbackjeiben kinyerhetjük ezeket az
+adatokat a <code>req.query.key</code> módon, ahol a <code>key</code> az,
+amit a url-ben megadtunk.</p>
+<p>pl. Ilyen url lehet: <code>/edit-product/12345?edit=true</code>,
+amelyet a <code>req.query.edit</code> property-vel érünk el.</p>
+<p>Több query paramétert is megadhatunk, ha <code>&amp;</code> karaktert
+teszünk közéjük.</p>
+</div>
+</div>
+<div id="error-page" class="section level3">
+<h3>404 error page</h3>
+<p>Kihasználva, hogy a use metódussal akár az összes requestet
+kezelhetjük, metódustól és útvonaltól függően, ha a kód végére megadunk
+egy ilyen middleware-t, kezelhetjük a nem létező route-okat is:</p>
+<div class="sourceCode" id="cb14"><pre
+class="sourceCode js"><code class="sourceCode javascript"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a>app<span class="op">.</span><span class="fu">use</span>(<span class="st">&#39;/&#39;</span><span class="op">,</span> (req<span class="op">,</span> res<span class="op">,</span> next) <span class="kw">=&gt;</span> {</span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>  res<span class="op">.</span><span class="fu">status</span>(<span class="dv">404</span>)<span class="op">.</span><span class="fu">send</span>(<span class="st">&#39;&lt;h1&gt;Page not found!&lt;/h1&gt;&#39;</span>)<span class="op">;</span></span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+</div>
+</div>
+<div id="html-file-ok-küldése" class="section level2">
+<h2>Html file-ok küldése</h2>
+<p>res.sendFile() automatikusan felismeri, hogy html file-ról van szó. A
+file-okban lévő linkeket is a szerver által kezelt routoknak megfelelő
+útvonalakkal kell lecserélni: “restaurants.html” helyett “/restaurants”
+- fontos a “/”, mert így abszolút útvonalak lesznek, és közvetlenül a
+domain-név után ez jön. A css és js file-okkal való kapcsolat így
+elveszik - ennek javításához egyrészt javítani kell a linkek útvonalait,
+másrészt explicite kezelni kell az ezeknek megfelelő requesteket. Mivel
+ez nagyon munkaigényes lenne, az express-nek van erre szolgáló
+eszköze:</p>
+<div class="sourceCode" id="cb15"><pre
+class="sourceCode js"><code class="sourceCode javascript"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="co">// Serving static (css, js) files</span></span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a><span class="co">// app.use(express.static(foldername))</span></span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a>app<span class="op">.</span><span class="fu">use</span>(express<span class="op">.</span><span class="fu">static</span>(path<span class="op">.</span><span class="fu">join</span>(<span class="bu">__dirname</span><span class="op">,</span> <span class="st">&#39;public&#39;</span>)))<span class="op">;</span></span></code></pre></div>
+<p>A public mappán belül lehetnek almappák. A file-okra mutató linkekben
+a “public” mappát már el kell hagyni, csak ezen belül kell megadni az
+útvonalat. Ez a többi route elé kerül, és ha a request statikus file-ra
+vonatkozik, amely a megadott mappában található, akkor ezzel kezeli, ha
+nem, akkor a később megadott route-okkal.</p>
+<div id="útvonalak" class="section level3">
+<h3>Útvonalak</h3>
+<p>A file-okra vonatkozó útvonalak felépítéséhez hasznos a
+<code>path</code> könyvtár. Ennek a join metódusa lehetővé teszi az
+útvonalak felépítését, a dirname metódus pedig egy file mappájának
+megállapítását, ami felhasználható ahhoz, hogy a root könyvtárat
+megadjuk.</p>
+<div class="sourceCode" id="cb16"><pre
+class="sourceCode js"><code class="sourceCode javascript"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a>path<span class="op">.</span><span class="fu">join</span>(<span class="bu">__dirname</span><span class="op">,</span> <span class="st">&quot;views&quot;</span><span class="op">,</span> <span class="st">&quot;index.html&quot;</span>)<span class="op">;</span></span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a></span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a><span class="co">// root mappa</span></span>
+<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a><span class="kw">const</span> rootPath <span class="op">=</span> path<span class="op">.</span><span class="fu">dirname</span>(require<span class="op">.</span><span class="at">main</span><span class="op">.</span><span class="at">filename</span>)<span class="op">;</span></span>
+<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a><span class="co">// korábban</span></span>
+<span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a><span class="co">// const rootPath = path.dirname(process.mainModule.filename);</span></span></code></pre></div>
+</div>
+<div id="templating" class="section level3">
+<h3>Templating</h3>
+<p>Különböző template engine-ek: legnépszerűbb az EJS, de népszerű a Pug
+és a Handlebars is, és továbbiak is léteznek. Ezeket telepíteni kell a
+projekthez: <code>npm install ejs pug express-handlebars</code></p>
+<p>Ezek után tudatni kell az Express-szel, hogy melyiket szeretnénk
+használni. Az EJS és a Pug beállítása könnyebb, mert ezeket beépítetten
+kezeli az Express.</p>
+<div class="sourceCode" id="cb17"><pre
+class="sourceCode js"><code class="sourceCode javascript"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="co">// Opcionális, ha a views mappában vannak (ez a default)</span></span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a>app<span class="op">.</span><span class="fu">set</span>(<span class="st">&#39;views&#39;</span><span class="op">,</span> path<span class="op">.</span><span class="fu">join</span>(<span class="bu">__dirname</span><span class="op">,</span> <span class="st">&#39;views&#39;</span>))<span class="op">;</span></span>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a>app<span class="op">.</span><span class="fu">set</span>(<span class="st">&#39;view engine&#39;</span><span class="op">,</span> <span class="st">&#39;ejs&#39;</span>)<span class="op">;</span></span>
+<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a><span class="co">// vagy </span></span>
+<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a>app<span class="op">.</span><span class="fu">set</span>(<span class="st">&#39;view engine&#39;</span><span class="op">,</span> <span class="st">&#39;pug&#39;</span>)<span class="op">;</span></span></code></pre></div>
+<p>Ha a Handlebars-t szeretnénk használni, azt először importálni kell,
+majd regisztrálni, mint template engine-t, és csak ezután használható a
+fenti módon.</p>
+<div class="sourceCode" id="cb18"><pre
+class="sourceCode js"><code class="sourceCode javascript"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="kw">const</span> expressHbs <span class="op">=</span> <span class="pp">require</span>(<span class="st">&#39;express-handlebars&#39;</span>)<span class="op">;</span></span>
+<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a></span>
+<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a>app<span class="op">.</span><span class="fu">engine</span>(<span class="st">&#39;hbs&#39;</span><span class="op">,</span> <span class="fu">expressHbs</span>())<span class="op">;</span></span>
+<span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a>app<span class="op">.</span><span class="fu">set</span>(<span class="st">&#39;view engine&#39;</span><span class="op">,</span> <span class="st">&#39;hbs&#39;</span>)<span class="op">;</span></span></code></pre></div>
+<p>A renderelt file-ok .pug, .hbs (ugyanaz, mint ahogy a programkódban
+elneveztük) vagy .ejs kiterjesztésű file-ok. Az EJS és a Handlebars
+normál html-t ötvöz speciális részekkel, míg a pug egy leegyszerűsített
+szerkezetet használ.</p>
+<p>Miután készen vannak a file-ok, a route-okban <code>sendFile</code>
+helyett a <code>render</code> metódussal tudjuk ezeket
+megjeleníteni.</p>
+<div class="sourceCode" id="cb19"><pre
+class="sourceCode js"><code class="sourceCode javascript"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a>res<span class="op">.</span><span class="fu">render</span>(<span class="st">&#39;index&#39;</span>)</span></code></pre></div>
+<p>A render a beállított alapértelmezett templating engine-t fogja
+használni.</p>
+<p>A renderrel különböző adatokat is továbbíthatun a template-nek,
+amelyeket felhasználhatunk a template-ben, amelyben elérhetők lesznek az
+objektumban key-ként megadott változónevek, amelyek az értékként
+megadott objektumokra hivatkoznak.</p>
+<div class="sourceCode" id="cb20"><pre
+class="sourceCode js"><code class="sourceCode javascript"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a>res<span class="op">.</span><span class="fu">render</span>(<span class="st">&#39;product-list&#39;</span><span class="op">,</span> {</span>
+<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a>  <span class="dt">products</span><span class="op">:</span> allProducts<span class="op">,</span></span>
+<span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a>  <span class="dt">path</span><span class="op">:</span> <span class="st">&#39;/product-list&#39;</span><span class="op">,</span></span>
+<span id="cb20-4"><a href="#cb20-4" tabindex="-1"></a>  <span class="dt">pageTitle</span><span class="op">:</span> <span class="st">&#39;Products&#39;</span><span class="op">,</span></span>
+<span id="cb20-5"><a href="#cb20-5" tabindex="-1"></a>})</span></code></pre></div>
+<div id="pug" class="section level4">
+<h4>Pug</h4>
+<p>A pug szintaxisa az html tag-eket használja, de egy egyszerűsített,
+indentáláson alapuló szintaxissal. A tagekkel kezdjük a deklarálást,
+class-okat a “.”-tal adhatunk hozzá, id-t pedig “#”-tel. Div megadható a
+tag nélkül is. Ha szöveges tartalma van a tag-nek, akkor ezt egy szóköz
+után egyszerűen megadhatjuk. Az attribútumokat “()” közé írjuk. Lezáró
+tagek nincsenek, és máshogy sem kell lezárni a sorokat.</p>
+<pre><code>h1.main-title This is the Title of the Page
+.container
+a.btn-link(href=&quot;www.google.com&quot;) Go to Google.com</code></pre>
+<p>A pug-ban lehetőség van változó értéket használni, feltételes
+tartalmat megadni és iterálni:</p>
+<pre><code>h1 #{mainTitle}
+
+ul.friends-list
+  if friends.length &gt; 0
+    each friend in friends
+      li.list-item #{friend.name}
+  else
+    h3 You have no friends :(</code></pre>
+<p>Hasznos funkció, hogy layoutokat használhatunk. Ezek az oldalak közös
+részeit tartalmazzák, plusz olyan blokkokat (pl.
+<code>block styles</code>), amelyeket a részfile-okban kitölthetünk
+tartalommal.</p>
+<pre><code>doctype html
+html(lang=&quot;en&quot;)
+  head
+    meta(charset=&quot;UTF-8&quot;)
+    meta(http-equiv=&quot;X-UA-Compatible&quot;, content=&quot;IE=edge&quot;)
+    meta(name=&quot;viewport&quot;, content=&quot;width=device-width, initial-scale=1.0&quot;)
+    title #{ pageTitle }
+    link(rel=&quot;stylesheet&quot;, href=&quot;/css/main.css&quot;)
+    block styles 
+  body 
+    header.main-header
+      nav.main-header__nav
+        ul.main-header__item-list
+          li.main-header__item
+            a(href=&quot;/&quot;) Shop
+          li.main-header__item
+            a(href=&quot;/admin/add-product&quot;) Add Product
+    block content</code></pre>
+<pre><code>extends layouts/main-layout.pug
+
+block content
+  h1 Page Not Found!</code></pre>
+<p>Az osztályokat dinamikusan is megadhatjuk a layoutban JS ternary
+operator segítségével.</p>
+</div>
+<div id="handlebars" class="section level4">
+<h4>Handlebars</h4>
+<p>A Handlebars is tudja kezelni a feltételes utasításokat, iterálást,
+illetve layoutokkal is tud dolgozni. A szintaxis a normál html-en
+alapszik. Változók értékeit egyszerűen behelyettesíthetjük, ha a változó
+nevét <code>{{}}</code> közé írjuk. Az if/else parancsokat és az
+iterálást is <code>{{}}</code> segtségével adhatjuk meg. Az iterálás
+során a <code>this</code> kulcsszó a soron következő elemre utal.</p>
+<p>Fontos, hogy ellentétben pl. a puggal, itt a JavaScript logika nem
+működik a template-ben, hanem ennek a js file-ban kell megtörténnie, a
+template-nek csak az eredményt továbbíthatjuk, az objektum
+részeként.</p>
+<pre><code>&lt;h1&gt;{{ title }}&lt;/h1&gt;
+
+{{#if boolVar}}
+  &lt;div&gt;...&lt;/div&gt;
+{{ else }}
+  &lt;p&gt;...&lt;/p&gt;
+{{/if}}
+
+&lt;ul&gt;
+  {{#each arr}}
+    &lt;li&gt;this.name&lt;/li&gt;
+  {{/each}}
+&lt;/ul&gt;</code></pre>
+<p>Layoutokat is használhatunk, ehhez a handlebars engine-t konfigurálni
+kell egy objektummal: a <code>layoutsDir</code> a layout file-ok
+könyvtárát közli, a <code>defaultLayout</code> az alapértelmezett layout
+file-t (kiterjesztés nem kell), az <code>extname</code> pedig lehetővé
+teszi, hogy na az alapértelmezett .handlebars kiterjesztést ismerje csak
+fel.</p>
+<div class="sourceCode" id="cb26"><pre
+class="sourceCode js"><code class="sourceCode javascript"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a>app<span class="op">.</span><span class="fu">engine</span>(</span>
+<span id="cb26-2"><a href="#cb26-2" tabindex="-1"></a>  <span class="st">&#39;hbs&#39;</span><span class="op">,</span></span>
+<span id="cb26-3"><a href="#cb26-3" tabindex="-1"></a>  <span class="fu">expressHbs</span>({</span>
+<span id="cb26-4"><a href="#cb26-4" tabindex="-1"></a>    <span class="dt">layoutsDir</span><span class="op">:</span> <span class="st">&#39;views/layouts&#39;</span><span class="op">,</span></span>
+<span id="cb26-5"><a href="#cb26-5" tabindex="-1"></a>    <span class="dt">defaultLayout</span><span class="op">:</span> <span class="st">&#39;main-layout&#39;</span><span class="op">,</span></span>
+<span id="cb26-6"><a href="#cb26-6" tabindex="-1"></a>    <span class="dt">extname</span><span class="op">:</span> <span class="st">&#39;hbs&#39;</span><span class="op">,</span></span>
+<span id="cb26-7"><a href="#cb26-7" tabindex="-1"></a>  })</span>
+<span id="cb26-8"><a href="#cb26-8" tabindex="-1"></a>)<span class="op">;</span></span></code></pre></div>
+<p>Ezután létrehozható a layout file, amelyben használhatók a fenti
+placeholderek, illetve logika. Pl. a nem közös css és js file-ok
+beillesztése is a fent bemutatott if/else utasítások és boolean változók
+kombinációjával oldható meg. Változó blokkot csak egyet adhatunk meg a
+layoutban a <code>{{{ body }}}</code> placeholder használatával.</p>
+<p>A részfile-okban már csak annak a résznek kell szerepelnie, amelyet a
+placeholder helyére szeretnénk betenni.</p>
+</div>
+<div id="ejs" class="section level4">
+<h4>EJS</h4>
+<p>Az ejs bizonyos szempontból a másik kettő keveréke, mivel normál
+html-t használ (mint a handlebars), amelyekbe placeholderekkel
+beilleszthetünk nemcsak változó értékeket (mindkettő), hanem JS logikát
+is (mint a pugban).</p>
+<p>Az ejs szintaxis a sima szövegek beillesztéséhez
+<code>&lt;%= varName %&gt;</code>, amellyel beilleszthetjük tagek
+tartalmát, de attribútumok értékeit is. Html beillesztéséhez
+<code>&lt;%- html %&gt;</code> használható (pl. ezt használhatjuk a
+layoutokhoz), JS logika pedig <code>&lt;% %&gt;</code> közé kerülhet,
+amelyet le is kell zárni (mint a handlebars-ban). Ide kerülhet if/else,
+ternary, bármilyen ciklus, stb.</p>
+<pre><code>&lt;h1&gt;&lt;%= title %&gt;&lt;/h1&gt;
+
+&lt;% if (condition) { %&gt;
+  &lt;div&gt;...&lt;/div&gt;
+&lt;% } else { %&gt;
+  &lt;p&gt;...&lt;/p&gt;
+&lt;% } %&gt;
+
+&lt;ul&gt;
+  &lt;% for (let friend of friends) { %&gt;
+    &lt;li&gt;friend.name&lt;/li&gt;
+  &lt;% } %&gt;
+&lt;/ul&gt;</code></pre>
+<p>A Layout logika helyett, amely szerint a közös részekbe
+beilleszthetünk dinamikus részeket, az ejs logika fordított, a közös
+részeket (vagy bármilyen többé-kevésbé önálló komponenst) illeszthetjük
+be a külön file-okba. Html részeket (partial) kiszervezhetünk külön
+file-okba (tipikusan külön mappába pl. includes névvel), amelyek
+tartalmát beilleszthetjük.</p>
+Mint az alábbi példában látható, nem is kell, hogy a beillesztett rész
+önmagban működőképes legyen. Lehet az csak a metaadatokat tartalmazó
+<head>
+<p>rész, akár a zárótag nélkül</p>
+<pre><code>&lt;%- include(&#39;includes/head.ejs&#39;) %&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;site.css&quot;&gt;
+&lt;/head&gt;</code></pre>
+</div>
+</div>
+</div>
+<div id="controllerek" class="section level2">
+<h2>Controllerek</h2>
+<p>Az MVC felépítés jegyében a különböző route-ok <em>handler</em>
+függvényeit külön controller file-okban is tarthatjuk, amelyekből
+exportáljuk ezeket, és a route-okban az importált függvényeket
+használjuk callback-ként.</p>
+<p>Pl. egy ilyen controller file az alábbi (részlet):</p>
+<div class="sourceCode" id="cb29"><pre
+class="sourceCode js"><code class="sourceCode javascript"><span id="cb29-1"><a href="#cb29-1" tabindex="-1"></a><span class="kw">const</span> Product <span class="op">=</span> <span class="pp">require</span>(<span class="st">&#39;../models/product&#39;</span>)<span class="op">;</span></span>
+<span id="cb29-2"><a href="#cb29-2" tabindex="-1"></a></span>
+<span id="cb29-3"><a href="#cb29-3" tabindex="-1"></a>exports<span class="op">.</span><span class="at">getAddProduct</span> <span class="op">=</span> (req<span class="op">,</span> res<span class="op">,</span> next) <span class="kw">=&gt;</span> {</span>
+<span id="cb29-4"><a href="#cb29-4" tabindex="-1"></a>  <span class="co">// res.sendFile(path.join(rootDir, &#39;views&#39;, &#39;add-product.html&#39;));</span></span>
+<span id="cb29-5"><a href="#cb29-5" tabindex="-1"></a>  res<span class="op">.</span><span class="fu">render</span>(<span class="st">&#39;admin/add-product&#39;</span><span class="op">,</span> {</span>
+<span id="cb29-6"><a href="#cb29-6" tabindex="-1"></a>    <span class="dt">path</span><span class="op">:</span> <span class="st">&#39;/admin/add-product&#39;</span><span class="op">,</span></span>
+<span id="cb29-7"><a href="#cb29-7" tabindex="-1"></a>    <span class="dt">pageTitle</span><span class="op">:</span> <span class="st">&#39;Add Product&#39;</span><span class="op">,</span></span>
+<span id="cb29-8"><a href="#cb29-8" tabindex="-1"></a>  })<span class="op">;</span></span>
+<span id="cb29-9"><a href="#cb29-9" tabindex="-1"></a>}<span class="op">;</span></span>
+<span id="cb29-10"><a href="#cb29-10" tabindex="-1"></a></span>
+<span id="cb29-11"><a href="#cb29-11" tabindex="-1"></a>exports<span class="op">.</span><span class="at">postAddProduct</span> <span class="op">=</span> (req<span class="op">,</span> res<span class="op">,</span> next) <span class="kw">=&gt;</span> {</span>
+<span id="cb29-12"><a href="#cb29-12" tabindex="-1"></a>  <span class="kw">const</span> title <span class="op">=</span> req<span class="op">.</span><span class="at">body</span><span class="op">.</span><span class="at">title</span><span class="op">;</span></span>
+<span id="cb29-13"><a href="#cb29-13" tabindex="-1"></a>  <span class="kw">const</span> imageUrl <span class="op">=</span> req<span class="op">.</span><span class="at">body</span><span class="op">.</span><span class="at">imageUrl</span><span class="op">;</span></span>
+<span id="cb29-14"><a href="#cb29-14" tabindex="-1"></a>  <span class="kw">const</span> price <span class="op">=</span> req<span class="op">.</span><span class="at">body</span><span class="op">.</span><span class="at">price</span><span class="op">;</span></span>
+<span id="cb29-15"><a href="#cb29-15" tabindex="-1"></a>  <span class="kw">const</span> description <span class="op">=</span> req<span class="op">.</span><span class="at">body</span><span class="op">.</span><span class="at">description</span><span class="op">;</span></span>
+<span id="cb29-16"><a href="#cb29-16" tabindex="-1"></a></span>
+<span id="cb29-17"><a href="#cb29-17" tabindex="-1"></a>  <span class="kw">const</span> product <span class="op">=</span> <span class="kw">new</span> <span class="fu">Product</span>(title<span class="op">,</span> imageUrl<span class="op">,</span> description<span class="op">,</span> price)<span class="op">;</span></span>
+<span id="cb29-18"><a href="#cb29-18" tabindex="-1"></a>  product<span class="op">.</span><span class="fu">save</span>()<span class="op">;</span></span>
+<span id="cb29-19"><a href="#cb29-19" tabindex="-1"></a>  res<span class="op">.</span><span class="fu">redirect</span>(<span class="st">&#39;/&#39;</span>)<span class="op">;</span></span>
+<span id="cb29-20"><a href="#cb29-20" tabindex="-1"></a>}<span class="op">;</span></span></code></pre></div>
+<p>Ezeket a controller függvényeket a route-okban megadhatjuk az adott
+route callback-jeként:</p>
+<div class="sourceCode" id="cb30"><pre
+class="sourceCode js"><code class="sourceCode javascript"><span id="cb30-1"><a href="#cb30-1" tabindex="-1"></a><span class="kw">const</span> express <span class="op">=</span> <span class="pp">require</span>(<span class="st">&#39;express&#39;</span>)<span class="op">;</span></span>
+<span id="cb30-2"><a href="#cb30-2" tabindex="-1"></a></span>
+<span id="cb30-3"><a href="#cb30-3" tabindex="-1"></a><span class="kw">const</span> adminController <span class="op">=</span> <span class="pp">require</span>(<span class="st">&#39;../controllers/admin&#39;</span>)<span class="op">;</span></span>
+<span id="cb30-4"><a href="#cb30-4" tabindex="-1"></a></span>
+<span id="cb30-5"><a href="#cb30-5" tabindex="-1"></a><span class="kw">const</span> router <span class="op">=</span> express<span class="op">.</span><span class="fu">Router</span>()<span class="op">;</span></span>
+<span id="cb30-6"><a href="#cb30-6" tabindex="-1"></a></span>
+<span id="cb30-7"><a href="#cb30-7" tabindex="-1"></a>router<span class="op">.</span><span class="fu">get</span>(<span class="st">&#39;/add-product&#39;</span><span class="op">,</span> adminController<span class="op">.</span><span class="at">getAddProduct</span>)<span class="op">;</span></span>
+<span id="cb30-8"><a href="#cb30-8" tabindex="-1"></a>router<span class="op">.</span><span class="fu">get</span>(<span class="st">&#39;/products&#39;</span><span class="op">,</span> adminController<span class="op">.</span><span class="at">getProducts</span>)<span class="op">;</span></span>
+<span id="cb30-9"><a href="#cb30-9" tabindex="-1"></a>router<span class="op">.</span><span class="fu">post</span>(<span class="st">&#39;/add-product&#39;</span><span class="op">,</span> adminController<span class="op">.</span><span class="at">postAddProduct</span>)<span class="op">;</span></span>
+<span id="cb30-10"><a href="#cb30-10" tabindex="-1"></a></span>
+<span id="cb30-11"><a href="#cb30-11" tabindex="-1"></a>module<span class="op">.</span><span class="at">exports</span> <span class="op">=</span> router<span class="op">;</span></span></code></pre></div>
+</div>
+<div id="modelek" class="section level2">
+<h2>Modelek</h2>
+<p>Az MVC architektúrában az adatokkal a model file-okban dolgozunk.
+Gyakori, hogy osztályokat hozunk létre a különböző objektumok számára.
+Ezeknek különböző metódusokat adunk, pl. az adatok beolvasására, új
+adatok hozzáadására, stb. Az adatok beolvasására szolgálók lehetnek
+static metódusok, hogy magán az osztályon hívhassuk ezeket, és ne
+kelljen ezért ál-instanciákat létrehozni.</p>
+</div>
+<div id="file-ba-írás" class="section level2">
+<h2>File-ba írás</h2>
+<p>A programkódban tárolt adatok egyik alternatívája, ha file-okkal
+dolgozunk. Általában JSON file-ba írunk a JSON objektummal. Az
+objektumot a <code>JSON.stringify()</code> metódussal alakítjuk JSON
+formátummá, fordítva pedig a <code>JSON.parse()</code> metódus
+segítségével tudjuk a JSON szöveget objektummá alakítani.</p>
+<p>Ha az olvasás és írás aszinkron módon történik, ami célszerű, ha
+olyan kódban tesszük, amely az Event loopban fog futni (hogy ne
+blokkoljuk a futást), megbonyolíthatja a munkát, mert pl. ha a
+beolvasott adatok alapján szeretnénk renderelni, akkor a kontrollerben
+nem tudjuk egyszerűen return-ölni a kapott adatokat, mert ezek még nem
+állnak rendelkezésre, amikor lefut a model megfelelő metódusa.</p>
+<p>Az egyik megoldás, hogy egy callback függvény argumentumot adunk a
+metódusnak, amelyet hív az aszinkron művelet befejezését követően, és
+amelyet aztán a kontrollerben deklarálni tudunk a metódus hívása során,
+és ennek a teste lehet pl. az adatok alapján történő renderelés.</p>
+<p>Pl. a model file</p>
+<div class="sourceCode" id="cb31"><pre
+class="sourceCode js"><code class="sourceCode javascript"><span id="cb31-1"><a href="#cb31-1" tabindex="-1"></a><span class="kw">const</span> fs <span class="op">=</span> <span class="pp">require</span>(<span class="st">&#39;fs&#39;</span>)<span class="op">;</span></span>
+<span id="cb31-2"><a href="#cb31-2" tabindex="-1"></a><span class="kw">const</span> path <span class="op">=</span> <span class="pp">require</span>(<span class="st">&#39;path&#39;</span>)<span class="op">;</span></span>
+<span id="cb31-3"><a href="#cb31-3" tabindex="-1"></a></span>
+<span id="cb31-4"><a href="#cb31-4" tabindex="-1"></a><span class="co">// Csak segéd: a file elérési útvonala</span></span>
+<span id="cb31-5"><a href="#cb31-5" tabindex="-1"></a><span class="kw">const</span> p <span class="op">=</span> path<span class="op">.</span><span class="fu">join</span>(</span>
+<span id="cb31-6"><a href="#cb31-6" tabindex="-1"></a>  path<span class="op">.</span><span class="fu">dirname</span>(<span class="bu">process</span><span class="op">.</span><span class="at">mainModule</span><span class="op">.</span><span class="at">filename</span>)<span class="op">,</span></span>
+<span id="cb31-7"><a href="#cb31-7" tabindex="-1"></a>  <span class="st">&#39;data&#39;</span><span class="op">,</span></span>
+<span id="cb31-8"><a href="#cb31-8" tabindex="-1"></a>  <span class="st">&#39;products.json&#39;</span></span>
+<span id="cb31-9"><a href="#cb31-9" tabindex="-1"></a>)<span class="op">;</span></span>
+<span id="cb31-10"><a href="#cb31-10" tabindex="-1"></a></span>
+<span id="cb31-11"><a href="#cb31-11" tabindex="-1"></a><span class="co">// Függvénybe kiszervezett file-olvasás az említett callback-kel</span></span>
+<span id="cb31-12"><a href="#cb31-12" tabindex="-1"></a><span class="co">// Az aszinkron művelet végén hívja a cb() függvényt</span></span>
+<span id="cb31-13"><a href="#cb31-13" tabindex="-1"></a><span class="kw">const</span> getProductsFromFile <span class="op">=</span> (cb) <span class="kw">=&gt;</span> {</span>
+<span id="cb31-14"><a href="#cb31-14" tabindex="-1"></a>  fs<span class="op">.</span><span class="fu">readFile</span>(p<span class="op">,</span> (err<span class="op">,</span> fileContent) <span class="kw">=&gt;</span> {</span>
+<span id="cb31-15"><a href="#cb31-15" tabindex="-1"></a>    <span class="cf">if</span> (err) {</span>
+<span id="cb31-16"><a href="#cb31-16" tabindex="-1"></a>      <span class="cf">return</span> <span class="fu">cb</span>([])<span class="op">;</span></span>
+<span id="cb31-17"><a href="#cb31-17" tabindex="-1"></a>    }</span>
+<span id="cb31-18"><a href="#cb31-18" tabindex="-1"></a>    <span class="fu">cb</span>(<span class="bu">JSON</span><span class="op">.</span><span class="fu">parse</span>(fileContent))<span class="op">;</span></span>
+<span id="cb31-19"><a href="#cb31-19" tabindex="-1"></a>  })<span class="op">;</span></span>
+<span id="cb31-20"><a href="#cb31-20" tabindex="-1"></a>}<span class="op">;</span></span>
+<span id="cb31-21"><a href="#cb31-21" tabindex="-1"></a></span>
+<span id="cb31-22"><a href="#cb31-22" tabindex="-1"></a>module<span class="op">.</span><span class="at">exports</span> <span class="op">=</span> <span class="kw">class</span> Product {</span>
+<span id="cb31-23"><a href="#cb31-23" tabindex="-1"></a>  <span class="fu">constructor</span>(title<span class="op">,</span> imageUrl<span class="op">,</span> description<span class="op">,</span> price) {</span>
+<span id="cb31-24"><a href="#cb31-24" tabindex="-1"></a>    <span class="kw">this</span><span class="op">.</span><span class="at">title</span> <span class="op">=</span> title<span class="op">;</span></span>
+<span id="cb31-25"><a href="#cb31-25" tabindex="-1"></a>    <span class="kw">this</span><span class="op">.</span><span class="at">imageUrl</span> <span class="op">=</span> imageUrl<span class="op">;</span></span>
+<span id="cb31-26"><a href="#cb31-26" tabindex="-1"></a>    <span class="kw">this</span><span class="op">.</span><span class="at">description</span> <span class="op">=</span> description<span class="op">;</span></span>
+<span id="cb31-27"><a href="#cb31-27" tabindex="-1"></a>    <span class="kw">this</span><span class="op">.</span><span class="at">price</span> <span class="op">=</span> price<span class="op">;</span></span>
+<span id="cb31-28"><a href="#cb31-28" tabindex="-1"></a>  }</span>
+<span id="cb31-29"><a href="#cb31-29" tabindex="-1"></a></span>
+<span id="cb31-30"><a href="#cb31-30" tabindex="-1"></a>  <span class="fu">save</span>() {</span>
+<span id="cb31-31"><a href="#cb31-31" tabindex="-1"></a>    <span class="kw">this</span><span class="op">.</span><span class="at">id</span> <span class="op">=</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">random</span>()<span class="op">.</span><span class="fu">toString</span>()<span class="op">;</span></span>
+<span id="cb31-32"><a href="#cb31-32" tabindex="-1"></a>    <span class="co">// A használat során megadjuk a callback függvényt: ennek argumentuma a produktumk listája (ld. fent)</span></span>
+<span id="cb31-33"><a href="#cb31-33" tabindex="-1"></a>    <span class="fu">getProductsFromFile</span>((products) <span class="kw">=&gt;</span> {</span>
+<span id="cb31-34"><a href="#cb31-34" tabindex="-1"></a>      products<span class="op">.</span><span class="fu">push</span>(<span class="kw">this</span>)<span class="op">;</span></span>
+<span id="cb31-35"><a href="#cb31-35" tabindex="-1"></a>      fs<span class="op">.</span><span class="fu">writeFile</span>(p<span class="op">,</span> <span class="bu">JSON</span><span class="op">.</span><span class="fu">stringify</span>(products)<span class="op">,</span> (err) <span class="kw">=&gt;</span> {</span>
+<span id="cb31-36"><a href="#cb31-36" tabindex="-1"></a>        <span class="cf">if</span> (err) <span class="bu">console</span><span class="op">.</span><span class="fu">log</span>(err)<span class="op">;</span></span>
+<span id="cb31-37"><a href="#cb31-37" tabindex="-1"></a>      })<span class="op">;</span></span>
+<span id="cb31-38"><a href="#cb31-38" tabindex="-1"></a>    })<span class="op">;</span></span>
+<span id="cb31-39"><a href="#cb31-39" tabindex="-1"></a>  }</span>
+<span id="cb31-40"><a href="#cb31-40" tabindex="-1"></a></span>
+<span id="cb31-41"><a href="#cb31-41" tabindex="-1"></a>  <span class="co">// Itt csak továbbadjuk: a controller-ben, ahol hívjuk a fetchAll metódust, ott deklaráljuk</span></span>
+<span id="cb31-42"><a href="#cb31-42" tabindex="-1"></a>  <span class="kw">static</span> <span class="fu">fetchAll</span>(cb) {</span>
+<span id="cb31-43"><a href="#cb31-43" tabindex="-1"></a>    <span class="fu">getProductsFromFile</span>(cb)<span class="op">;</span></span>
+<span id="cb31-44"><a href="#cb31-44" tabindex="-1"></a>  }</span>
+<span id="cb31-45"><a href="#cb31-45" tabindex="-1"></a></span>
+<span id="cb31-46"><a href="#cb31-46" tabindex="-1"></a>  <span class="co">// Ez egy fokkal bonyolultabb, mert egyrészt deklarálunk egy callback-et a getProductsFromFile függvényhez</span></span>
+<span id="cb31-47"><a href="#cb31-47" tabindex="-1"></a>  <span class="co">// másrészt csak hívjuk, a deklarálás a controllerben történik</span></span>
+<span id="cb31-48"><a href="#cb31-48" tabindex="-1"></a>  <span class="kw">static</span> <span class="fu">findById</span>(id<span class="op">,</span> cb) {</span>
+<span id="cb31-49"><a href="#cb31-49" tabindex="-1"></a>    <span class="fu">getProductsFromFile</span>((products) <span class="kw">=&gt;</span> {</span>
+<span id="cb31-50"><a href="#cb31-50" tabindex="-1"></a>      <span class="kw">const</span> product <span class="op">=</span> products<span class="op">.</span><span class="fu">find</span>((p) <span class="kw">=&gt;</span> p<span class="op">.</span><span class="at">id</span> <span class="op">===</span> id)<span class="op">;</span></span>
+<span id="cb31-51"><a href="#cb31-51" tabindex="-1"></a>      <span class="fu">cb</span>(product)<span class="op">;</span></span>
+<span id="cb31-52"><a href="#cb31-52" tabindex="-1"></a>    })<span class="op">;</span></span>
+<span id="cb31-53"><a href="#cb31-53" tabindex="-1"></a>  }</span>
+<span id="cb31-54"><a href="#cb31-54" tabindex="-1"></a>}<span class="op">;</span></span></code></pre></div>
+<p>Pl. a contollerben, amely a termékeket betölti, és egy konkrét
+terméket is betölt:</p>
+<p>A deklarált callback-ek a termékek listáját kapják, és renderelik a
+megfelelő view-ket.</p>
+<div class="sourceCode" id="cb32"><pre
+class="sourceCode js"><code class="sourceCode javascript"><span id="cb32-1"><a href="#cb32-1" tabindex="-1"></a><span class="kw">const</span> Product <span class="op">=</span> <span class="pp">require</span>(<span class="st">&#39;../models/product&#39;</span>)<span class="op">;</span></span>
+<span id="cb32-2"><a href="#cb32-2" tabindex="-1"></a></span>
+<span id="cb32-3"><a href="#cb32-3" tabindex="-1"></a>exports<span class="op">.</span><span class="at">getProducts</span> <span class="op">=</span> (req<span class="op">,</span> res<span class="op">,</span> next) <span class="kw">=&gt;</span> {</span>
+<span id="cb32-4"><a href="#cb32-4" tabindex="-1"></a>  <span class="co">// res.sendFile(path.join(__dirname, &#39;..&#39;, &#39;views&#39;, &#39;shop.html&#39;));</span></span>
+<span id="cb32-5"><a href="#cb32-5" tabindex="-1"></a>  <span class="kw">const</span> products <span class="op">=</span> Product<span class="op">.</span><span class="fu">fetchAll</span>((products) <span class="kw">=&gt;</span> {</span>
+<span id="cb32-6"><a href="#cb32-6" tabindex="-1"></a>    res<span class="op">.</span><span class="fu">render</span>(<span class="st">&#39;shop/product-list&#39;</span><span class="op">,</span> {</span>
+<span id="cb32-7"><a href="#cb32-7" tabindex="-1"></a>      <span class="dt">prods</span><span class="op">:</span> products<span class="op">,</span></span>
+<span id="cb32-8"><a href="#cb32-8" tabindex="-1"></a>      <span class="dt">pageTitle</span><span class="op">:</span> <span class="st">&#39;All Products&#39;</span><span class="op">,</span></span>
+<span id="cb32-9"><a href="#cb32-9" tabindex="-1"></a>      <span class="dt">path</span><span class="op">:</span> <span class="st">&#39;/products&#39;</span><span class="op">,</span></span>
+<span id="cb32-10"><a href="#cb32-10" tabindex="-1"></a>    })<span class="op">;</span></span>
+<span id="cb32-11"><a href="#cb32-11" tabindex="-1"></a>  })<span class="op">;</span></span>
+<span id="cb32-12"><a href="#cb32-12" tabindex="-1"></a>}<span class="op">;</span></span>
+<span id="cb32-13"><a href="#cb32-13" tabindex="-1"></a></span>
+<span id="cb32-14"><a href="#cb32-14" tabindex="-1"></a>exports<span class="op">.</span><span class="at">getProduct</span> <span class="op">=</span> (req<span class="op">,</span> res<span class="op">,</span> next) <span class="kw">=&gt;</span> {</span>
+<span id="cb32-15"><a href="#cb32-15" tabindex="-1"></a>  <span class="kw">const</span> prodId <span class="op">=</span> req<span class="op">.</span><span class="at">params</span><span class="op">.</span><span class="at">productId</span><span class="op">;</span></span>
+<span id="cb32-16"><a href="#cb32-16" tabindex="-1"></a>  Product<span class="op">.</span><span class="fu">findById</span>(prodId<span class="op">,</span> (product) <span class="kw">=&gt;</span> {</span>
+<span id="cb32-17"><a href="#cb32-17" tabindex="-1"></a>    res<span class="op">.</span><span class="fu">render</span>(<span class="st">&#39;shop/product-detail&#39;</span><span class="op">,</span> {</span>
+<span id="cb32-18"><a href="#cb32-18" tabindex="-1"></a>      <span class="dt">product</span><span class="op">:</span> product<span class="op">,</span></span>
+<span id="cb32-19"><a href="#cb32-19" tabindex="-1"></a>      <span class="dt">pageTitle</span><span class="op">:</span> product<span class="op">.</span><span class="at">title</span><span class="op">,</span></span>
+<span id="cb32-20"><a href="#cb32-20" tabindex="-1"></a>      <span class="dt">path</span><span class="op">:</span> <span class="st">&#39;/products&#39;</span><span class="op">,</span></span>
+<span id="cb32-21"><a href="#cb32-21" tabindex="-1"></a>    })<span class="op">;</span></span>
+<span id="cb32-22"><a href="#cb32-22" tabindex="-1"></a>  })<span class="op">;</span></span>
+<span id="cb32-23"><a href="#cb32-23" tabindex="-1"></a>}<span class="op">;</span></span>
+<span id="cb32-24"><a href="#cb32-24" tabindex="-1"></a></span>
+<span id="cb32-25"><a href="#cb32-25" tabindex="-1"></a>exports<span class="op">.</span><span class="at">getIndex</span> <span class="op">=</span> (req<span class="op">,</span> res<span class="op">,</span> next) <span class="kw">=&gt;</span> {</span>
+<span id="cb32-26"><a href="#cb32-26" tabindex="-1"></a>  <span class="kw">const</span> products <span class="op">=</span> Product<span class="op">.</span><span class="fu">fetchAll</span>((products) <span class="kw">=&gt;</span> {</span>
+<span id="cb32-27"><a href="#cb32-27" tabindex="-1"></a>    res<span class="op">.</span><span class="fu">render</span>(<span class="st">&#39;shop/index&#39;</span><span class="op">,</span> {</span>
+<span id="cb32-28"><a href="#cb32-28" tabindex="-1"></a>      <span class="dt">prods</span><span class="op">:</span> products<span class="op">,</span></span>
+<span id="cb32-29"><a href="#cb32-29" tabindex="-1"></a>      <span class="dt">pageTitle</span><span class="op">:</span> <span class="st">&#39;Shop&#39;</span><span class="op">,</span></span>
+<span id="cb32-30"><a href="#cb32-30" tabindex="-1"></a>      <span class="dt">path</span><span class="op">:</span> <span class="st">&#39;/&#39;</span><span class="op">,</span></span>
+<span id="cb32-31"><a href="#cb32-31" tabindex="-1"></a>    })<span class="op">;</span></span>
+<span id="cb32-32"><a href="#cb32-32" tabindex="-1"></a>  })<span class="op">;</span></span>
+<span id="cb32-33"><a href="#cb32-33" tabindex="-1"></a>}<span class="op">;</span></span></code></pre></div>
+</div>
+<div id="api-k" class="section level2">
+<h2>API-k</h2>
+<div id="rest-api-design" class="section level3">
+<h3>REST API design</h3>
+<p>Ennek légyege, hogy a különböző erőforrásokat URL-ek segítségével
+tesszük elérhetővé (pl. /tours, /films). Az erőforrások eléréséhez, a
+CRUD (Create Read Update Delete) tevékenységekhez különböző http
+metódusokat használunk: olvasáshoz <code>GET</code>, új itemhez
+<code>POST</code>, szerkesztéshez <code>PUT</code> (teljes objektum
+kell) vagy <code>PATCH</code> (csak módosított részek kellenek),
+törléshez <code>DELETE</code>. Az egyes erőforrásokon belül adhatunk
+hozzáférést egyes elemekhez.</p>
+<p>Az adatokat jellemzően <code>json</code> formátumban küldjük,
+általában valamilyen módon formázva, pl. egy másik objektumba ágyazva a
+JSEND módszer szerint. Itt látható egy sikeres és egy sikertelen kérés
+esetén küldött válasz, JSEND módszer szerint: az objektum tartalmazza a
+status-t, egy üzenetet, adatokat, illetve, ha több adatot küldünk,
+tartalmazhatná ennek hosszát is (pl. hány túra, recept, film, stb. van
+az objektumban).</p>
+<div class="sourceCode" id="cb33"><pre
+class="sourceCode js"><code class="sourceCode javascript"><span id="cb33-1"><a href="#cb33-1" tabindex="-1"></a><span class="kw">const</span> getTour <span class="op">=</span> (req<span class="op">,</span> res) <span class="kw">=&gt;</span> {</span>
+<span id="cb33-2"><a href="#cb33-2" tabindex="-1"></a>  <span class="kw">const</span> id <span class="op">=</span> req<span class="op">.</span><span class="at">params</span><span class="op">.</span><span class="at">id</span> <span class="op">*</span> <span class="dv">1</span><span class="op">;</span></span>
+<span id="cb33-3"><a href="#cb33-3" tabindex="-1"></a>  <span class="kw">const</span> tour <span class="op">=</span> tours<span class="op">.</span><span class="fu">find</span>((el) <span class="kw">=&gt;</span> el<span class="op">.</span><span class="at">id</span> <span class="op">===</span> id)<span class="op">;</span></span>
+<span id="cb33-4"><a href="#cb33-4" tabindex="-1"></a></span>
+<span id="cb33-5"><a href="#cb33-5" tabindex="-1"></a>  <span class="cf">if</span> (<span class="op">!</span>tour) {</span>
+<span id="cb33-6"><a href="#cb33-6" tabindex="-1"></a>    <span class="cf">return</span> res<span class="op">.</span><span class="fu">status</span>(<span class="dv">404</span>)<span class="op">.</span><span class="fu">json</span>({</span>
+<span id="cb33-7"><a href="#cb33-7" tabindex="-1"></a>      <span class="dt">status</span><span class="op">:</span> <span class="st">&#39;fail&#39;</span><span class="op">,</span></span>
+<span id="cb33-8"><a href="#cb33-8" tabindex="-1"></a>      <span class="dt">message</span><span class="op">:</span> <span class="st">&#39;Invalid ID&#39;</span><span class="op">,</span></span>
+<span id="cb33-9"><a href="#cb33-9" tabindex="-1"></a>    })<span class="op">;</span></span>
+<span id="cb33-10"><a href="#cb33-10" tabindex="-1"></a>  }</span>
+<span id="cb33-11"><a href="#cb33-11" tabindex="-1"></a></span>
+<span id="cb33-12"><a href="#cb33-12" tabindex="-1"></a>  res<span class="op">.</span><span class="fu">status</span>(<span class="dv">200</span>)<span class="op">.</span><span class="fu">json</span>({</span>
+<span id="cb33-13"><a href="#cb33-13" tabindex="-1"></a>    <span class="dt">status</span><span class="op">:</span> <span class="st">&#39;success&#39;</span><span class="op">,</span></span>
+<span id="cb33-14"><a href="#cb33-14" tabindex="-1"></a>    <span class="dt">data</span><span class="op">:</span> {</span>
+<span id="cb33-15"><a href="#cb33-15" tabindex="-1"></a>      <span class="dt">tour</span><span class="op">:</span> tour<span class="op">,</span></span>
+<span id="cb33-16"><a href="#cb33-16" tabindex="-1"></a>    }<span class="op">,</span></span>
+<span id="cb33-17"><a href="#cb33-17" tabindex="-1"></a>  })<span class="op">;</span></span>
+<span id="cb33-18"><a href="#cb33-18" tabindex="-1"></a>}<span class="op">;</span></span></code></pre></div>
+<p>A RESTful API-k stateless-ek: a state-et a kliens kezeli, a szerver
+nem emlékezik a korábbi kérésekre ahhoz, hogy a jelenlegi kérést
+kiszolgálja.</p>
+<p>Érdemes az API verzióját is bevenni, hogy ha később változtatunk, a
+korábbi API-t használók kódja tovább működjön.</p>
+<p>Maga a gyakorlati megvalósítás Express-ben nem különbözik jelentősen
+attól, amikor weboldalakat küldtünk választként, csak annyiban, hogy a
+válasz json formátumú lesz. Ugyanúgy a különböző route-okat kell kezelni
+handler függvényekkel.</p>
+<div id="státuszok" class="section level4">
+<h4>Státuszok</h4>
+<p>Rest API-nál többféle státusz közül szokás válogatni:<br />
+- <code>404</code> jelöli, hogy nem találtuk a megadott URL-t (pl. hibás
+ID esetén) - <code>200</code> jelöli, hogy rendben ment minden (OK), pl.
+amikor GET vagy PATCH requestet küldünk - <code>201</code> jelöli, hogy
+valamit sikeresen létrehoztunk (Created), pl. POST request esetén -
+<code>204</code> jelöli, hogy a válasznak nincs tartalma (No content),
+pl. DELETE request esetén nem küldünk vissza adatot, csak visszajelzünk,
+hogy sikeres volt a törlés</p>
+</div>
+</div>
+</div>
+<div id="környezet-változók" class="section level2">
+<h2>Környezet változók</h2>
+<p>A Node.js és Express alkalmazások különböző környezetekben futhatnak:
+legfontosabbak a fejlesztői (<em>development</em>) és az éles
+(<em>production</em>) környezet. A környezettől függően lehetséges, hogy
+más adatbázisokat akarunk használni, illetve más funkciókat akarunk be-
+vagy kikapcsolni.</p>
+<p>Az environment változók olyan globális változók, amelyek a Node
+alkalmazás környezetét adják meg. A Node.js maga is sok változót ad meg
+alapértelmezettként, és az Express is. Alapértelmezettként az Express
+development environmentként állítja be a környezetet.</p>
+<p>A környezetet a <code>process.env</code> property révén (Node.js
+környezeti változók) és <code>app.get('env')</code> (Express környezeti
+változók) paranccsal kapjuk meg.</p>
+<p>Az Express-ben sok csomag támaszkodik a NODE_ENV változóra
+(konvenció), amelynek meg kell adnia, hogy milyen módban vagyunk. Ezt
+manuálisan kell megadni. A <code>process.env</code> révén ellenőrizhetők
+ezek a változók.</p>
+<ol style="list-style-type: decimal">
+<li>A terminálban (több is megadható egymás után):
+<code>NODE_ENV=development nodemon server.js</code></li>
+<li>Config file-ban (config.env): VS Code-ban a dotENV kiegészítő
+hasznos lehet a formázáshoz. A file tartalmához a dotenv csomaggal
+férhetünk hozzá (npm-ről telepíteni kell), amelynek a
+<code>dotenv.config({ path: './config.env' })</code> paranccsal adjuk
+meg, milyen file-ban keresse a változók deklarációit.</li>
+</ol>
+<p>Elég csak egy modulban beolvasni, és az egész alkalmazás részére
+elérhető lesz, mert a process core modul részévé válnak. Ennek még az
+app importálása előtt kell történnie.</p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,74 @@
+---
+title: "JavaScript reguláris kifejezések"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    toc_depth: 2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
+```
+
+## .test és .match
+
+A fő függvények a `.test` és a `.match`. Előbbi boolean értéket ad vissza aszerint, hogy a tesztelt string tartalmazza-e, a második pedig a reguláris kifejezéssel egyező szakaszt/szakaszokat adja egy array-ben. A kettő szintaxisa különbözik: a test esetében a regexhez kapcsolódik a metódus, a match estében pedig a stringhez.
+
+```{js}
+testRegex.test(testStr)
+testStr.match(testRegex)
+```
+
+## Regex szintaxis
+
+A reguláris kifejezéseket `/` közé kell írni. A záró `/` után pedig különböző `flag`ek adhatók hozzá, amelyek következtében például ignorálhatók a kis- és nagybetűk közötti különbségek, illetve jelezhető, ha nem csak az első, hanem az összes előfordulást keressük.
+
+```{js}
+const regExLiteral = /literal/
+const regExAlter = /yes|no|maybe/
+const ignoreCase = /code/i
+const repeat = /rep/g
+```
+
+## Speciális karakterek és operátorok
+
+```{js}
+const wildcard = /./              // bármilyen karakter (wildcard)
+const alphabet = /\w/g            // betűk, számok, _
+const exceptAlphabet = /\W/g      // minden, kivéve betűk, számok, _
+const digits = /\d/g              // minden szám
+const nonDigits = /\D/g           // minden nem szám
+const whitesp = /\s/g             // whitespace: space, carriage return, tab, form feed, new line
+const nonWhitesp = /\S/g          // minden, ami nem whitespace
+
+// Character set
+const alternatives = /b[aeiou]g/  // megadott karakterek bármelyike
+const range = /[a-f]/             // megadott intervallumon belül bármi
+const lettersAndNumbers = /[a-z0-9]/gi
+const except = /[^abcd]/gi        // bármi, kivéve a megadottak
+
+// Quantity
+const multiA = /a+/               // a megadott karakterből egy vagy több egy sorban
+const zeroOrMore = /\d*$/         // a megadott karakterből 0 vagy több szerepeljen
+const withOrWithout = /colou?r/   // a megadott karakterből 0 vagy 1 szerepeljen
+const between = /\d{2,4}/         // 2 és 4 közötti szerepeljen
+const orMore = /\d{2,}/           // legalább 2 szerepeljen
+const orLess = /\d{,4}/           // legfeljebb 4 szerepeljen
+const exactly = /\d{4}/           // éppen 4 szerepeljen
+
+// Lazy matching
+const lazy = /t[a-z]*?i/          // a lehető legrövidebb egyező karaktersorozat
+
+// Position: start, end, lookahead
+const start = /^First/            // string elején keres egyezést
+const end = /last$/               // string végén keres egyezést
+const followedBy = /q(?=u)/       // csak akkor, ha a zárójelben megadott követi
+const notFollowedBy = /q(?!u)/    // csak akkor, ha a zárójeles kifejezés nem követi
+
+// Groups & capture groups
+const alternatives = /P(engu|umpki)n/
+const repeat = /(\w+)\s\1/        // bármilyen szó kétszer, egy szóközzel elválasztva 
+"Code Camp".replace(/(\w+)\s(\w+)/, '$2 $1')  // Camp Code
+```

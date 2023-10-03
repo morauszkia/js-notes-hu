@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Redux</title>
+
+<script src="site_libs/header-attrs-2.24/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/readable.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    background-color: #ffffff;
+    color: #a0a0a0;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #a0a0a0;  padding-left: 4px; }
+div.sourceCode
+  { color: #1f1c1b; background-color: #ffffff; }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span { color: #1f1c1b; } /* Normal */
+code span.al { color: #bf0303; background-color: #f7e6e6; font-weight: bold; } /* Alert */
+code span.an { color: #ca60ca; } /* Annotation */
+code span.at { color: #0057ae; } /* Attribute */
+code span.bn { color: #b08000; } /* BaseN */
+code span.bu { color: #644a9b; font-weight: bold; } /* BuiltIn */
+code span.cf { color: #1f1c1b; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #924c9d; } /* Char */
+code span.cn { color: #aa5500; } /* Constant */
+code span.co { color: #898887; } /* Comment */
+code span.cv { color: #0095ff; } /* CommentVar */
+code span.do { color: #607880; } /* Documentation */
+code span.dt { color: #0057ae; } /* DataType */
+code span.dv { color: #b08000; } /* DecVal */
+code span.er { color: #bf0303; text-decoration: underline; } /* Error */
+code span.ex { color: #0095ff; font-weight: bold; } /* Extension */
+code span.fl { color: #b08000; } /* Float */
+code span.fu { color: #644a9b; } /* Function */
+code span.im { color: #ff5500; } /* Import */
+code span.in { color: #b08000; } /* Information */
+code span.kw { color: #1f1c1b; font-weight: bold; } /* Keyword */
+code span.op { color: #1f1c1b; } /* Operator */
+code span.ot { color: #006e28; } /* Other */
+code span.pp { color: #006e28; } /* Preprocessor */
+code span.re { color: #0057ae; background-color: #e0e9f8; } /* RegionMarker */
+code span.sc { color: #3daee9; } /* SpecialChar */
+code span.ss { color: #ff5500; } /* SpecialString */
+code span.st { color: #bf0303; } /* String */
+code span.va { color: #0057ae; } /* Variable */
+code span.vs { color: #bf0303; } /* VerbatimString */
+code span.wa { color: #bf0303; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Programozás jegyzeteim</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Vanilla JS
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="vanilla/js-variables.html">JavaScript alapok</a>
+    </li>
+    <li>
+      <a href="vanilla/js-program-flow.html">Program Flow Control</a>
+    </li>
+    <li>
+      <a href="vanilla/js-functions.html">Függvények</a>
+    </li>
+    <li>
+      <a href="vanilla/js-data-structures.html">Adatstruktúrák</a>
+    </li>
+    <li>
+      <a href="vanilla/js-array-methods.html">Haladó Array műveletek</a>
+    </li>
+    <li>
+      <a href="vanilla/js-dom-manipulation.html">DOM manipuláció</a>
+    </li>
+    <li>
+      <a href="vanilla/js-strings.html">Stringek</a>
+    </li>
+    <li>
+      <a href="vanilla/js-numbers-dates.html">Számok és dátumok</a>
+    </li>
+    <li>
+      <a href="vanilla/js-regex.html">Reguláris kifejezések</a>
+    </li>
+    <li>
+      <a href="vanilla/js-async.html">Asynchronous JavaScript</a>
+    </li>
+    <li>
+      <a href="vanilla/js-oop.html">OOP</a>
+    </li>
+    <li>
+      <a href="vanilla/js-dev-practice.html">JavaScript Development a gyakorlatban</a>
+    </li>
+    <li>
+      <a href="vanilla/js-api.html">Hasznos API-k</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Typescript
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="ts-basics.html">TypeScript basics</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Front-End JS Libraries&amp;Frameworks
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="front-end/jquery-basics.html">jQuery</a>
+    </li>
+    <li>
+      <a href="front-end/react-basics.html">React</a>
+    </li>
+    <li>
+      <a href="front-end/redux-basics.html">Redux</a>
+    </li>
+    <li>
+      <a href="front-end/next.html">Next</a>
+    </li>
+    <li>
+      <a href="front-end/vue-basics.html">Vue.js</a>
+    </li>
+    <li>
+      <a href="front-end/angular.html">Angular</a>
+    </li>
+    <li>
+      <a href="front-end/svelte.html">Svelte</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Back-End JS
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="back-end/node-js.html">Node.js</a>
+    </li>
+    <li>
+      <a href="back-end/express-js.html">Express.js</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Miscellaneous
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="misc/js-libraries.html">JS libraries</a>
+    </li>
+    <li>
+      <a href="misc/js-testing.html">JS Testing</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Redux</h1>
+
+</div>
+
+
+<p>A Redux arra szolgál, hogy az alkalmazás state-jét kezelje. Fő
+összetevői:</p>
+<ol style="list-style-type: decimal">
+<li><code>store</code>, amely a <code>state</code> objektumot
+tárolja,</li>
+<li>egy <code>root-reducer</code> függvény, opcionálisan több sima
+<code>reducer</code> függvénnyel, amely az akció függvényében
+változtatja a state-et,</li>
+<li>egy vagy több <code>action creator</code> függvény, amellyel
+különböző akciók hozhatók létre</li>
+</ol>
+<div id="reducer-függvények" class="section level2">
+<h2>Reducer függvények</h2>
+<p>Ez a része tulajdonképpen megfelel a React alap reducer logikájának,
+a reducerek alig változnak ahhoz képest. Egy változás, hogy a sima React
+<code>useReducer</code>-nél ez utóbbi megkapja a kezdőállapotot, amit a
+reducer függvény használ, itt viszont a kezdőállapotot a reducer
+függvény deklarációjában kell megadni default értékként. Ezt használja
+az inicializálás során, később pedig megkapja az aktuális state-et.</p>
+<p>A másik különbség, hogy a Redux esetében minden reducer megkap minden
+action-t, és ezért ha az adott reducer nem is tudja kezelni az action-t,
+akkor se hibát dobunk, hanem a state-et adjuk vissza, és így a program
+tudja, hogy ez a reducer nem változtatta a state-et, hiszen nem egy új
+objektumot kap.</p>
+</div>
+<div id="store" class="section level2">
+<h2>Store</h2>
+</div>
+<div id="action-creator-függvények" class="section level2">
+<h2>Action creator függvények</h2>
+<p>Lépések: 1. Opcionális: Létrehozni egy alapértelmezett
+<code>state</code>-et: objektum a szükséges property-kkel. A state
+létrehozható a reducer részeként is, és lehet egyszerűbb is, mint egy
+komplex objektum: akár egyetlen érték vagy egy üres array. 2. Létrehozni
+egy vagy több <code>reducer</code> függvényt, amely a state-et
+változtatja (valójában új state-et ad). A reducer tiszta függvény,
+mellékhatások nélkül. Két paramétert kap: a jelenlegi state-et és egy
+actiont. Sokszor switch-et használnak, hogy többféle típusú actiont
+kezelni tudjon. Return értéke egy új vagy az eredeti state. 3. A
+<code>store</code> a <code>Redux.createStore()</code> révén jön létre
+(nevesítve is importálhatjuk), amely a reducer függvényt kapja
+paraméterként. 4. Opcionális: Létrehozni az <code>action creator</code>
+fügvényeket, amelyek objektumokat (<code>action</code>-öket) adnak,
+amelyek kötelező property-je a típus (<code>type</code>). Az action
+objektumok közvetlenül is hozzáadhatók a dispatch metódushoz.</p>
+<p>Opcionális best practice:</p>
+<ul>
+<li>Az action típusokat lehetséges konstans változóként létrehozni
+(nagybetűs név), és a függvényekben ezekre hivatkozni, nem pedig
+stringeket használni, hogy elkerüljük az elgépeléseket. Hogy
+áttekinthetőbb legyen, ezek egy objektum property-jeiként is
+létrehozhatók.</li>
+<li>A state összes elemét egyetlen store-ban kell kezelni, de ehhez
+lehetséges több reducer függvényt írni és kombinálni, amelyek a state
+különböző alkotórészeit kezelik.</li>
+</ul>
+<div class="sourceCode" id="cb1"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co">// Konstansok</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="kw">const</span> LOGIN <span class="op">=</span> <span class="st">&#39;LOGIN&#39;</span><span class="op">;</span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="kw">const</span> LOGOUT <span class="op">=</span> <span class="st">&#39;LOGOUT&#39;</span><span class="op">;</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="co">// State objektum</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="kw">const</span> defaultState <span class="op">=</span> {</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>  <span class="dt">authenticated</span><span class="op">:</span> <span class="kw">false</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>  <span class="dt">notes</span><span class="op">:</span> []</span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>}<span class="op">;</span></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="co">// Reducer függvények</span></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="kw">const</span> authReducer <span class="op">=</span> (state <span class="op">=</span> { <span class="dt">authenticated</span><span class="op">:</span> <span class="kw">false</span> }<span class="op">,</span> action) <span class="kw">=&gt;</span> {</span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>  <span class="cf">switch</span> (action<span class="op">.</span><span class="at">type</span>) {</span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>    <span class="cf">case</span> <span class="dt">LOGIN</span><span class="op">:</span></span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a>      <span class="cf">return</span> { <span class="dt">authenticated</span><span class="op">:</span> <span class="kw">true</span> }</span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a>    <span class="cf">case</span> <span class="dt">LOGOUT</span><span class="op">:</span></span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a>      <span class="cf">return</span> { <span class="dt">authenticated</span><span class="op">:</span> <span class="kw">false</span> }</span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a>    <span class="cf">default</span><span class="op">:</span></span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a>      <span class="cf">return</span> state</span>
+<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a>  }</span>
+<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a>}<span class="op">;</span></span>
+<span id="cb1-22"><a href="#cb1-22" tabindex="-1"></a></span>
+<span id="cb1-23"><a href="#cb1-23" tabindex="-1"></a><span class="kw">const</span> notesReducer <span class="op">=</span> (state <span class="op">=</span> { <span class="dt">notes</span><span class="op">:</span> [] }<span class="op">,</span> action) <span class="kw">=&gt;</span> {</span>
+<span id="cb1-24"><a href="#cb1-24" tabindex="-1"></a>  <span class="cf">switch</span> (action<span class="op">.</span><span class="at">type</span>) {</span>
+<span id="cb1-25"><a href="#cb1-25" tabindex="-1"></a>    <span class="cf">case</span> <span class="st">&#39;ADD&#39;</span><span class="op">:</span></span>
+<span id="cb1-26"><a href="#cb1-26" tabindex="-1"></a>      <span class="cf">return</span> { <span class="dt">notes</span><span class="op">:</span> [<span class="op">...</span>notes<span class="op">,</span> action<span class="op">.</span><span class="at">note</span>] }</span>
+<span id="cb1-27"><a href="#cb1-27" tabindex="-1"></a>    <span class="cf">case</span> <span class="st">&#39;REMOVE&#39;</span><span class="op">:</span></span>
+<span id="cb1-28"><a href="#cb1-28" tabindex="-1"></a>      <span class="cf">return</span> { notes<span class="op">.</span><span class="fu">filter</span>(note <span class="kw">=&gt;</span> note<span class="op">.</span><span class="at">id</span> <span class="op">!==</span> action<span class="op">.</span><span class="at">note</span><span class="op">.</span><span class="at">id</span>) }</span>
+<span id="cb1-29"><a href="#cb1-29" tabindex="-1"></a>    <span class="cf">default</span><span class="op">:</span></span>
+<span id="cb1-30"><a href="#cb1-30" tabindex="-1"></a>      <span class="cf">return</span> state</span>
+<span id="cb1-31"><a href="#cb1-31" tabindex="-1"></a>  }</span>
+<span id="cb1-32"><a href="#cb1-32" tabindex="-1"></a>}<span class="op">;</span></span>
+<span id="cb1-33"><a href="#cb1-33" tabindex="-1"></a></span>
+<span id="cb1-34"><a href="#cb1-34" tabindex="-1"></a><span class="kw">const</span> rootReducer <span class="op">=</span> Redux<span class="op">.</span><span class="fu">combineReducers</span>({</span>
+<span id="cb1-35"><a href="#cb1-35" tabindex="-1"></a>  <span class="dt">authenticated</span><span class="op">:</span> authReducer<span class="op">,</span></span>
+<span id="cb1-36"><a href="#cb1-36" tabindex="-1"></a>  <span class="dt">notes</span><span class="op">:</span> notesReducer</span>
+<span id="cb1-37"><a href="#cb1-37" tabindex="-1"></a>})</span>
+<span id="cb1-38"><a href="#cb1-38" tabindex="-1"></a></span>
+<span id="cb1-39"><a href="#cb1-39" tabindex="-1"></a><span class="co">// Store - csak egy reducert fogad el</span></span>
+<span id="cb1-40"><a href="#cb1-40" tabindex="-1"></a><span class="kw">const</span> store <span class="op">=</span> Redux<span class="op">.</span><span class="fu">createStore</span>(rootReducer)<span class="op">;</span></span>
+<span id="cb1-41"><a href="#cb1-41" tabindex="-1"></a></span>
+<span id="cb1-42"><a href="#cb1-42" tabindex="-1"></a><span class="co">// Action creatorok - az action-ök közvetlenül is küldhetők</span></span>
+<span id="cb1-43"><a href="#cb1-43" tabindex="-1"></a><span class="kw">const</span> loginUser <span class="op">=</span> () <span class="kw">=&gt;</span> {</span>
+<span id="cb1-44"><a href="#cb1-44" tabindex="-1"></a>  <span class="cf">return</span> {</span>
+<span id="cb1-45"><a href="#cb1-45" tabindex="-1"></a>    <span class="dt">type</span><span class="op">:</span> LOGIN</span>
+<span id="cb1-46"><a href="#cb1-46" tabindex="-1"></a>  }</span>
+<span id="cb1-47"><a href="#cb1-47" tabindex="-1"></a>}<span class="op">;</span></span>
+<span id="cb1-48"><a href="#cb1-48" tabindex="-1"></a></span>
+<span id="cb1-49"><a href="#cb1-49" tabindex="-1"></a><span class="kw">const</span> logoutUser <span class="op">=</span> () <span class="kw">=&gt;</span> {</span>
+<span id="cb1-50"><a href="#cb1-50" tabindex="-1"></a>  <span class="cf">return</span> {</span>
+<span id="cb1-51"><a href="#cb1-51" tabindex="-1"></a>    <span class="dt">type</span><span class="op">:</span> LOGOUT</span>
+<span id="cb1-52"><a href="#cb1-52" tabindex="-1"></a>  }</span>
+<span id="cb1-53"><a href="#cb1-53" tabindex="-1"></a>}<span class="op">;</span></span></code></pre></div>
+</div>
+<div id="store-metódusok" class="section level2">
+<h2>Store metódusok</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="kw">const</span> currentState <span class="op">=</span> store<span class="op">.</span><span class="fu">getState</span>()   <span class="co">// Get current state</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>store<span class="op">.</span><span class="fu">dispatch</span>(action)                  <span class="co">// Dispatch an action to the store</span></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>store<span class="op">.</span><span class="fu">subscribe</span>(callback)               <span class="co">// Call callback fun every time store gets updated</span></span></code></pre></div>
+</div>
+<div id="aszinkron-műveletek" class="section level2">
+<h2>Aszinkron műveletek</h2>
+<p>Erre a célra a Redux beépített middleware-jét használhatjuk. A store
+létrehozásánál második argumentumként adjuk meg a reducer függvény
+mellett (ld. lent). Az alábbi példában az időzítés jelenti az aszinkron
+folyamatot, de ez lehet API request is.</p>
+<p>Ilyenkor szokás az aszinkron folyamat indítása előtt egy actiont
+élesíteni, amely jelzi, hogy az adatok lekérése folyamatban van (pl.
+ikonnal), majd az adatok beérkezése után egy újabb actiont, amely
+szállítja a kapott adatokat. Az action creator egy <code>dispatch</code>
+argumentummal ellátott függvényt ad, amelyben élesítjük a két akciót,
+hogy ezt lehetővé tegye.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co">// Konstans</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="kw">const</span> REQUESTING_DATA <span class="op">=</span> <span class="st">&#39;REQUESTING_DATA&#39;</span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="kw">const</span> RECEIVED_DATA <span class="op">=</span> <span class="st">&#39;RECEIVED_DATA&#39;</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">// Action creator</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="kw">const</span> requestingData <span class="op">=</span> () <span class="kw">=&gt;</span> { <span class="cf">return</span> {<span class="dt">type</span><span class="op">:</span> REQUESTING_DATA} }</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="kw">const</span> receivedData <span class="op">=</span> (data) <span class="kw">=&gt;</span> { <span class="cf">return</span> {<span class="dt">type</span><span class="op">:</span> RECEIVED_DATA<span class="op">,</span> <span class="dt">users</span><span class="op">:</span> data<span class="op">.</span><span class="at">users</span>} }</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="kw">const</span> handleAsync <span class="op">=</span> () <span class="kw">=&gt;</span> {</span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>  <span class="cf">return</span> <span class="kw">function</span>(dispatch) {</span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>    <span class="co">// Dispatch request action here</span></span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a>    <span class="fu">dispatch</span>(<span class="fu">requestingData</span>())</span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>    <span class="pp">setTimeout</span>(<span class="kw">function</span>() {</span>
+<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a>      <span class="kw">let</span> data <span class="op">=</span> {</span>
+<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a>        <span class="dt">users</span><span class="op">:</span> [<span class="st">&#39;Jeff&#39;</span><span class="op">,</span> <span class="st">&#39;William&#39;</span><span class="op">,</span> <span class="st">&#39;Alice&#39;</span>]</span>
+<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a>      }</span>
+<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a>      <span class="co">// Dispatch received data action here</span></span>
+<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a>      <span class="fu">dispatch</span>(<span class="fu">receivedData</span>())</span>
+<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a>    }<span class="op">,</span> <span class="dv">2500</span>)<span class="op">;</span></span>
+<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a>  }</span>
+<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a>}<span class="op">;</span></span>
+<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a></span>
+<span id="cb3-23"><a href="#cb3-23" tabindex="-1"></a><span class="co">// Initial state</span></span>
+<span id="cb3-24"><a href="#cb3-24" tabindex="-1"></a><span class="kw">const</span> defaultState <span class="op">=</span> {</span>
+<span id="cb3-25"><a href="#cb3-25" tabindex="-1"></a>  <span class="dt">fetching</span><span class="op">:</span> <span class="kw">false</span><span class="op">,</span></span>
+<span id="cb3-26"><a href="#cb3-26" tabindex="-1"></a>  <span class="dt">users</span><span class="op">:</span> []</span>
+<span id="cb3-27"><a href="#cb3-27" tabindex="-1"></a>}<span class="op">;</span></span>
+<span id="cb3-28"><a href="#cb3-28" tabindex="-1"></a></span>
+<span id="cb3-29"><a href="#cb3-29" tabindex="-1"></a><span class="co">// Reducer függvény</span></span>
+<span id="cb3-30"><a href="#cb3-30" tabindex="-1"></a><span class="kw">const</span> asyncDataReducer <span class="op">=</span> (state <span class="op">=</span> defaultState<span class="op">,</span> action) <span class="kw">=&gt;</span> {</span>
+<span id="cb3-31"><a href="#cb3-31" tabindex="-1"></a>  <span class="cf">switch</span>(action<span class="op">.</span><span class="at">type</span>) {</span>
+<span id="cb3-32"><a href="#cb3-32" tabindex="-1"></a>    <span class="cf">case</span> <span class="dt">REQUESTING_DATA</span><span class="op">:</span></span>
+<span id="cb3-33"><a href="#cb3-33" tabindex="-1"></a>      <span class="cf">return</span> {</span>
+<span id="cb3-34"><a href="#cb3-34" tabindex="-1"></a>        <span class="dt">fetching</span><span class="op">:</span> <span class="kw">true</span><span class="op">,</span></span>
+<span id="cb3-35"><a href="#cb3-35" tabindex="-1"></a>        <span class="dt">users</span><span class="op">:</span> []</span>
+<span id="cb3-36"><a href="#cb3-36" tabindex="-1"></a>      }</span>
+<span id="cb3-37"><a href="#cb3-37" tabindex="-1"></a>    <span class="cf">case</span> <span class="dt">RECEIVED_DATA</span><span class="op">:</span></span>
+<span id="cb3-38"><a href="#cb3-38" tabindex="-1"></a>      <span class="cf">return</span> {</span>
+<span id="cb3-39"><a href="#cb3-39" tabindex="-1"></a>        <span class="dt">fetching</span><span class="op">:</span> <span class="kw">false</span><span class="op">,</span></span>
+<span id="cb3-40"><a href="#cb3-40" tabindex="-1"></a>        <span class="dt">users</span><span class="op">:</span> action<span class="op">.</span><span class="at">users</span></span>
+<span id="cb3-41"><a href="#cb3-41" tabindex="-1"></a>      }</span>
+<span id="cb3-42"><a href="#cb3-42" tabindex="-1"></a>    <span class="cf">default</span><span class="op">:</span></span>
+<span id="cb3-43"><a href="#cb3-43" tabindex="-1"></a>      <span class="cf">return</span> state<span class="op">;</span></span>
+<span id="cb3-44"><a href="#cb3-44" tabindex="-1"></a>  }</span>
+<span id="cb3-45"><a href="#cb3-45" tabindex="-1"></a>}<span class="op">;</span></span>
+<span id="cb3-46"><a href="#cb3-46" tabindex="-1"></a></span>
+<span id="cb3-47"><a href="#cb3-47" tabindex="-1"></a><span class="kw">const</span> store <span class="op">=</span> Redux<span class="op">.</span><span class="fu">createStore</span>(</span>
+<span id="cb3-48"><a href="#cb3-48" tabindex="-1"></a>  asyncDataReducer<span class="op">,</span></span>
+<span id="cb3-49"><a href="#cb3-49" tabindex="-1"></a>  Redux<span class="op">.</span><span class="fu">applyMiddleware</span>(ReduxThunk<span class="op">.</span><span class="at">default</span>)</span>
+<span id="cb3-50"><a href="#cb3-50" tabindex="-1"></a>)<span class="op">;</span></span></code></pre></div>
+</div>
+<div id="immutabilitás" class="section level2">
+<h2>Immutabilitás</h2>
+<p>Reduxban fontos, hogy a state-et ne mutáljuk, hanem mindig új
+state-et adjunk vissza. Ez számok és stringek esetében nem probléma,
+hiszen ezek eleve mutálhatatlanok, array és objektum state-ek esetében
+viszont erre nekünk kell odafigyelni, és az eredeti objektum másolatához
+hozzáfűzni az új adatokat / a másolatot módosítani.</p>
+<div id="megoldási-lehetőségek" class="section level3">
+<h3>Megoldási lehetőségek</h3>
+<p>Ha csak egyszintes a state, akkor a spread operátor ([…arr])jól
+használható, hiszen másolatot ad. Törlésre használható a
+<code>.slice</code>, kombinálva a spread operátorral vagy
+<code>.concat</code>-tal Szintén használhatók a <code>.map</code> és
+<code>.filter</code> metódusok, amelyek új array-t adnak. Objektum
+másolására az <code>Object.assign()</code> használható, amely első
+paramétere jellemzően egy üres objektum, a további paraméterek pedik
+azok az eredeti objektumok, amelyek tulajdonságaival fel szeretnénk
+tölteni.</p>
+</div>
+</div>
+<div id="redux-toolkit" class="section level2">
+<h2>Redux Toolkit</h2>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

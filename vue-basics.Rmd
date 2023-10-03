@@ -1,0 +1,955 @@
+---
+title: "Vue.js"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    toc_depth: 2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
+```
+
+A Vue.js a React és Angular alternatívája, amely ugyancsak egy olyan JS framework, amely lehetővé teszi, hogy könnyebben hozzunk létre komplex webes alkalmazásokat. A Vue.js reaktivitást ad a html dokumentumokhoz a direktívák segítségével, amelyekkel bizonyos megjelenített tartalmakat változókhoz köthetünk, illetve függvényeket élesíthetünk.
+
+## Projektek létrehozása
+
+Egyszerűbb projektekhez a html file-ba illesztett CDN scripttel adhatjuk hozzá, amelyet megtalálunk a [Vue.js honlapon](https://vuejs.org/v2/guide/installation.html#CDN). Ezt a JS scriptünk elé kell beilleszteni, hogy utóbbi már hozzáférjen az ebben foglaltakhoz.
+
+### App objektum létrehozása és hozzákapcsolása a html file-hoz
+
+Ha beillesztettük a megfelelő scriptet a html file-ba és a .js file-t is hozzákötöttük, a .js file-ban létrehozható a Vue alkalmazás objektum. Ehhez adhatunk data property-ket és metódusokat. Ha `.vue` file-okat használunk, ezekben egymás mellett létrehozhatjuk a html template-eket, a Vue alkalmazás objektumot és a css deklarációkat.
+
+Az alkalmazásnak a `.mount(id)` metódussal tehetjük lehetővé, hogy a html file bizonyos részeit kezelje. Érdemes id-t használni, mert az egyedi. Class esetén az első találathoz köti.
+
+Egy html file-hoz több alkalmazást is létrehozhatunk, amelyek különböző részeit kezelik. Minden alkalmazás csak a saját adataihoz és metódusaihoz fér hozzá. Ugyanakkor egy html részt csak egy app kezelhet, és egy app csak a html egy részét kezelheti.
+
+A mount révén az html kód adott részét a Vue app `template`-jévé tesszük. A leggyakoribb és legegyszerűbb mód kis alkalmazások esetén a html kódot a html file-ban megírni, és hozzákötni az alkalmazást.
+
+A template viszont az app részeként is létrehozható.
+
+```{js}
+const app = Vue.createApp({
+  template: `
+    <p>{{ text }}</p>
+  `,
+  data() {
+    return {
+      // Data properties
+    }
+  },
+  methods: {}
+})
+```
+
+Komplexebb projekteknél a template a vue file `<template>` tagon belül hozható létre.
+
+### Vue CLI és Vetur
+
+Bonyolultabb projektekhez két lehetőség közül választhatunk.  
+
+Az egyik kombináció a Vue CLI és a VS Code Vetur kiegészítőjének kombinációja. Használatához a Node.js-re van szükségünk. Ezután telepíthetjük a Vue CLI-t:
+
+```{}
+npm install -g @vue/cli
+```
+
+Ezután létrehozhatjuk az alkalmazásunkat:
+
+```{}
+vue create app-name
+```
+
+A kérdésekre válaszolva kiválaszthatjuk, milyen beállításokkal (pl. Vue verzió) szeretnénk létrehozni. Ha a feature-ök manuális kiválasztása mellett döntünk, kijelölhetjük, melyeket szeretnénk használni, majd kiválaszthatjuk a verziót. A többi kérdésre megelégedhetünk a default válaszokkal.
+
+Ezután a könyvtárba lépve elindíthatjuk a web development servert:
+
+```{}
+cd app-name
+npm run serve
+```
+
+A Vetur a VS Code bővítménye, amely segíti a fejlesztést, pl. javaslatokkal, hibák jelzésével.
+
+### npm init vue és Volar
+
+A másik lehetőség az `npm init vue` parancs használata a projekt létrehozása. Ebben az esetben a VS Code-ban a Volar bővítményt érdemes telepíteni.
+
+### Projektek és .vue file-ok struktúrája
+
+Hasonlóan a React projekt struktúrához, a Vue projektek is külön file-okban létrehozott komponensekből épülnek fel. Ezeket `.vue` kiterjesztésű file-okban hozzuk létre, amelyek három komponenst is tartalmazhatnak:
+
+```{}
+<template>
+  Ide jön a reaktív html
+</template>
+
+<script>
+  Ide jön a Vue objektum definíciója, amely az alkalmazást működteti
+</script>
+
+<style>
+  Ide jönnek a stílus deklarációk
+</style>
+```
+
+Maga a fő html egyszerű struktúrájú, mint a React esetében is: egy `app` id-vel rendelkező, eredetileg üres div-ből áll. Egy tipikusan `main.js` nevű JavaScript file-ban építjük fel és kötjük az alkalmazásunkat az app div-hez. Ezeket automatikusan létrehozza a CLI.
+
+```{js}
+import { createApp } from "vue";
+
+import App from "./App.vue";
+import FriendsList from "./components/FriendsList.vue"
+
+const app = createApp(App)
+
+app.component(FriendsList)
+
+app.mount("app")
+```
+
+A komponenseket jellemzően a `components` mappában, esetleg annak almappáiban hozzuk létre: minden file egy komponens. A komponensek neve PascalCase formátumú szokott lenni. 
+
+## Vue működése
+
+A Vue a JavaScript Proxy funkcióján alapul. Ez lehetővé teszi, hogy bizonyos értékeket más változóértékek megváltoztatása hatására szintén megváltoztassunk.
+
+Akárcsak a React.js, a Vue.js is virtuális DOM-ot használ, és csak azokat a DOM elemeket rendereli újra, amelyek változnak a korábbi állapothoz képest. 
+
+### TODO (Proxy részletek)
+
+### Vue Style Guide
+
+A Vue kóddal kapcsolatos elvárásokat, ajánlásokat a hivatalos Vue.js Style Guide tartalmazza, amely elérhető a Vue.js honlapot, [itt](https://vuejs.org/style-guide/).
+
+## Komponensek
+
+Bonyolultabb alkalmazásokat modulárisan hozunk létre: a komponensek külön file-okban vannak definiálva, html template-jükkel és stílusdeklarációikkal együtt. A komponens file-ok tartalmaznak egy template részt, amely a html felépítést adja meg. Emellett, ha JS logika kötődik hozzájuk, tartalmaznak egy script részt, amelybe kerülnek az importok, illetve itt definiáljuk az exportált komponens objektumot is. Ezen kívül kaphatnak stílus deklarációkat a style tag segítségével:
+
+```{}
+<template>
+  <!-- html -->
+</template>
+
+<script>
+  // JS
+</script>
+
+<style>
+  /* CSS */
+</style>
+```
+
+A Vue3 már lehetővé teszi, hogy a komponens template-jében több elemet is a legfelsőbb szinten, testvérként rendereljünk, ellentétben például a React-tal, ahol szabály, hogy a renderelt komponensnek egy elemből kell állnia a legfelső szinten (ez lehet fragment is, amely a html-ben nem hoz létre új szintet).
+
+### Globális komponensek
+
+Ha azt szeretnénk, hogy a komponensek az egész alkalmazásban használhatók legyenek, Importálni tudjuk őket a fő JS file-ba (`main.js`) és használni tudjuk bármelyik komponensben, ha az importált komponenst az `app.component('element-name', ComponentName)` paranccsal az alkalmazás rendelkezésére bocsátjuk.
+
+A komponenst a szülő file-jában speciális html-tagként tudjuk használni.
+
+A globális komponensekkel a probléma, hogy bizonyos nagyobb alkalmazásoknál egyes komponensek nem is feltétlenül jelennek meg a használat során (pl. hibaüzenet). A böngésző azonban mégis minden egyes komponenst letölt az oldal megnyitásakor. Emellett ebben az esetben nem egyértelmű a programkódból, melyik komponenst hol is használjuk.
+
+### Lokális komponensek
+
+Ha a létrehozott komponenseket csak egy helyen, egy komponensen belül használjuk, akkor lokálisan is regisztrálhatjuk ezeket: ehhez a komponens (ez lehet az App.vue is) script részében importáljuk ezeket, és az objektumon létrehozzuk a `components` property-t, amelynek értéke egy objektum, amely tartalmazza a használni kívánt komponenseket.
+
+Ezeket többféleképpen megadhatjuk: a key lehet kebab-case-ben és PascalCase-ben is, az érték pedig az importált komponens objektum:
+
+```{}
+export default {
+ // ...
+ components: {
+  'element-one': ElementOne,
+  ElementTwo: ElementTwo,
+  ElementThree
+}
+}
+```
+
+Ezek után a template-ben használhatjuk a `<element-name></element-name>` vagy `<ElementName />` formát egyaránt, függetlenül attól, hogyan regisztráltuk.
+
+### Az App/komponens objektum
+
+A Vue script logikáját az App/komponens objektum tartalmazza, akár kisebb, akár komplex projektekről van szó. Ezen hozhatjuk létre a különböző property-ket, illetve metódusokat, amelyekkel a Vue program működési logikáját felépítjük. A .vue file-okban ez a `script` tag-be kerül.
+
+A legfontosabbak a data, methods, props property-k és mások.
+
+#### Data property
+
+Azokat a változókat, amelyeket a html file-ban szeretnénk használni, a Vue alkalmazás data() függvényében adhatjuk meg. Ez a függvény egy objektumot ad eredményként, amelyben az egyes property-k elérhetők lesznek a metódusok és a Vue által kezelt html file számára.
+
+#### Metódusok
+
+A Vue alkalmazás részeként létrehozhatunk metódusokat is, amelyeket szintén felhasználhatunk a html-ben. Ezeket a methods property alatt egy objektum metódusaiként adhatjuk meg (ES6 rövidített formában is). A metódusban az adatokra a `this.propertyName` formában tudunk hivatkozni.
+
+```{js}
+const app = Vue.createApp({
+  // Takes a function and returns an object
+  // will be properties of Vue global object
+  data() {
+    return {
+      courseGoalA: "Finish the course and learn Vue!",
+      courseGoalB: "Master Vue and build amazing apps!",
+      courseGoalHtml: "<h3>Learn a lot of important features</h3>",
+      vueLink: "https://vuejs.org/",
+    };
+  },
+  methods: {
+    outputGoal() {
+      const randomNumber = Math.random();
+      if (randomNumber < 0.5) {
+        return this.courseGoalA;
+      } else {
+        return this.courseGoalB;
+      }
+    },
+  },
+});
+```
+
+#### Computed property
+
+Bizonyos esetekben a változóértéket nem közvetlenül (pl. inputból) kapjuk, hanem számítjuk. Ilyen esetekben, ha a kapott eredményt nem eventhez kötve, hanem interpolationnel szeretnénk megjeleníteni, jobb nem metódusokat használni, mert ezek az oldal minden újrarenderelésénél újra lefutnak, mert a Vue nem tudhatja, milyen egyéb adatokon alapulnak. 
+
+Ehelyett lehetőség van számított property-ket megadni, amelyek csak akkor futnak újra, ha valamelyik feltételük megváltozott. 
+
+Ezeket metódusként hozzuk létre, de ugyanúgy hivatkozhatunk rájuk (zárójel nélkül), mint a sima data property-kre.
+
+#### Watchers
+
+Hasznos funkció, hogy bizonyos változókat figyelhetünk, és ha ezek valamilyen adott feltételnek megfelelnek, akkor futtathatunk egy metódust. Ehhez a watcher metódust ugyanúgy nevezzük el, mint a megfigyelt változót. Ez a metódus automatikusan hozzáférést kap (a Vue argumentumként megadja) a változó aktuális értékéhez.
+
+```{js}
+const app = Vue.createApp({
+  data() {
+    return {
+      counter: 0,
+      name: "",
+      lastName: "",
+    };
+  },
+  watch: {
+    counter(value) {
+      if (value > 50) {
+        this.counter = 0;
+      }
+    },
+  },
+  computed: {
+    fullname() {
+      if (this.name === "" || this.lastName === "") {
+        return "";
+      }
+      return this.name + " " + this.lastName;
+    },
+  },
+  methods: {
+    setName(event) {
+      this.name = event.target.value;
+    },
+    add(num) {
+      this.counter += num;
+    },
+    reduce() {
+      this.counter--;
+    },
+    resetInput() {
+      this.name = "";
+    },
+  },
+});
+```
+
+#### Custom property-k (Props-ok)
+
+A szülő komponens a gyermekkel propok révén kommunikál (hasonlóan a Reacthoz). Ez a kommunikáció egyirányú, tehát a kapott propokat nem lehet módosítani, legfeljebb annyit tehetünk, hogy kezdeti értékként kezeljük, és a másolatát módosítjuk, amire az alkalmazás reagál. 
+
+A propok neveit `kebab-case` formában adjuk meg a template-ekben, az alkalmazás objektumban pedig `camelCase` formában férünk hozzájuk. Közvetlenül string értékeket adhatunk át, illetve a `v-bind:prop-name="jsExpression"` (röviden `:prop-name`) révén nem string értékeket is. 
+
+A propokat validálhatjuk is: megadhatjuk, milyen típusúaknak kell lenniük, és megadhatjuk, mely propok szükségesek.
+
+```{}
+props: {
+    id: {
+      type: String,
+      required: true,
+    },
+    // name: String
+    name: {
+      // Can be any constructor function
+      type: String,
+      required: true,
+    },
+    phoneNumber: {
+      type: String,
+      required: true,
+    },
+    emailAddress: {
+      type: String,
+      required: true,
+    },
+    isFavorite: {
+      type: Boolean,
+      required: false,
+      default: false,
+    }
+}
+```
+
+Ha sok propot adunk meg, akkor ezeket továbbíthatjuk objektumba csomagolva is. 
+
+#### Custom eventek, emits property
+
+A gyermek komponens a szülő felé saját események élesítésével tud kommunikálni.
+Ehhez létrehozhatunk egy metódust az objektumon, amely ilyen saját eventet élesít: a `this.$emit('custom-event', dataArguments)` paranccsal, ahol megadhatunk továbbítandó argumentumokat is. Ezeket a speciális eseményeket ugyanúgy kezelhetjük a szülő komponensben, mint a beépítetteket: a gyermek komponenshez adott `v-on` vagy `@` direktíva révén.
+
+A komponens által élesített eseményeket az objektumon belül az emits key-hez adhatjuk, array-ként vagy objektumként, amely esetben validálhatjuk is ezeket: ha teljesül minden feltétel, akkor `true`-nak, ha pedig valami probléma van, `false`-nak kell lennie a return értéknek.
+
+```{}
+emits: {
+    "toggle-favorite": function (id) {
+      if (id) {
+        return true;
+      } else {
+        console.warn("Id is missing.");
+        return false;
+      }
+    },
+  },
+```
+
+Ezeket közvetlenül is létrehozhatjuk a megfelelő elemen, metódus nélkül: `<button @click="$emit('delete', id)">Delete</button>`, de az emits array-be (objektumba) ekkor is beleírhatjuk, hogy egyértelművé tegyük, milyen eseményeket élesít a komponens.
+
+#### Prop / event fallthrough
+
+Ha egy custom komponens csak egy root komponenst (pl. egy gombot) generál, akkor a custom komponensnek megadott egyes propok öröklődnek, és ugyanígy, a root komponens által élesített eseményeket figyelhetjük a custom komponensen. Tehát pl. a class propot megkapja a gyermek, és a click eseményt felveszi a szülő is. 
+
+#### Propok és eventek több szinten át való továbbítása: provide és inject
+
+Vannak esetek, amikor a propokat, illetve az eseményeket csak továbbítunk néhány szinten keresztül. Ilyen esetekben a továbbküldözgetést kiválthatjuk a `provide` és `inject` segítségével.
+
+A `provide` az app vagy komponens objektumhoz adott property-ként adatokat tud továbbítani, a `provide()` függvényként pedig az objektum adatai, illetve metódusai közül is továbbíthat. Ehhez a függvény egy objektumot ad return értékként, amelynek property-jeihez kötjük az egyes adat attribútumokat vagy metódusokat.
+
+```{}
+provide() {
+    return {
+      topics: this.topics,
+      selectTopic: this.activateTopic,
+    };
+  },
+```
+
+Az így rendelkezésre bocsátott adatokhoz és metódusokhoz a közvetlen vagy közvetett gyermekek férhetnek hozzá. Ehhez ezeken létre kell hozni az `inject` property-t, amelyhez egy array-t kötünk, amelyben megadjuk, milyen továbbított adatokat vagy metódusokat fogad. Pl. `inject: ['topics', 'selectTopic']`. Ezeket aztán ugyanúgy használhatjuk az objektumban, mint a saját adatokat, illetve propokat.
+
+Ha a továbbított függvényt argumentumokkal akarjuk hívni, Vue-ban erre is van lehetőség, nem csak a függvény objektumra mutatni: `@click="selectTopic(id)"`
+
+A provide/inject esetében viszont arra kell figyelni, hogy ha a renderelést követően új objektummal helyettesítjük a provide-dal továbbított objektumot (pl. array-t), a gyermek komponensek továbbra is az eredetire mutató hivatkozáshoz férnek hozzá, és így pl. nem frissül az UI.
+
+### Testre szabható wrapper komponensek, slotok
+
+Néha újrahasznosítható wrapper komponenseket szeretnénk létrehozni, amelyeket változatos tartalmakkal szeretnénk feltölteni: pl. Card komponens. Ehhez használhatjuk a slot funkciót. Létrehozzuk a komponens template-jét és stílusait, majd arra a helyre, ahová a html tartalmat szeretnénk illeszteni a `<slot></slot>` elemet illesztjük.
+
+Ha ezek után valahol a komponenst használjuk, és a nyitó és zárótag közé html tartalmat írunk, azt a slot helyére illeszti be.
+
+```{}
+// BaseCard.vue
+
+<template>
+  <div>
+    <slot></slot>
+  </div>
+</template>
+
+// UserInfo.vue
+
+<template>
+  <section>
+    <base-card>
+      <header>
+        <h3>{{ fullName }}</h3>
+        <base-badge :type="role" :caption="role.toUpperCase()"></base-badge>
+      </header>
+      <p>{{ infoText }}</p>
+    </base-card>
+  </section>
+</template>
+
+```
+
+#### Nevesített és default slotok
+
+Ha több slotot szeretnénk használni, a slotokat **nevesíthetjük** is. Legfeljebb egyet hagyhatunk név nélkül, ez lesz az alapértelmezett (*default*). 
+
+A nevesített slotba a <template> taggel illeszthetünk be, amelyhez speciális direktívát adunk: `v-slot:name` formában. Enek rövidített formája a `#name`. A template maga nem hoz létre html elemet.
+
+Minden nem template-be helyezett tartalom a default slotba kerül, de ezt egyértelművé is tehetjük, ha `<template v-slot:default></template>` tagek közé tesszük.
+
+```{}
+// BaseCard.vue
+
+<template>
+  <div>
+    <header>
+      <slot name="header"></slot>
+    </header>
+    <slot></slot>
+  </div>
+</template>
+
+// UserInfo.vue
+
+<template>
+  <section>
+    <base-card>
+      <template v-slot:header>
+        <h3>{{ fullName }}</h3>
+        <base-badge :type="role" :caption="role.toUpperCase()"></base-badge>
+      </template>
+      <p>{{ infoText }}</p>
+    </base-card>
+  </section>
+</template>
+```
+
+Ha a felhasznált komponensben csak egy default slot van, a felhasználáskor nem kell a template elemet használni, hanem közvetlenül a custom komponens tagjében megadhatunk minden propot (ld. alább a CourseGoals-nál).
+
+A slotok egyes részeinek renderelését feltételhez is köthetjük. Az alábbi BaseCard template-ből a header rész csak akkor renderelődik, ha van tartalma. Ezt a header elemhez adott v-if attribútummal érhetjük el. A slotok tartalmához a beépített `$slots` objektum révén férünk hozzá, amelyen minden slot tartalma property-ként jön létre automatikusan.
+
+```{html}
+<template>
+  <div>
+    <header v-if="$slots.header">
+      <slot name="header">
+        <!-- <h2>The Default content</h2> -->
+      </slot>
+    </header>
+    <slot></slot>
+  </div>
+</template>
+```
+
+A slotba küldött tartalomban hozzáférünk a felhasználó komponens minden adatához és metódusához. A stílusokat viszont a wrapper komponensnél tudjuk deklarálni. 
+
+#### Scoped slots: adattovábbítás
+
+Problémát jelenthet, ha például a komponenst úgy szeretnénk kialakítani, hogy a felhasználás helyén megszabhassák a tartalom formáját is, de azt szeretnénk, hogy itt is hozzáférjenek a slotot létrehozó komponens adataihoz. Például az alábbi CourseGoals komponensnél meg akarjuk hagyni a lehetőséget, hogy ahol beillesztjük, adhassuk meg, hogy néz ki. A felhasznált adatokhoz (goals array) azonban a CourseGoals komponens fér hozzá, az App komponens, ahol használjuk, nem. Ilyenkor az adatokat a props-hoz hasonlóan meg tudjuk adni a sloton (ezt hívjuk `scoped slot`-nak), és ezekhez a felhasználási helyen, a slothoz tartozó template-ben hozzá tudunk férni egy objektum részeként. Ehhez a template objektumon (vagy, ha csak egy default slot van, és nem kell template, magán a custom komponensen) megadjuk a `v-slot="slotProps"` (vagy `#slotName="slotProps"`) attribútumot, és ekkor a slotProps.propName formában férünk hozzá a továbbított adatokhoz.
+
+```{}
+// CourseGoals.vue
+<template>
+  <ul>
+    <li v-for="goal in goals" :key="goal">
+      <slot :item="goal" another-prop="..."></slot>
+    </li>
+  </ul>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      goals: ["Finish the course", "Learn vue"],
+    };
+  },
+};
+</script>
+
+
+// App.vue (részlet)
+<template>
+  <div>
+    ...
+    <course-goals #default="slotProps">
+      <!-- Get access to object with all prop values -->
+      <h2>{{ slotProps.item }}</h2>
+      <p>{{ slotProps["another-prop"] }}</p>
+    </course-goals>
+    ...
+  </div>
+</template>
+```
+
+Bizonyos esetekben hasznos lehet, hogy a slotokat alapértelmezett tartalommal is ellássuk. Ez csak akkor renderelődik, ha a felhasználási helyen üresen hagyjuk a slot template-jét. A default tartalom egyszerűen létrehozható: a slotot deklaráló file-ban megadjuk a tartalmat html formában.
+
+### Dinamikus komponensek: a component elem
+
+Hasznos funkció a `component` beépített elem, amely lehetővé teszi, hogy dinamikusan illesszünk be komponenseket. Ezeket, akárcsak a más lokális komponenseket az objektum components property-jén regisztráljuk, a beillesztés pedig a `<component>` tag segítségével történik, amely `it` attribútumán megadhatjuk, melyik komponenst szeretnénk ide renderelni. 
+
+Ez hasznos lehet például a tabok esetében. A kiválasztott tab nevét egy data property-ben tároljuk, és ezt használjuk fel a rendereléshez. 
+
+Ezeket a dinamikus komponenseket a váltáskor hozza létre, illetve a korábbiakat megsemmisíti a böngésző, ezért a pl. félig kitöltött form adatai elvesznek. Ez elkerülhető a `keep-alive` tag-ek használatával. 
+
+```{}
+<template>
+  <base-card>
+    <!-- Event fallthrough -->
+    <base-button @click="setSelectedTab('stored-resources')">
+      Stored Resources
+    </base-button>
+    <base-button @click="setSelectedTab('add-resource')">
+      Add Resource
+    </base-button>
+  </base-card>
+  
+  
+  <!-- DYNAMIC COMPONENT -->
+  <keep-alive>
+    <component :is="selectedTab"></component>
+  </keep-alive>
+</template>
+
+<script>
+import StoredResources from './StoredResources.vue';
+import AddResource from './AddResource.vue';
+
+export default {
+  components: {
+    StoredResources,
+    AddResource,
+  },
+  data() {
+    return {
+      selectedTab: 'stored-resources',
+    }
+  },
+  methods: {
+    setSelectedTab(tab) {
+      this.selectedTab = tab;
+    },
+  }
+}
+</script>
+```
+
+A dinamikus komponenseknek való adattovábbítás történhet propokkal: ebben az esetben olyan komponenseknek is továbbítjuk a propokat, amelyek esetleg nem is használják. Ebben az esetben a kozolon figyelmeztetést kapunk.
+A másik lehetséges megoldás a provide/inject használata.
+
+### Teleport
+
+A komponensek részeit alapvetően a komponensen belül hozza létre a böngésző, ahol a html-ben is szerepelnek. Ezt a teleport segítségével felülírhatjuk, és pl. egy felugró ablakot a legfelső szinten (a `body` tagben) is létrehozhatunk. Ehhez a teleportálandó részt a `<teleport>` tagbe csomagoljuk, amelyhez a `to="cssSelector"` attribútumot hozzáadva megadhatjuk, hová szeretnénk renderelni.
+
+```{}
+<template>
+  <teleport to="body">
+    <div @click="$emit('close')"></div>
+    <dialog open>
+      <header>
+        <slot name="header">
+          <h2>{{ title }}</h2>
+        </slot>
+      </header>
+      <section>
+        <slot></slot>
+      </section>
+      <menu>
+        <slot name="actions">
+          <base-button @click="$emit('close')">Close</base-button>
+        </slot>
+      </menu>
+    </dialog>
+  </teleport>
+</template>
+```
+
+## JS logika a html template-ben
+
+A Vue alkalmazásokban a html szerkezet és a JavaScript logikát kombinálhatjuk: a html template-eket változók felhasználásával tehetjük dinamikusabbá, illetve eventeket élésíthetünk, amelyek különböző metódusokat hívnak, stb.
+
+Az alábbiak függetlenül attól érvényesek, hogy külön .html és .js file-okkal dolgozunk (kisebb projekteknél), vagy a Vue.js saját .vue file-jaival. Előbbi esetben a html és js file-ok közötti kommunikáció zajlik így (a html file-nak csak azok a részei férnek hozzá a Vue objektumok adataikhoz, amelyekre mountoltuk az alkalmazást), utóbbi esetben pedig a vue file-ok template és script részei között zajlik a kommunikáció.
+
+### Adatok, metódusok és propok felhasználása
+
+Az alkalmazásban létrehozott adat property-k és metódusok, illetve a fogadott propok felhasználása attól függ, hol történik.
+
+**Html tagek tartalmaként** való megjelenítésre az interpolációt használhatjuk: `{{}}` közé írhatjuk az adott adat vagy metódus nevét, illetve bármilyen JS kifejezést (*expression*). Ha viszont a tartalom html tageket is tartalmaz, akkor a nyitó tagbe illesztett `v-html="value"` formában adhatjuk meg. Ez kevésbé jellemző, ehelyett a slot funkciót használhatjuk, ha a html-t is szeretnénk alakítani.  
+  
+**Html attribútumok** (pl. href, src, value, stb.) a `v-bind` segítségével kezelhetők: `v-bind:attribute-name="value"` formában. Ennek rövidített formája: `:attribute-name="value"`.
+
+```{}
+<body>
+    <header>
+      <h1>Vue Course Goals</h1>
+    </header>
+    <section id="user-goal">
+      <h2>My Course Goal</h2>
+      <!-- Interpolation -->
+      <p>{{ courseGoalA }}</p>
+      <!-- Call methods -->
+      <p>{{ outputGoal() }}</p>
+      <!-- Output html content -->
+      <p v-html="courseGoalHtml"></p>
+      <!-- <p v-html="outputGoal()"></p> -->
+      <!-- Bind data to attributes -->
+      <p>Learn more <a v-bind:href="vueLink">about Vue</a></p>
+    </section>
+  </body>
+```
+
+### Feltételes renderelés
+
+Ha a DOM egyes részeit csak bizonyos feltétel esetén szeretnénk renderelni, használhatjuk a `v-if` direktívát, szükség esetén a `v-else-if` és `v-else` direktívákkal együtt, de utóbbiak csak közvetlenül a `v-if` után jöhetnek, testvér elemeken.
+
+```{}
+<p v-if="goals.length === 0">No goals have been added yet - please start adding some!</p>
+<p v-else-if="goals.length === 1">Please add more goals!</p>
+<ul v-else>
+  <li>...</li>
+  ...
+</ul>
+```
+
+### Listák renderelése
+
+Ha egy array, vagy objektum minden eleméhez, vagy egy számsor minden értékéhez rendelni akarunk egy elemet, a `v-for` direktívát használhatjuk. Ha array-ön használjuk, az adott elemhez, és az indexéhez férünk hozzá, ha objektumon, akkor az értékhez, a kulcshoz és az indexhez. Ezekhez hozzáférnek az adott html elem attribútumai, és a tartalma.
+
+Listák renderelésénél, hogy a Vue meg tudja különböztetni az elemeket, a key speciális attribútumot kell használni, hogy a listaelemeket egyedi kulccsal ellássuk. 
+
+```{}
+<ul>
+    <li v-for="(goal, index) in goals" :key="goal" @click="removeGoal(index)">
+        <p> {{ index }}: {{ goal }} </p>
+    </li>
+    <li v-for="(value, key, index) in { name: 'John', age: 25 }">{{key}}: {{ value }}</li>
+    <li v-for="num in 10">{{ num }}</li>
+</ul>
+```
+
+### Eventek
+
+A Vue az eventek hozzáadását is könnyű teszi a `v-on:eventName` szintaxis révén. Ennek rövidített változata `@eventName`. A Vue ismer beépített eventeket (pl. click, dblclick, submit), de saját eventek is létrehozhatók és élesíthetők (ld. később)
+
+## Formok és inputok kezelése
+
+Adatlap inputok esetében lehetséges az adatok beolvasása event handler révén, pl. az `input` vagy `keyup` eventek használatával, és az input értékét (a value attribútummal) összeköthetjük az adott data property-vel, így létrehozva a two-way bindingot, de a Vue.js ezt a két dolgot egy külön direktívával összeköti, és könnyebbé teszi az input értékek data property-be mentését.  
+
+Ez a `v-model` direktíva. Ez egy data property-t kap értékként, és metódusra már nincs is szükség a beolvasáshoz. Ráadásul így a data property felülírásával egyúttal az input értékét is változtatjuk (pl. törölni tudjuk a beírt szavakat) 
+
+```{}
+<input type="text" v-model="name">
+```
+
+Ezek a megoldások minden leütésnél frissítik az adott data property-t. Ez jó lehet, ha minden leütésnél validálni akarunk.
+
+### v-model különböző típusú inputoknál
+
+**Text** inputoknál evidens, hogy string típusú értéket kapunk. **Number** típusú inputnál a v-model számot eredményez. Ha ezt kényszeríteni akarjuk (pl. text input esetében is megtehetjük), a `v-model`-hez hozzadhatjuk a `.number` módosítást. 
+
+Egy másik modifier a `.trim`, amely lehetővé teszi, hogy a szóeleji és szóvégi space-eket töröljük, és azok nélkül mentsük az értéket.
+
+A v-model **dropdown** típusú input elemekkel (`<select>`) is működik: a v-modelt a select elemhez adjuk, az értéke pedig a kiválasztott `option` value értéke lesz. Ebben az esetben a kiinduló érték, amit a data property-ben mentünk ne üres legyen, hanem az alapértelmezett opció, amelyet először ott szeretnénk látni.
+
+**Checkbox** input esetén a v-model direktívát minden opcióhoz hozzáadjuk, és ugyanarra az adat property-re mutat mind. A kezdeti értéket array-ként kell megadni, ehhez adja hozzá a bejelölt inputok értékeit. Ahhoz, hogy ez működjön, az inputoknak rendelkezniük kell `value` attribútumértékkel. 
+
+Ha csak egy checkbox van (pl. felhasználási feltételek elfogadása), akkor a v-modellel Boolean értéket kapunk attól függően, hogy be van-e pipálva.
+
+Ugyanígy a **radio button** inputnál is meg kell adni a value attribútumértékeket, és a v-model direktívát minden egyes radio elemhez hozzá kell adni, azonos data property-vel. A kezdeti érték `null` lehet.
+
+### Ref
+
+Az inputhoz (és bármilyen más html elemhez) hozzáadható egy `ref` attribútum.
+
+```{}
+<input type="text" ref="inputText">
+```
+
+Ez létrehoz egy speciális property-t a Vue alkalmazás objektumon, amelyhez a `$refs` property névvel férhetünk hozzá. Ez maga is egy objektum, amelyen a megadott stringekkel jelölt property-k jönnek létre. Ezek az egész html elem objektumot tartalmazzák. Ennek lehet pl. `value` property-je.
+
+**Fontos:** Ha number inputhoz adjuk is, akkor is string értéket kapunk.
+
+```{js}
+const app = Vue.createApp({
+  data() {},
+  methods: {
+    setText() {
+      this.message = this.$refs.inputText.value
+    }
+  }
+})
+```
+
+
+### Form kezelése
+
+Default html viselkedés, hogy ha form elemen belül gomb van, akkor az arra való kattintás elküldi az adatokat. Ezeket a frontenden is kezelni tudjuk, ehhez azonban az alapértelmezett viselkedést le kell tiltani. A formon a submit eseményt figyelhetjük. Ehhez hozzáadhatjuk a `.prevent` beépített metódust, hogy letiltsuk az alapértelmezett viselkedést, és ezután egy saját függvénnyel kezelhetjük az adatokat, illetve élesíthetünk pl. saját eseményt is.
+
+`<form @submit.prevent="funName">`
+
+### Input validáció
+
+Alap validációra jó megoldás lehet, hogy a submit által élesített metódusban, ha valamelyik input értéke nem felel meg (pl. üres), nem rögzítjük az adatokat, hanem figyelmeztetést jelenítünk meg (pl. alert() vagy felugró custom ablak komponens segítségével).
+
+Ha minden változásnál validálni akarunk, figyelhetjük a `blur` eventet is. Ez élesíthet egy validáló metódust, amely alapján változtathatunk valamilyen adatot, és ennek függvényében változtathatjuk az input stílusait, vagy megjeleníthetünk figyelmeztető üzeneteket.
+
+### Saját inputok építése
+
+Komponensként létrehozhatunk saját inputokat is, saját html felépítéssel (pl. gombokból, listből, stb.) és saját stílussal. Ezekben mindazt felhasználhatjuk, amit a komponensekben használhatunk. 
+
+A `v-model` direktíva ilyen custom input elemeken is használható. Ez a komponensben létrehoz egy speciális propot (`model-value` / `modelValue`) és egy eventet (`update:modelValue`). Ezeket hozzá kell adni a komponens objektumhoz. A megfelelő metódusban pedig élesíthetjük ezt az eventet, és további paraméterekként továbbíthatjuk a szükséges adatokat.
+
+A (two-way bindinggal) visszaadott értéket felhasználhatjuk a stílusokban is (nem kell data property-ként kezelni, pl. hogy melyik az aktív gomb), vagy használhatunk ezen alapuló computed property-t. (Az első megoldás egyszerűbb)
+
+Az alábbi példában a li elemhez adott inline stílusokkal jelezzük, melyik gomb aktív, és ehhez a propként visszaadott modelValue értéket használjuk közvetlenül. De erre építve computed property-t is létrehozhatunk (pl. több gomb együttes kijelöléséhez), de ez nem feltétlenül szükséges.
+
+Az activate metódusban az update:modelValue eventet használjuk, és továbbítjuk a kiválasztott gombnak megfelelő string értéket, amit a felhasználó komponensben data property-ként mentünk.
+
+```{}
+<template>
+  <ul>
+    <li :class="{ active: modelValue === 'poor' }">
+      <button type="button" @click="activate('poor')">Poor</button>
+    </li>
+    <li :class="{ active: modelValue === 'average' }">
+      <button type="button" @click="activate('average')">Average</button>
+    </li>
+    <li :class="{ active: modelValue === 'great' }">
+      <button type="button" @click="activate('great')">Great</button>
+    </li>
+  </ul>
+</template>
+
+<script>
+export default {
+  props: ['modelValue'],
+  emits: ['update:modelValue'],
+  methods: {
+    activate(option) {
+      this.$emit('update:modelValue', option);
+    },
+  },
+};
+</script>
+```
+
+## Http requestek
+
+Vue alkalmazásokban is használhatunk http requesteket, amelyek segítségével az alkalmazásunk egy szerverrel, egy azon futó adatbázissal tud kommunikálni. Használható a fetch API, vagy külső csomagok (pl. Axios), és a Promise-ok kezelhetők then/catch-csel és async/await-tel is. 
+
+Figyelni kell a hibák kezelésére (.catch-csel vagy try/catch-csel). A szerveroldali hibákat jellemzően nem ismeri fel automatikusan a böngésző, ezért a visszakapott response objektumon ellenőrizni kell az ok property-t, és szükség esetén új hibát generálni, megfelelő üzenettel. 
+
+Az UI-ban a különböző állapotok kezelésére data property-ket hozunk létre (pl. isLoading, error), és feltételes rendereléssel jelenítjük meg a megfelelő komponenseket.
+
+## Routing
+
+A Vue, akárcsak a React alapvetően single page application-ök (SPA) készítésére szolgál, mégis, hasznos lehet, ha különböző részekre különböző url-ek mutatnának, és ezáltal olyan linkeket tudnánk megosztani, amelyek megnyitása ahhoz a részhez vezet, nem pedig a főoldalra. Ezt teszi lehetővé a routing.
+
+Ehhez a Vue Router package-et kell telepíteni `npm install vue-router@4` (ez a 4-es verziót telepíti).
+
+### Router konfiguráció
+
+Telepítés után importálhatjuk a szükséges függvényeket és létrehozhatjuk a routert. Ennek megadhatjuk, milyen útvonalakat akarunk regisztrálni. Ezt a `routes` property alatt adhatjuk meg. Ez egy array, amely útvonalanként egy objektumot tartalmaz, amelyek maguk a path és a component property-kből állnak: pl. `{ path: '/teams', component: TeamsView }`
+
+A router azt is lehetővé teszi, hogy a böngésző megjegyezze a meglátogatott url-eket, és a visszalépéssel vissza tudjuk ezekre lépni. Ehhez a `createWebHistory` függvényt importálhatjuk és használhatjuk a router objektum konfigurációja során. Ezt a router objektum history property-jével adhatjuk meg.
+
+Megj: Régebben erre nem volt lehetőség, és a Vue Routernek emulálnia kellett a böngészési előzményeket.
+
+Miután létrehoztuk a router objektumot, az alkalmazás objektum `.use` metódusával tudjuk ezt összekötni az alkalmazással.
+
+```{}
+import { createApp } from 'vue';
+import { createRouter, createWebHistory } from 'vue-router';
+
+import App from './App.vue';
+import TeamsList from './components/teams/TeamsList.vue';
+import UsersList from './components/users/UsersList.vue';
+
+const router = createRouter({
+  history: createWebHistory(),
+  routes: [
+    { path: '/teams', component: TeamsList },
+    { path: '/users', component: UsersList },
+  ],
+});
+
+const app = createApp(App);
+
+app.use(router);
+
+app.mount('#app');
+```
+
+A routerre való áttéréssel elgondolkodhatunk azon is, hogy egyes komponenseket, amelyeket bizonyos route-okkal összefüggésben használunk, áthelyezzük egy külön mappába (pl. `pages`), és csak azokat a komponenseket hagyjuk a components mappában, amelyeket beágyazunk. 
+
+Sok útvonal esetén szintén jó ötlet lehet a routert külön file-ban (nem a `main.js`-ben) létrehozni és exportálni/importálni.
+
+### A route-ok renderelése és navigáció
+
+Miután regisztráltuk a különböző route-okat, ezeket a `<router-view>` taggel tudjuk beilleszteni az alkalmazáson belül. Ezek után, ha a url valamelyik path-nak felel meg, a tag-en belül az alkalmazás a megadott komponenst rendereli. Pl. a `/users` route esetén a UsersList komponens kerül a `router-view` elem helyére.
+
+```{}
+<template>
+  <the-navigation @set-page="setActivePage"></the-navigation>
+  <main>
+    <router-view></router-view>
+  </main>
+</template>
+```
+
+A navigáció a `<router-link>` tag segítségével történik, amely tartalma bármi (akár html is) lehet, mert a motorháztető alatt slot-okat használ. Ez utasítja a Vue alkalmazást, hogy a megadott url-t nyissa meg, és ennek megfelelően renderelje az UI-t. A cél-url-t a `to` attribútummal adhatjuk meg. A html-be anchor tag-ek kerülnek, de automatikusan felülírja a böngésző alapértelmezett működését, és nem indítják el új oldal betöltését, hanem ugyanazon az oldalon történik az újrarenderelés.
+
+Ráadásul automatikusan `router-link-active` és `router-link-exact-active` osztályt kapnak az aktív navigációs elemek, amit a stílusok deklarációjára is felhasználhatunk. Előbbit akkor is megkapja, ha "al-url"-t nyitunk meg. A router config-ja segítségével ezeket is megváltoztathatjuk (`linkActiveClass` és `linkExactActiveClass` property-kkel)
+
+JS kódon belül a `this.$router` metódusaival navigálhatunk (ehhez azért van hozzáférésünk, mert regisztráltuk a routert az alkalmazáshoz). A `.push()` metódus átirányít a megadott pathra: pl. `.push('/users')`. A `.back()` és `.forward()` a böngésző vissza- és előrelépés funkcióit használja.
+
+### Dinamikus útvonalak
+
+Az Express szintaxisának megfelelően, `:`-tal dinamikus részeket is hozzáadhatunk az útvonalakhoz: pl. `'/teams/:teamId'` Ha más route-ot is regisztrálni akarunk, amely `/teams/valami` formájú, azt ezelőtt kell megadni, mert különben ezt is felfogja a dinamikus route.
+
+Az útvonalak dinamikus összetevőihez a `this.$route` révén férünk hozzá: pl. `this.$route.path` (teljes útvonal) vagy `this.$route.params` (az url-be kódolt paraméterek).
+
+A paraméterek neve azonos azzal, ahogy a router konfigurációjában megadtuk (pl. teamId), ezek pedig szerepelnek a `this.$route.params` objektumon.
+
+A dinamikus útvonalakra való navigálást szintén a router-link elemmel tudjuk megtenni, a to attribútumot dinamikusan kötve valamilyen JS kifejezéshez vagy computed property-hez.
+
+#### Dinamikus útvonalak közötti navigálás
+
+Probléma lehet, ha azonos felépítésű útvonalak között akarunk váltani: pl. `/teams/t1`-ről `/teams/t2`-re, mivel ebben az esetben a Vue nem építi újra a UI felületet csak a paraméter változása miatt. 
+
+Erre megoldás lehet, ha létrehozunk egy watchert, amellyel a `$route` értéket figyeljük, és amely automatikusan megkapja paraméterként az új értéket.
+
+#### Paraméterek továbbítása propként
+
+Hasznos lehet, ha a paramétereket nem a route-on keresztül, hanem propként kapjuk, mert ebben az esetben nem csak routing révén tudjuk megjeleníteni az adott komponenst, hanem hagyományos módon is. 
+
+Ehhez pl. a teamId-t propként adjuk meg, és a `this.$route` helyett. Ehhez, hogy routerrel is tovább tudjuk használni, a megfelelő route regisztrációjánál (pl. `/teams/:teamId`) további opcióként hozzáadjuk, hogy `props: true`. Ennek hatására a dinamikus komponenseket a program propként adja át a komponensnek.
+
+Ha mindezt megtesszük, a komponenst a hagyományos módon is beilleszthetjük, ha megadjuk a szükséges propo(ka)t.
+
+### Átirányítás
+
+Egyes route-ok esetében azt szeretnénk, hogy automatikusan átirányítsunk egy másik route-ra. Ehhez a route konfigurációjánál nem a renderelendő komponenst adjuk meg, hanem a `redirect: '/path'` opciót, ahol megadjuk, milyen útvonalra szeretnénk átirányítani. Alternatívaként ahhoz a route-hoz, amelyre át akarunk irányítani is megadhatjuk az `alias: '/path'` formában. 
+
+A különbség, hogy a redirect-nél a url meg is változik, alias-nél nem.
+
+### Catch all útvonalak
+
+Minden további útvonal kezelésére (pl. egy 404 oldal megjelenítésével) létrehozhatunk egy speciális útvonalat, amely path értéke `/:notFound(.*)`, ahol a notFound rész más is lehet. Ehhez is megadhatunk komponenst, vagy redirectet.
+
+### Beágyazott útvonalak
+
+Az útvonalakat valamely másik útvonal gyermekeként is létrehozhatjuk, ha valamelyik route-hoz hozzáadjuk a `children` property-t, amely értéke egy array, amelybe route-konfigurációk kerülnek (objektumok). Ezek útvonalából a közös részt kihagyjuk. Pl. ha a `/teams` útvonal gyermekeként regisztráljuk a `/teams/:teamId` útvonalat, akkor csak `:teamId` formában írjuk.
+
+Fontos, hogy az így regisztrált útvonalak nem az App fő file-jában, a legfelső szinten lesznek elérhetők, hanem abban a komponensben, amelyhez regisztráltuk őket: pl. a TeamsList komponensben - itt használhatjuk a <router-view> elemet ezek beillesztésére.
+
+Ez a funkció jól felhasználható, ha az url-től függően más-más beágyazódó komponenseket szeretnénk megjeleníteni.
+
+### Nevesített útvonalak
+
+A router-linkeknek, .push()-nak, stb. adott útvonalak nemcsak stringekként adhatók meg, hanem objektum formában is, amelynek path property-je maga az útvonal string lehet (ezzen túl sokat nem nyerünk), de megadható másképpen is.
+
+Az utak regisztrációjánál az egyes utaknak nevet is adhatunk a `name` property-vel. A `to`-nak adott objektumban erre a névre is hivatkozhatunk, és ha paramétert is továbbítani akarunk, ezt a `params` property-vel tehetjük meg, amely értéke egy objektum, ahol a key a megadott név, az érték pedig az értéke.
+
+Ennek előnye, hogy jól olvasható, és könnyen módosítható, ha pl. az útvonalat megváltoztatjuk, de a nevet nem, akkor a kapcsolatok továbbra is működnek.
+
+```{}
+<template>
+  <li>
+    <h3>{{ name }}</h3>
+    <div class="team-members">{{ memberCount }} Members</div>
+    <router-link :to="teamMembersLink">View Members</router-link>
+  </li>
+</template>
+
+<script>
+export default {
+  props: ['id', 'name', 'memberCount'],
+  computed: {
+    teamMembersLink() {
+      return { name: 'team-members', params: { teamId: this.id } };
+    },
+  },
+};
+</script>
+```
+
+### Query paraméterek
+
+A fenti módon (természetesen stringként megadva is) könnyen hozzáadhatók query paraméterek is, a `query` property-vel, amely értéke szintén egy objektum, amelyben a key-value párok adják meg a query paramétereket: pl. `{ sort: 'asc' }`
+
+Ezeket felhasználhatjuk a renderelés során: a hozzáférés a `this.$route.query` property révén történik. Props-ként nem adhatók meg. Ezek viszont opcionálisak, az útvonalak ezek nélkül is működnek, ezért nem lehetetlenítik el a komponens más módon való beillesztését, de ebben az esetben nem lesz ezekhez hozzáférésünk.
+
+### Több router-view ugyanazon a szinten
+
+Ha egy útvonalon több komponenst szeretnénk renderelni, előfordulhat, hogy több router-view elemet illesztünk be. 
+
+Ehhez az útvonal konfigurációjában a `component` helyett a `components` property-t is haszálhatjuk, amelyhez egy objektumot rendelünk, ahol a key megadja, melyik router-view-höz szeretnénk rendelni, az érték pedig megadja, melyik komponenst. Ehhez a router-view-ket elnevezzük. Legfeljebb egy router-view maradhat névtelen, ez lesz a default.
+
+Ettől függetlenül lehetnek olyan útvonalaink, ahol csak egy komponenst renderelünk: ez a default router-view-be megy.
+
+### Navigation Guards
+
+Lehetővé teszik, hogy navigáció során ellenőrizzük pl. a jogosultságot, illetve megakadályozzuk, hogy a felhasználó ellépjen egy félig kitöltött formról az adatok mentése, elküldése nélkül.
+
+Global .beforeEach(), ha a router objektumhoz adjuk `router.beforeEach()`` - to, from és next - függvény, alapból true (engedi a továbblépést), ha false, nem engedi, ha pathnév (string) vagy path objektum (nevesített, paraméterekkel, stb.) akkor oda visz tovább.
+
+Regisztrált útvonalakhoz is megadhatunk ilyeneket: az útvonal konfigurációjába a beforeEnter() metódust illesztve - ugyanazokat a paramétereket kapja.
+
+Komponensekben is hozzáadható a beforeRouteEntered() metódus.
+
+Először a globális fut le, aztán az útvonalhoz regisztrált guard, végül a komponensben deklarált guard.
+
+Ha olyan komponenssel dolgozunk, amelyet nem újraépít, csak frissít új adatokkal, a beforeRouteUpdate() metódust használhatjuk. Ez csak akkor fut le, ha routinggal összefüggésben frissül, ezért szűkítheti a komponens felhasználhatóságát, de ha ez nem gond, alternatívája lehet a watcher beállításnak, hogy frissüljön a komponens.
+
+A globális .afterEach() csak to és from argumentumot kap. Használható pl. analitika küldésére. Ahhoz már késő, hogy azt befolyásoljuk, mit lát a felhasználó, mert ez a navigáció elfogadása után történik csak.
+
+Az unmounted() életciklus-metódussal megadhatunk olyan parancsokat, amelyeket azelőtt futtatunk, hogy a felhasználó elhagyna egy komponenst. Ez viszont azután fut, hogy már elhagytuk az oldalt. Vannak viszont esetek, amikor meg akarjuk akadályozni az elnavigálást (pl. mentetlen változások miatt).
+
+Szintén a komponensben megadhatjuk a `beforeRouteLeave()` metódust, ha routert használunk. Ez is to, from, next argumentumokat kap. Ebben például megerősítést kérhetünk a confirm paranccsal, amely eredményét változóba mentve felhasználhatjuk, hogy a next lefutása ennek értékétől függjön.
+
+### Route metaadatok
+
+Az egyes regisztrált útvonalakhoz metaadatokat is megadhatunk a `meta` property-vel, amelynek értéke pl. egy objektum lehet, amelyben megadhatunk ilyen saját készítésű metaadatokt (pl. `needsAuth: true`). Ezeket a metaadatokat elérjük a komponensekben, ahol hozzáférünk a `$route` objektumhoz, de a navigáció során a `from` és `to` objektumokon is. Így a globális navigation guardokat is tudjuk szelektíven, csak néhány útvonal esetében élesíteni.
+
+### scrollBehavior
+
+Ilyen a scrollBehavior, ami egy metódusként adható a router setupjához. Három argumentumot kap: `to`, `from`, `savedPosition`. A to és a from két útvonal objektum: ahonnan és ahová navigálunk. A savedPosition a scroll pozíciót tartalmazza, ahonnan érkeztünk: left és top property-kből álló objektumként. A metódus return értéke egy objektum legyen left és top property-kkel, amelyek megadják, hová ugorjon az új oldal megnyitásakor: pl. `{ left: 0, top: 0 }` hatására mindig az oldal tetejére ugrik. A savedPosition argumentum felhasználható, hogy visszalépésnél ugyanoda ugorjon, ahol volt.
+
+## Stílusok hozzáadása
+
+CSS stílusokat többféleképpen adhatunk hozzá. A legegyszerűbb az inline stílusok használata, amihez ugyancsak használhatunk változókat. A `style` property nemcsak striget, hanem objektumot is elfogad, amelyben a kulcsok a css property-k camelCase formában vagy kebab-case formában, az értékek pedig JS kifejezések, amelyek érvényes string értékeket adnak.
+
+```{}
+<div class="demo" :style="{borderColor: boxASelected ? 'red' : '#ccc'}" @click="boxSelected('A')"></div>
+```
+
+Jobb megoldás azonban a dinamikus stílusok használata, aminek több módja van. A `class` property elfogad egy array-t a hozzáadandó class-okkal (ebben is lehetnek számított változók is), egy objektumot, amelynek kulcsai a class-nevek, értékei pedig boolean értékeket adó JS kifejezések, de megadhatók a class-ok több részletben is.
+
+```{}
+<div :class="{demo: true, active: boxBSelected}" @click="boxSelected('B')"></div>
+<div :class="['demo', boxCClasses]" @click="boxSelected('C')"></div>
+<div class="demo" :class="{active: boxDSelected}" @click="boxSelected('D')"></div>
+```
+
+Végül komplex alkalmazásoknál a stílusdeklarációk a vue file-ok részei is lehetnek. EZek azonban továbbra is az egész alkalmazásra vonatkoznak. Ezt megváltoztathatjuk, hogy a nyitó `<style>` tagbe a `scoped` attribútumot írjuk: `<style scoped>`
+
+Ennek hatására a Vue speciális attribútumokat ad a html elemekhez, és a css file-ban ezeket felhasználja: attribútumokkal kiegészített selectorokat használ.
+
+## Vue alkalmazások életciklusa
+
+beforeCreate() - pl. http requestet küldhetünk
+created()
+beforeMount()
+mounted()
+beforeUpdate()
+updated()
+beforeUnmount()
+unmounted()
+
+Ezeket metódusként adhatjuk hozzá a createApp objektumához, a data, methods, stb. mellett, tehát NEM a methods objektumon belül. A valóságan ezeknek csak egy kisebb részhalmazát használjuk. A metódusokon belül olyan parancsokat adhatunk meg, amelyeket csak az adott életciklus esemény bekövetkezésekor futtat az alkalmazás.
+
+## Animáció és tranzíció
+
+Elemek animálása legkönnyebben speciális class-ok segítségével történhet, amelyek feltételes hozzáadásával elindíthatjuk az animációt. A megjelenő elemek animációja nem probléma, az eltűnőeké viszont már nem oldható meg simán css-szel.
+
+A Vue tartalmaz egy `<transition>` tag-et, amely egy közvetlen gyermeket tartalmazhat, amellyel animálhatjuk a belépést/kilépést. Ez a tag speciális css osztályokat hoz létre, és ezeket adott sorrendben hozzáadja, majd törli, hogy az animációt végrehajtsák. A Vue emellett biztosítja, hogy a komponens csak azután semmisül meg, hogy az animáció lefutott. Ezt feltételesen renderelt komponensekhez használjuk, hiszen a folyamatosan jelenlévő komponenseket osztályok hozzáadásával és törlésével tudjuk animálni.
+
+A létrehozott osztályok:  
+
+- v.enter-from: kiinduló helyzet
+- v.enter-active: ide kerülhet pl. a transition property
+- v.enter-to: végállapot
+- v.leave-from: kezdőállapot
+- v.leave-active: a folyamatot szabályozza
+- v.leave-to: végállapot

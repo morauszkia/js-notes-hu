@@ -1,0 +1,168 @@
+---
+title: "JavaScript számok és dátumok"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_collapsed: true
+    toc_depth: 2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
+```
+
+## Számok 
+
+A számok a JavaScriptben floating point számokként vannak tárolva, kettes számrendszerben, ami egyes törtek reprezentációját nehezíti, ez pedig furcsa eredményekhez vezethet.
+
+### String és szám konvertálása
+
+```{js}
+const num = Number('23')
+const num = +'23'
+const num = Number.parseInt('30px')   // Ha számmal kezdődik
+const binNum = Number.parseInt(str, 2)  // 2-es számrendszerbe
+const floatNum = Number.parseFloat('2.5rem')  // parseInt 2 lenne
+```
+
+### Típus ellenőrzése
+
+```{js}
+Number.isNaN(val)
+Number.isNaN('20')    // false
+Number.isFinite(val)
+Number.isFinite('20') // false
+Number.isFinite(20 / 0) // false
+Number.isInteger(val)
+```
+
+### Math namespace
+
+```{js}
+Math.sqrt(num)
+// Other roots
+const cubRoot = num ** (1 / 3)
+Math.max(...nums)
+Math.min(...nums)
+Math.PI
+Math.random()     // [0; 1)
+// Rounding
+Math.trunc(num)
+Math.round(num)
+Math.ceil(num)
+Math.floor(num)
+num.toFixed(d)
+```
+
+### Egyéb műveletek számokkal
+
+#### Post-increment és pre-increment (és decrement)
+
+A `++` és `--` műveletek az adott numerikus változó értékét 1-gyel növeli/csökkenti. Erre két lehetőség van:
+`a++` és `++a` (ugyanez `--`-szal). Előbbi növeli az `a` változó értékét, de return értéke az eredeti, míg utóbbi már a megnövelt értéket adja.
+
+#### BigInt
+
+```{js}
+const bigNum = 78423475917289n
+const bigNum = BigInt(num)      // nem megbízható
+```
+
+A legtöbb művelet használható vele, de nem lehet keverni sima számokkal, osztásnál legközelebbi egész számra kerekít, sqrt nem működik. Kisebb, nagyobb összehasonlítások nem működnek jól.
+
+#### Numeric separators
+
+Nagy számoknál az olvashatóságot segíti egy ES2021 újítás: a számokon belül `_`-sal csoportosíthatunk, és a JS továbbra is felismeri a számokat. Csak két szám közé helyezhető, és nem lehet kettő egymás mellett. 
+
+De: Stringben nem használható, mert a JS nem tudja számmá alakítani.
+
+```{js}
+const diameter = 287_460_000_000;
+const priceCents = 345_99;
+```
+
+## Dátumok 
+
+### Dátumok létrehozása
+
+```{js}
+const now = new Date();
+const lastChristmas = new Date('December 24, 2020')
+const date1 = new Date(2021, 6, 12, 14, 25, 5)  // hónap 0-based!
+const autocorrect = new Date(2021, 1, 30)       // március 2.
+const afterUNIX = new Date(ms)                  // UNIX után ms ezredmásodperccel
+```
+
+## Dátumok elemeinek lekérése és módosítása
+
+```{js}
+future.getFullYear()
+future.getMonth()
+future.getDate()      // Hányadika
+future.getDay()       // Milyen nap
+future.getHours()
+future.getMinutes()
+future.getSeconds()
+future.toISOString()  // Formázás
+future.getTime()      // Timestamp
+Date.now()            // Timestamp a mostani pillanatra
+```
+
+A módosítás a `set*` parancsokkal (pl. future.setFullYear(2035)) történik.
+
+A dátumokkal műveletek is végezhetők: pl. két dátum különbsége kiszámítható milliszekundumokban, amely átalakítható más mértékegységre. 
+
+## Nemzetköziesítés
+
+Ahhoz, hogy a dátumok minden felhasználó számára a megszokott formában jelenjenek meg, az Internationalization API-t használhatjuk, amely az `Intl` namespace-en keresztül érthető el. 
+
+```{js}
+new Intl.DateTimeFormat(locale)
+```
+
+A fenti kód egy új formattert ad, amelynek van egy `.format` metódusa.
+
+```{js}
+new Intl.DateTimeFormat(locale).format(date)
+
+// Pl.:
+new Intl.DateTimeFormat('en-US').format(future)
+```
+
+Második paraméterként megadható egy objektum, amely a beállításokat tartalmazza ([további információ](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat)):
+
+```{js}
+const options = {
+  hour: 'numeric',
+  minute: 'numeric',
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+  weekday: 'short'
+  }
+const locale = navigator.language
+
+new Intl.DateTimeFormat(locale, options).format(date)
+```
+
+Ez használható más értékek nemzetköziesítésére, formázására is (bővebb információ az [MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat/NumberFormat)-en):
+
+```{js}
+const opts = {
+  style: 'unit',
+  unit: 'mile-per-hour'
+}
+
+const opts2 = {
+  style: 'percent'
+}
+
+const opts2 = {
+  style: 'currency',
+  currency: 'EUR',
+  useGrouping: false
+}
+
+new Intl.NumberFormat(locale, opts).format(num)
+```
