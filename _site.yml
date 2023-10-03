@@ -1,4 +1,5 @@
 name: "coding-notes"
+output_dir: "."
 output:
   html_document:
     theme: readable
